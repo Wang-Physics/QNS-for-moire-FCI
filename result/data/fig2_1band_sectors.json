@@ -1,0 +1,103 @@
+[
+  {
+    "dimension": 12,
+    "energies_meV": [
+      -282.93686112421034,
+      -281.2268033326321,
+      -272.9479782376692
+    ],
+    "momentum": [
+      0,
+      0
+    ],
+    "residual_meV": 1.5081474793353242e-13
+  },
+  {
+    "dimension": 9,
+    "energies_meV": [
+      -274.1103744149455
+    ],
+    "momentum": [
+      0,
+      1
+    ],
+    "residual_meV": 2.1145505451409175e-13
+  },
+  {
+    "dimension": 9,
+    "energies_meV": [
+      -274.1103743102212
+    ],
+    "momentum": [
+      0,
+      2
+    ],
+    "residual_meV": 2.0532343473442673e-13
+  },
+  {
+    "dimension": 9,
+    "energies_meV": [
+      -274.11037426448917
+    ],
+    "momentum": [
+      1,
+      0
+    ],
+    "residual_meV": 1.5240710916630848e-13
+  },
+  {
+    "dimension": 9,
+    "energies_meV": [
+      -274.1103744690026
+    ],
+    "momentum": [
+      1,
+      1
+    ],
+    "residual_meV": 1.8038791677010767e-13
+  },
+  {
+    "dimension": 9,
+    "energies_meV": [
+      -278.7012749762532
+    ],
+    "momentum": [
+      1,
+      2
+    ],
+    "residual_meV": 2.1493805931302444e-13
+  },
+  {
+    "dimension": 9,
+    "energies_meV": [
+      -274.1103745776847
+    ],
+    "momentum": [
+      2,
+      0
+    ],
+    "residual_meV": 1.5638534687504008e-13
+  },
+  {
+    "dimension": 9,
+    "energies_meV": [
+      -278.7012749986815
+    ],
+    "momentum": [
+      2,
+      1
+    ],
+    "residual_meV": 2.149571051331446e-13
+  },
+  {
+    "dimension": 9,
+    "energies_meV": [
+      -274.1103743825804
+    ],
+    "momentum": [
+      2,
+      2
+    ],
+    "residual_meV": 1.150954915415852e-13
+  }
+]

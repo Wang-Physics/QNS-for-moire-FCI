@@ -1,0 +1,14 @@
+{
+  "construction": "exact first-four-band restriction of validated five-band operator",
+  "ground_energy_meV": -315.2276990411001,
+  "ground_energy_per_hole_meV": -52.53794984018335,
+  "hilbert_dimension": 1947792,
+  "momentum": [
+    0,
+    0
+  ],
+  "n_bands": 4,
+  "residual_meV": 1.7422001633807403e-06,
+  "sector_dimension": 216480,
+  "wall_clock_seconds": 40.893116503953934
+}

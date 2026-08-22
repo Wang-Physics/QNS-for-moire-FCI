@@ -1,0 +1,63 @@
+{
+  "status": "passed_with_one_metadata_scope_bug_fixed",
+  "one_rdm": {
+    "estimator": "rho_ab = 2 N_e E_{X~|Psi|^2,i,xprime}[phi_a^0(x_i)^* phi_b^0(xprime) (Psi(X_i->xprime)/Psi(X))^*]",
+    "implementation": "src/neural_bloch_diagnostics.py:18-124",
+    "complete_replacement_ratio": "src/neural_bloch_diagnostics.py:67-73",
+    "complete_ansatz_forward": "src/neural_bloch.py:333-413",
+    "fixed_bare_projector": "src/neural_bloch_overlap.py:31-61",
+    "projector_has_backflow_phase": false,
+    "production_projected_bands": 5,
+    "fixed_bug": "renamed misleading one_body_density_matrix_full to one_body_density_matrix_projected_5band; five-band trace is not a full-basis trace",
+    "bare_slater_test": {
+      "conditions": "delta_r=0, J=1, fixed complex M, one determinant, complete 9-orbital synthetic basis",
+      "walkers": 4096,
+      "burn_sweeps": 100,
+      "auxiliary_draws": 32,
+      "particles": 2,
+      "frobenius_error_to_exact": 0.05272101410873329,
+      "trace": 2.0104740266758663,
+      "trace_sem": 0.014586040403255604,
+      "hermiticity_error": 0.0,
+      "minimum_eigenvalue": -0.020723748037027766,
+      "sum_two_occupied_natural_populations": 2.0067618569284837,
+      "exact_eigenvalues": [
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "interpretation": "exact matrix is PSD; small negative sampled eigenvalue is finite Monte Carlo noise"
+    }
+  },
+  "hamiltonian": {
+    "production": "src/jax_neural_bloch.py:184-248",
+    "pytorch_reference": "src/continuum_vmc.py:96-206",
+    "moire_uses_raw_positions": true,
+    "coulomb_uses_raw_pair_displacements": true,
+    "tunneling_prefactor_uses_raw_positions": true,
+    "tunneling_numerator_calls_complete_logpsi_on_flipped_configuration": true,
+    "kinetic_plus_minus_call_complete_logpsi": true,
+    "cached_backflow_in_local_energy": false,
+    "instrumented_test": "tests/test_jax_neural_bloch.py:198",
+    "graph_calls_per_local_energy": [
+      "base (B,N,2)",
+      "all plus (2NB,N,2)",
+      "all minus (2NB,N,2)",
+      "all layer flips (NB,N,2)"
+    ],
+    "input_routing_error_found": false
+  },
+  "test_suite": {
+    "tests_run": 47,
+    "failures": 0,
+    "errors": 0,
+    "log": "result/final_test_audit.log"
+  },
+  "report": "result/tmote2_continuum_multiband_ed_report.pdf"
+}

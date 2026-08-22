@@ -1,0 +1,210 @@
+{
+  "difference_from_paper_meV_per_hole": -0.03553897658534311,
+  "ground_energy_meV": -316.35323385951205,
+  "ground_energy_per_hole_meV": -52.72553897658534,
+  "method": "three C6-inequivalent sectors; symmetry-related momenta replicated",
+  "pair3_hermiticity_error": 5.341916014700953e-16,
+  "paper_fig2_digitized_5band_meV_per_hole": -52.69,
+  "representatives": {
+    "Gamma": {
+      "dimension": 905100,
+      "energies_meV": [
+        -316.35323385951205
+      ],
+      "representative_momentum": [
+        0,
+        0
+      ],
+      "residuals_meV": null
+    },
+    "K_pair": {
+      "dimension": 904995,
+      "energies_meV": [
+        -312.19702848042704
+      ],
+      "representative_momentum": [
+        1,
+        2
+      ],
+      "residuals_meV": [
+        3.4668057936134565e-07
+      ]
+    },
+    "generic_six": {
+      "dimension": 904995,
+      "energies_meV": [
+        -313.63281355235017
+      ],
+      "representative_momentum": [
+        0,
+        1
+      ],
+      "residuals_meV": [
+        2.6950290409110736e-07
+      ]
+    }
+  },
+  "sectors": [
+    {
+      "dimension": 905100,
+      "energies_meV": [
+        -316.35323385951205
+      ],
+      "momentum": [
+        0,
+        0
+      ],
+      "representative_momentum": [
+        0,
+        0
+      ],
+      "residuals_meV": null,
+      "symmetry_class": "Gamma"
+    },
+    {
+      "dimension": 904995,
+      "energies_meV": [
+        -313.63281355235017
+      ],
+      "momentum": [
+        0,
+        1
+      ],
+      "representative_momentum": [
+        0,
+        1
+      ],
+      "residuals_meV": [
+        2.6950290409110736e-07
+      ],
+      "symmetry_class": "generic_six"
+    },
+    {
+      "dimension": 904995,
+      "energies_meV": [
+        -313.63281355235017
+      ],
+      "momentum": [
+        0,
+        2
+      ],
+      "representative_momentum": [
+        0,
+        1
+      ],
+      "residuals_meV": [
+        2.6950290409110736e-07
+      ],
+      "symmetry_class": "generic_six"
+    },
+    {
+      "dimension": 904995,
+      "energies_meV": [
+        -313.63281355235017
+      ],
+      "momentum": [
+        1,
+        0
+      ],
+      "representative_momentum": [
+        0,
+        1
+      ],
+      "residuals_meV": [
+        2.6950290409110736e-07
+      ],
+      "symmetry_class": "generic_six"
+    },
+    {
+      "dimension": 904995,
+      "energies_meV": [
+        -313.63281355235017
+      ],
+      "momentum": [
+        1,
+        1
+      ],
+      "representative_momentum": [
+        0,
+        1
+      ],
+      "residuals_meV": [
+        2.6950290409110736e-07
+      ],
+      "symmetry_class": "generic_six"
+    },
+    {
+      "dimension": 904995,
+      "energies_meV": [
+        -312.19702848042704
+      ],
+      "momentum": [
+        1,
+        2
+      ],
+      "representative_momentum": [
+        1,
+        2
+      ],
+      "residuals_meV": [
+        3.4668057936134565e-07
+      ],
+      "symmetry_class": "K_pair"
+    },
+    {
+      "dimension": 904995,
+      "energies_meV": [
+        -313.63281355235017
+      ],
+      "momentum": [
+        2,
+        0
+      ],
+      "representative_momentum": [
+        0,
+        1
+      ],
+      "residuals_meV": [
+        2.6950290409110736e-07
+      ],
+      "symmetry_class": "generic_six"
+    },
+    {
+      "dimension": 904995,
+      "energies_meV": [
+        -312.19702848042704
+      ],
+      "momentum": [
+        2,
+        1
+      ],
+      "representative_momentum": [
+        1,
+        2
+      ],
+      "residuals_meV": [
+        3.4668057936134565e-07
+      ],
+      "symmetry_class": "K_pair"
+    },
+    {
+      "dimension": 904995,
+      "energies_meV": [
+        -313.63281355235017
+      ],
+      "momentum": [
+        2,
+        2
+      ],
+      "representative_momentum": [
+        0,
+        1
+      ],
+      "residuals_meV": [
+        2.6950290409110736e-07
+      ],
+      "symmetry_class": "generic_six"
+    }
+  ],
+  "wall_clock_seconds": 1470.7607606500387
+}

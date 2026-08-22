@@ -1,0 +1,92 @@
+[
+  {
+    "band": 1,
+    "berry_rms_nm2": 9.755403840243817,
+    "chern_kubo_quadrature": -0.9999995251403193,
+    "mean_trace_metric_nm2": 8.132447543764764,
+    "path_bandwidth_meV": 9.550892893266631,
+    "path_max_meV": -10.935993119451076,
+    "path_min_meV": -20.486886012717708
+  },
+  {
+    "band": 2,
+    "berry_rms_nm2": 21.175622225354694,
+    "chern_kubo_quadrature": -1.0000147196605036,
+    "mean_trace_metric_nm2": 24.704565998371475,
+    "path_bandwidth_meV": 3.8963184669944795,
+    "path_max_meV": -2.275950292343344,
+    "path_min_meV": -6.172268759337824
+  },
+  {
+    "band": 3,
+    "berry_rms_nm2": 27.791468618861643,
+    "chern_kubo_quadrature": 1.999912394335373,
+    "mean_trace_metric_nm2": 30.90543867058958,
+    "path_bandwidth_meV": 16.98769705043948,
+    "path_max_meV": 18.96239460083389,
+    "path_min_meV": 1.9746975503944082
+  },
+  {
+    "band": 4,
+    "berry_rms_nm2": 148.1704718069265,
+    "chern_kubo_quadrature": -4.70993410377535,
+    "mean_trace_metric_nm2": 80.15247837458412,
+    "path_bandwidth_meV": 21.445184724229136,
+    "path_max_meV": 36.83677728240994,
+    "path_min_meV": 15.391592558180802
+  },
+  {
+    "band": 5,
+    "berry_rms_nm2": 148.0496873186099,
+    "chern_kubo_quadrature": 2.7096051527264096,
+    "mean_trace_metric_nm2": 114.22573252478817,
+    "path_bandwidth_meV": 11.61813619169483,
+    "path_max_meV": 49.73347577715692,
+    "path_min_meV": 38.11533958546209
+  },
+  {
+    "band": 6,
+    "berry_rms_nm2": 64.2096333649641,
+    "chern_kubo_quadrature": 3.8478545512250686,
+    "mean_trace_metric_nm2": 140.2871978083213,
+    "path_bandwidth_meV": 12.35964063020917,
+    "path_max_meV": 60.38702864972279,
+    "path_min_meV": 48.027388019513616
+  },
+  {
+    "band": 7,
+    "berry_rms_nm2": 59.00115159802586,
+    "chern_kubo_quadrature": -2.99043049401766,
+    "mean_trace_metric_nm2": 155.15791531299791,
+    "path_bandwidth_meV": 25.826777757378757,
+    "path_max_meV": 81.04478311017823,
+    "path_min_meV": 55.21800535279947
+  },
+  {
+    "band": 8,
+    "berry_rms_nm2": 93.41984703599576,
+    "chern_kubo_quadrature": 0.31627689578124585,
+    "mean_trace_metric_nm2": 234.31172547948168,
+    "path_bandwidth_meV": 15.15463101392433,
+    "path_max_meV": 83.41748299213887,
+    "path_min_meV": 68.26285197821454
+  },
+  {
+    "band": 9,
+    "berry_rms_nm2": 4261.005963933947,
+    "chern_kubo_quadrature": 27.688306054095943,
+    "mean_trace_metric_nm2": 762.9577617360173,
+    "path_bandwidth_meV": 19.627284934559967,
+    "path_max_meV": 94.6358592778195,
+    "path_min_meV": 75.00857434325954
+  },
+  {
+    "band": 10,
+    "berry_rms_nm2": 4260.858572844136,
+    "chern_kubo_quadrature": -26.86393292228892,
+    "mean_trace_metric_nm2": 755.1624291675907,
+    "path_bandwidth_meV": 29.21575594348225,
+    "path_max_meV": 108.28067432363123,
+    "path_min_meV": 79.06491838014898
+  }
+]

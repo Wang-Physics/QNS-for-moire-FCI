@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "tMoTe2 continuum multiband ED summary",
+  "type": "object",
+  "required": ["run_id", "protocol_version", "stage", "benchmark", "seed", "status", "resources", "bands", "ed", "checks", "decision", "protocol_deviations"],
+  "properties": {
+    "run_id": {"type": "string", "minLength": 1},
+    "protocol_version": {"type": "string"},
+    "stage": {"enum": ["smoke", "pilot", "confirm"]},
+    "benchmark": {"const": "tmote2_continuum_multiband_ed"},
+    "seed": {"type": "integer", "minimum": 0},
+    "status": {"enum": ["completed", "failed", "stopped"]},
+    "resources": {"type": "object"},
+    "bands": {"type": "object"},
+    "ed": {"type": "object"},
+    "checks": {"type": "object"},
+    "decision": {"enum": ["CONTINUE", "REVISE", "STOP", "ESCALATE"]},
+    "protocol_deviations": {"type": "array", "items": {"type": "string"}}
+  }
+}

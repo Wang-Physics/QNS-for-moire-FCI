@@ -1,0 +1,66 @@
+{
+  "benchmark": "twisted_MoTe2_continuum_multiband_ED",
+  "paper": "arXiv:2503.13585v3",
+  "parameters": {
+    "dielectric_constant": 5.0,
+    "plane_wave_shells": 8,
+    "coulomb_reciprocal_shells": 8,
+    "quantum_geometry_theta_deg": 2.6,
+    "multiband_theta_deg": 3.0,
+    "fig5_theta_deg": 2.6,
+    "manybody_twist_plaquettes_per_direction": 6
+  },
+  "symmetries": {
+    "charge_U1": true,
+    "spin_U1": "fully polarized fixed Sz",
+    "translations": true,
+    "point_group": "C3/C6 symmetry representatives for large blocks"
+  },
+  "fig2_cluster": {
+    "geometry": "3x3",
+    "bands": [1, 2, 3, 4, 5],
+    "fillings": ["1/3", "2/3"]
+  },
+  "fig5_cluster": {
+    "geometry": "27-cell 3sqrt(3) x 3sqrt(3)",
+    "supercell_matrix": [[3, -3], [3, 6]],
+    "bands": 1,
+    "momentum_index": "k1 + 3*k2",
+    "Gamma_index": 0,
+    "Kprime_index": 9,
+    "K_index": 18
+  },
+  "main_results_meV": {
+    "nu_1_over_3_manifold_relative": [0.0, 0.572845, 0.572845],
+    "nu_1_over_3_gap_after_manifold": 1.476154,
+    "nu_2_over_3_manifold_relative": [0.0, 0.108374, 0.298320],
+    "nu_2_over_3_gap_after_manifold": 3.482322,
+    "nu_1_over_3_S_K": 1.057122,
+    "nu_2_over_3_S_K": 0.196797,
+    "nu_1_over_3_bundle_chern": 9.334971866929525e-7,
+    "nu_2_over_3_bundle_chern": 1.9999997495788555,
+    "nu_2_over_3_hall_conductance_e2_over_h": 0.6666665831929518,
+    "nu_1_over_3_flux_cut_min_gap_meV": 1.4761541021401285,
+    "nu_2_over_3_same_Gamma_min_gap_meV": 5.143591964762891,
+    "nu_1_over_3_min_link_overlap": 0.964367951898261,
+    "nu_2_over_3_min_link_singular_value": 0.9579146114772554
+  },
+  "deliverables": {
+    "report": "result/tmote2_continuum_multiband_ed_report.pdf",
+    "figure_1": "result/figures/fig1_bands_quantum_geometry.pdf",
+    "figure_2": "result/figures/fig2_multiband_ed.pdf",
+    "figure_3": "result/figures/fig3_fig5_spectra_observables.pdf",
+    "figure_4": "result/figures/fig4_manybody_berry_curvature.pdf",
+    "fig5_spectrum": "result/data/fig5_27cell_1band_spectrum.json",
+    "fig5_observables": "result/data/fig5_27cell_observables.json",
+    "manybody_berry_nu_1_over_3": "result/data/manybody_berry_27cell_nu1of3.json",
+    "manybody_berry_nu_2_over_3": "result/data/manybody_berry_27cell_nu2of3.json"
+  },
+  "validation": {
+    "unittest_count": 20,
+    "unittest_status": "pass",
+    "rectangular_vs_general_interaction_relative_error": 3.3e-16,
+    "particle_hole_sector_spectral_error_meV": 3.4e-13,
+    "plane_wave_C6_mismatch_meV": 8.0e-6
+  }
+}

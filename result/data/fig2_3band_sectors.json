@@ -1,0 +1,103 @@
+[
+  {
+    "dimension": 32922,
+    "energies_meV": [
+      -311.16315601425583,
+      -309.77392359306026,
+      -304.44827073867833
+    ],
+    "momentum": [
+      0,
+      0
+    ],
+    "residual_meV": 6.31156338623679e-12
+  },
+  {
+    "dimension": 32886,
+    "energies_meV": [
+      -308.9893604011115
+    ],
+    "momentum": [
+      0,
+      1
+    ],
+    "residual_meV": 1.9618956451649436e-11
+  },
+  {
+    "dimension": 32886,
+    "energies_meV": [
+      -308.9893603436726
+    ],
+    "momentum": [
+      0,
+      2
+    ],
+    "residual_meV": 4.4842786712861734e-11
+  },
+  {
+    "dimension": 32886,
+    "energies_meV": [
+      -308.98936071340574
+    ],
+    "momentum": [
+      1,
+      0
+    ],
+    "residual_meV": 2.7472243943776692e-11
+  },
+  {
+    "dimension": 32886,
+    "energies_meV": [
+      -308.98936048891943
+    ],
+    "momentum": [
+      1,
+      1
+    ],
+    "residual_meV": 2.563148941878808e-11
+  },
+  {
+    "dimension": 32886,
+    "energies_meV": [
+      -307.1380748102455
+    ],
+    "momentum": [
+      1,
+      2
+    ],
+    "residual_meV": 1.8947140118484866e-12
+  },
+  {
+    "dimension": 32886,
+    "energies_meV": [
+      -308.9893608644325
+    ],
+    "momentum": [
+      2,
+      0
+    ],
+    "residual_meV": 5.972117214711534e-11
+  },
+  {
+    "dimension": 32886,
+    "energies_meV": [
+      -307.1380746165587
+    ],
+    "momentum": [
+      2,
+      1
+    ],
+    "residual_meV": 1.9672618589485628e-12
+  },
+  {
+    "dimension": 32886,
+    "energies_meV": [
+      -308.989360250475
+    ],
+    "momentum": [
+      2,
+      2
+    ],
+    "residual_meV": 3.9945835760256183e-11
+  }
+]

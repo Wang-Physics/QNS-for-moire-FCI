@@ -1,0 +1,42 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local experiments and retired branches.
+archive/
+runs/
+
+# Native kernels are rebuilt automatically from native/*.cpp.
+native/*.so
+
+# Raw Monte Carlo walkers, checkpoints, Lanczos vectors, and twist states.
+# Keep only small top-level benchmark fixtures used by regression tests.
+result/data/*
+!result/data/*.json
+!result/data/fig2_bloch_mesh.npz
+!result/data/fig2_1band_ground_state.npz
+!result/data/fig2_2band_ground_state.npz
+!result/data/fig2_3band_ground_state.npz
+!result/data/fig2_4band_ground_state.npz
+!result/data/fig2_5band_ground_state.npz
+!result/data/nu1of3_1band_ground_state.npz
+!result/data/nu1of3_2band_ground_state.npz
+!result/data/nu1of3_3band_ground_state.npz
+!result/data/nu1of3_4band_ground_state.npz
+!result/data/nu1of3_5band_ground_state.npz
+
+# LaTeX intermediates, local audits, backups, and inspection-only previews.
+result/**/*.aux
+result/**/*.log
+result/**/*.out
+result/**/*.orig
+result/result/
+result/compile_final.log
+result/final_test_audit.log
+result/figures/*_preview.png
+texput.log
+*.orig
+
+# Downloaded papers are cited by DOI/arXiv in references/README.md.
+references/*.pdf

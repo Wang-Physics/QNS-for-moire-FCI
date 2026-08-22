@@ -1,0 +1,76 @@
+{
+  "label": "POST-HOC",
+  "purpose": "reciprocal-transfer cutoff stability",
+  "primary_cutoff_shells": 8,
+  "comparisons": {
+    "4": {
+      "1": {
+        "ground_energy_meV": -108.98894837456767,
+        "per_particle_meV": -36.32964945818922,
+        "three_state_splitting_meV": 2.0035272718050265,
+        "gap_after_three_meV": 2.808203612901849,
+        "pair_hermiticity_error": 3.693313683948839e-16
+      },
+      "2": {
+        "ground_energy_meV": -111.34769183670718,
+        "per_particle_meV": -37.115897278902395,
+        "three_state_splitting_meV": 0.49024933962061823,
+        "gap_after_three_meV": 3.5721761611191454,
+        "pair_hermiticity_error": 4.0913013968043036e-16
+      },
+      "3": {
+        "ground_energy_meV": -112.05563180775233,
+        "per_particle_meV": -37.35187726925078,
+        "three_state_splitting_meV": 0.40286200536046124,
+        "gap_after_three_meV": 3.671138724034833,
+        "pair_hermiticity_error": 4.3984145961340826e-16
+      }
+    },
+    "6": {
+      "1": {
+        "ground_energy_meV": -108.98876546261646,
+        "per_particle_meV": -36.32958848753882,
+        "three_state_splitting_meV": 2.0034861821221597,
+        "gap_after_three_meV": 2.808181088507652,
+        "pair_hermiticity_error": 3.9361565773551193e-16
+      },
+      "2": {
+        "ground_energy_meV": -111.3474121375926,
+        "per_particle_meV": -37.1158040458642,
+        "three_state_splitting_meV": 0.49016465306949897,
+        "gap_after_three_meV": 3.5722346164694727,
+        "pair_hermiticity_error": 4.532647145218087e-16
+      },
+      "3": {
+        "ground_energy_meV": -112.05537272086276,
+        "per_particle_meV": -37.35179090695426,
+        "three_state_splitting_meV": 0.4027860190790875,
+        "gap_after_three_meV": 3.6712475743601374,
+        "pair_hermiticity_error": 4.859247588226316e-16
+      }
+    },
+    "8": {
+      "1": {
+        "ground_energy_meV": -108.98876638208252,
+        "per_particle_meV": -36.32958879402751,
+        "three_state_splitting_meV": 2.0034851314673148,
+        "gap_after_three_meV": 2.8081791052337763,
+        "pair_hermiticity_error": 3.6509283057023857e-16
+      },
+      "2": {
+        "ground_energy_meV": -111.34740829858937,
+        "per_particle_meV": -37.11580276619646,
+        "three_state_splitting_meV": 0.4901594242966354,
+        "gap_after_three_meV": 3.5722336567095994,
+        "pair_hermiticity_error": 5.002677989361335e-16
+      },
+      "3": {
+        "ground_energy_meV": -112.05536852236939,
+        "per_particle_meV": -37.351789507456466,
+        "three_state_splitting_meV": 0.40278115227253863,
+        "gap_after_three_meV": 3.6712458149414573,
+        "pair_hermiticity_error": 5.341916014700953e-16
+      }
+    }
+  }
+}

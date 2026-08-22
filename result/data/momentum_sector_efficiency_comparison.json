@@ -1,0 +1,86 @@
+{
+  "comparison": "matched 200-step natural-gradient runs (step-100 checkpoints continued for 100 updates)",
+  "efficiency_definition": "energy descent per update and wall time, late-window energy, local-energy variance, and force norm",
+  "fillings": {
+    "1/3": {
+      "full_M": {
+        "final_step": 200,
+        "step_200_energy_per_particle_meV": -36.38563108071412,
+        "step_200_training_walker_sem_meV": 0.0630613885234969,
+        "last_20_mean_energy_per_particle_meV": -36.42738021627572,
+        "last_20_energy_rms_meV": 0.04309221292730915,
+        "last_20_min_energy_per_particle_meV": -36.51990299313403,
+        "last_20_slope_meV_per_particle_per_step": 0.002418045684412564,
+        "last_20_mean_local_energy_variance_meV2": 137.23364662223258,
+        "final_local_energy_variance_meV2": 147.74379701874446,
+        "last_20_mean_force_norm": 9.886487511589483,
+        "mean_step_seconds": 41.474419913217424,
+        "last_20_mean_cg_relative_residual": 0.41353816514894054,
+        "median_step_seconds": 43.69772860221565,
+        "training_seconds": 4788.347890388221,
+        "parameter_count": 84892,
+        "five_band_ed_meV_per_particle": -37.3932329459257,
+        "last_20_minus_five_band_ed_meV_per_particle": 0.9658527296499813
+      },
+      "fixed_Gamma_no_M": {
+        "final_step": 200,
+        "step_200_energy_per_particle_meV": -36.478429735782164,
+        "step_200_training_walker_sem_meV": 0.0576541777567528,
+        "last_20_mean_energy_per_particle_meV": -36.45527615487119,
+        "last_20_energy_rms_meV": 0.05728634505799195,
+        "last_20_min_energy_per_particle_meV": -36.5613953475231,
+        "last_20_slope_meV_per_particle_per_step": -0.002558185063040144,
+        "last_20_mean_local_energy_variance_meV2": 136.71582138942682,
+        "final_local_energy_variance_meV2": 123.49340451421492,
+        "last_20_mean_force_norm": 8.21862828400896,
+        "mean_step_seconds": 41.707834239136425,
+        "last_20_mean_cg_relative_residual": 0.5071714620059999,
+        "median_step_seconds": 43.522538017481565,
+        "training_seconds": 4737.076885204762,
+        "parameter_count": 84838,
+        "five_band_ed_meV_per_particle": -37.3932329459257,
+        "last_20_minus_five_band_ed_meV_per_particle": 0.9379567910545106
+      }
+    },
+    "2/3": {
+      "full_M": {
+        "final_step": 200,
+        "step_200_energy_per_particle_meV": -52.20999602967834,
+        "step_200_training_walker_sem_meV": 0.07130844395147315,
+        "last_20_mean_energy_per_particle_meV": -52.31983110902779,
+        "last_20_energy_rms_meV": 0.06869903555822565,
+        "last_20_min_energy_per_particle_meV": -52.48725055848882,
+        "last_20_slope_meV_per_particle_per_step": 0.007907717930495974,
+        "last_20_mean_local_energy_variance_meV2": 728.8905989143684,
+        "final_local_energy_variance_meV2": 755.6559541201958,
+        "last_20_mean_force_norm": 17.004836863005014,
+        "mean_step_seconds": 104.02798837084323,
+        "last_20_mean_cg_relative_residual": 0.3692424230809907,
+        "median_step_seconds": 104.87867438793182,
+        "training_seconds": 11066.892941560596,
+        "parameter_count": 84946,
+        "five_band_ed_meV_per_particle": -52.72553897658534,
+        "last_20_minus_five_band_ed_meV_per_particle": 0.4057078675575525
+      },
+      "fixed_Gamma_no_M": {
+        "final_step": 200,
+        "step_200_energy_per_particle_meV": -52.39636964185684,
+        "step_200_training_walker_sem_meV": 0.06884314463497793,
+        "last_20_mean_energy_per_particle_meV": -52.34467650356203,
+        "last_20_energy_rms_meV": 0.07727936825519065,
+        "last_20_min_energy_per_particle_meV": -52.507267901378405,
+        "last_20_slope_meV_per_particle_per_step": -0.005721732811969463,
+        "last_20_mean_local_energy_variance_meV2": 701.9483740587089,
+        "final_local_energy_variance_meV2": 704.3095695248538,
+        "last_20_mean_force_norm": 13.529446943377641,
+        "mean_step_seconds": 104.64265464823693,
+        "last_20_mean_cg_relative_residual": 0.48391917597543593,
+        "median_step_seconds": 105.28890179097652,
+        "training_seconds": 11083.865974768996,
+        "parameter_count": 84838,
+        "five_band_ed_meV_per_particle": -52.72553897658534,
+        "last_20_minus_five_band_ed_meV_per_particle": 0.38086247302331344
+      }
+    }
+  }
+}

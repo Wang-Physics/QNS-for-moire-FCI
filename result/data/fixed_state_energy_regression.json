@@ -1,0 +1,41 @@
+{
+  "definition": "fixed-state delta-r=0, J=1, fixed-M Bloch-Slater energy regression",
+  "occupied_momentum_indices": [
+    0,
+    4
+  ],
+  "walkers": 4096,
+  "burn_sweeps": 120,
+  "measurement_sweeps": 10,
+  "analytic_meV": {
+    "kinetic": 39.420749303776894,
+    "moire": -38.51675041566798,
+    "tunneling": -29.943523483171358,
+    "coulomb": -9.67687445979184,
+    "total": -38.71639905485428
+  },
+  "monte_carlo_meV": {
+    "kinetic": 39.34672828486298,
+    "moire": -38.77386827169953,
+    "tunneling": -29.61178624059957,
+    "coulomb": -10.16705589036445,
+    "total": -39.20598211780057
+  },
+  "sem_meV": {
+    "kinetic": 0.3342693894185175,
+    "moire": 0.5346771040659448,
+    "tunneling": 0.2983738202738959,
+    "coulomb": 0.3354093432995143,
+    "total": 0.3354077369605017
+  },
+  "difference_meV": {
+    "kinetic": -0.07402101891391766,
+    "moire": -0.2571178560315488,
+    "tunneling": 0.33173724257178705,
+    "coulomb": -0.4901814305726102,
+    "total": -0.48958306294629494
+  },
+  "mean_position_acceptance": 0.6703031099759615,
+  "mean_layer_acceptance": 0.45593825120192305,
+  "used_for_parameter_updates": false
+}

@@ -1,0 +1,393 @@
+{
+  "benchmark": "Luo-Zaklama-Fu_Fig2_epsilon5_first_three_ED_points",
+  "checks": {
+    "all_momentum_sectors_scanned": true,
+    "ground_state_is_gamma": true,
+    "lanczos_residual": true,
+    "pair_hermiticity": true,
+    "paper_agreement": true,
+    "variational_monotonicity": true
+  },
+  "digitization_uncertainty_meV_per_hole": 0.06,
+  "paper_digitized_meV_per_hole": {
+    "1": -47.15,
+    "2": -50.06,
+    "3": -51.83
+  },
+  "parameters": {
+    "cluster": "3x3",
+    "coulomb_reciprocal_shells": 8,
+    "dielectric_constant_epsilon": 5.0,
+    "filling": "2/3",
+    "n_cells": 9,
+    "n_holes": 6,
+    "plane_wave_shells": 8,
+    "q0_removed": true,
+    "theta_deg": 3.0
+  },
+  "projections": {
+    "1": {
+      "difference_from_paper_meV_per_hole": -0.006143520701726857,
+      "energy_per_hole_meV": -47.156143520701725,
+      "ground_energy_meV": -282.93686112421034,
+      "ground_momentum": [
+        0,
+        0
+      ],
+      "hilbert_dimension": 84,
+      "max_lanczos_residual_meV": 2.149571051331446e-13,
+      "n_bands": 1,
+      "n_orbitals": 9,
+      "pair_hermiticity_error": 3.6509283057023857e-16,
+      "paper_digitized_meV_per_hole": -47.15,
+      "sectors": [
+        {
+          "dimension": 12,
+          "energies_meV": [
+            -282.93686112421034,
+            -281.2268033326321,
+            -272.9479782376692
+          ],
+          "momentum": [
+            0,
+            0
+          ],
+          "residual_meV": 1.5081474793353242e-13
+        },
+        {
+          "dimension": 9,
+          "energies_meV": [
+            -274.1103744149455
+          ],
+          "momentum": [
+            0,
+            1
+          ],
+          "residual_meV": 2.1145505451409175e-13
+        },
+        {
+          "dimension": 9,
+          "energies_meV": [
+            -274.1103743102212
+          ],
+          "momentum": [
+            0,
+            2
+          ],
+          "residual_meV": 2.0532343473442673e-13
+        },
+        {
+          "dimension": 9,
+          "energies_meV": [
+            -274.11037426448917
+          ],
+          "momentum": [
+            1,
+            0
+          ],
+          "residual_meV": 1.5240710916630848e-13
+        },
+        {
+          "dimension": 9,
+          "energies_meV": [
+            -274.1103744690026
+          ],
+          "momentum": [
+            1,
+            1
+          ],
+          "residual_meV": 1.8038791677010767e-13
+        },
+        {
+          "dimension": 9,
+          "energies_meV": [
+            -278.7012749762532
+          ],
+          "momentum": [
+            1,
+            2
+          ],
+          "residual_meV": 2.1493805931302444e-13
+        },
+        {
+          "dimension": 9,
+          "energies_meV": [
+            -274.1103745776847
+          ],
+          "momentum": [
+            2,
+            0
+          ],
+          "residual_meV": 1.5638534687504008e-13
+        },
+        {
+          "dimension": 9,
+          "energies_meV": [
+            -278.7012749986815
+          ],
+          "momentum": [
+            2,
+            1
+          ],
+          "residual_meV": 2.149571051331446e-13
+        },
+        {
+          "dimension": 9,
+          "energies_meV": [
+            -274.1103743825804
+          ],
+          "momentum": [
+            2,
+            2
+          ],
+          "residual_meV": 1.150954915415852e-13
+        }
+      ]
+    },
+    "2": {
+      "difference_from_paper_meV_per_hole": -0.01742313514298388,
+      "energy_per_hole_meV": -50.077423135142986,
+      "ground_energy_meV": -300.4645388108579,
+      "ground_momentum": [
+        0,
+        0
+      ],
+      "hilbert_dimension": 18564,
+      "max_lanczos_residual_meV": 2.878957952082536e-10,
+      "n_bands": 2,
+      "n_orbitals": 18,
+      "pair_hermiticity_error": 5.002677989361335e-16,
+      "paper_digitized_meV_per_hole": -50.06,
+      "sectors": [
+        {
+          "dimension": 2076,
+          "energies_meV": [
+            -300.4645388108579,
+            -299.2852423142599,
+            -295.12171004191583
+          ],
+          "momentum": [
+            0,
+            0
+          ],
+          "residual_meV": 1.8435796072620523e-12
+        },
+        {
+          "dimension": 2061,
+          "energies_meV": [
+            -298.620208438984
+          ],
+          "momentum": [
+            0,
+            1
+          ],
+          "residual_meV": 2.6426032478308464e-12
+        },
+        {
+          "dimension": 2061,
+          "energies_meV": [
+            -298.62020828591784
+          ],
+          "momentum": [
+            0,
+            2
+          ],
+          "residual_meV": 6.756820060178893e-12
+        },
+        {
+          "dimension": 2061,
+          "energies_meV": [
+            -298.6202086435335
+          ],
+          "momentum": [
+            1,
+            0
+          ],
+          "residual_meV": 2.8889018788131962e-12
+        },
+        {
+          "dimension": 2061,
+          "energies_meV": [
+            -298.6202084563458
+          ],
+          "momentum": [
+            1,
+            1
+          ],
+          "residual_meV": 1.3039926701898185e-11
+        },
+        {
+          "dimension": 2061,
+          "energies_meV": [
+            -295.8598876328254
+          ],
+          "momentum": [
+            1,
+            2
+          ],
+          "residual_meV": 2.878957952082536e-10
+        },
+        {
+          "dimension": 2061,
+          "energies_meV": [
+            -298.62020876684926
+          ],
+          "momentum": [
+            2,
+            0
+          ],
+          "residual_meV": 1.1051129186053388e-11
+        },
+        {
+          "dimension": 2061,
+          "energies_meV": [
+            -295.85988745432
+          ],
+          "momentum": [
+            2,
+            1
+          ],
+          "residual_meV": 9.594749532504298e-13
+        },
+        {
+          "dimension": 2061,
+          "energies_meV": [
+            -298.62020823704637
+          ],
+          "momentum": [
+            2,
+            2
+          ],
+          "residual_meV": 3.782589672511893e-12
+        }
+      ]
+    },
+    "3": {
+      "difference_from_paper_meV_per_hole": -0.030526002375971473,
+      "energy_per_hole_meV": -51.86052600237597,
+      "ground_energy_meV": -311.16315601425583,
+      "ground_momentum": [
+        0,
+        0
+      ],
+      "hilbert_dimension": 296010,
+      "max_lanczos_residual_meV": 5.972117214711534e-11,
+      "n_bands": 3,
+      "n_orbitals": 27,
+      "pair_hermiticity_error": 5.341916014700953e-16,
+      "paper_digitized_meV_per_hole": -51.83,
+      "sectors": [
+        {
+          "dimension": 32922,
+          "energies_meV": [
+            -311.16315601425583,
+            -309.77392359306026,
+            -304.44827073867833
+          ],
+          "momentum": [
+            0,
+            0
+          ],
+          "residual_meV": 6.31156338623679e-12
+        },
+        {
+          "dimension": 32886,
+          "energies_meV": [
+            -308.9893604011115
+          ],
+          "momentum": [
+            0,
+            1
+          ],
+          "residual_meV": 1.9618956451649436e-11
+        },
+        {
+          "dimension": 32886,
+          "energies_meV": [
+            -308.9893603436726
+          ],
+          "momentum": [
+            0,
+            2
+          ],
+          "residual_meV": 4.4842786712861734e-11
+        },
+        {
+          "dimension": 32886,
+          "energies_meV": [
+            -308.98936071340574
+          ],
+          "momentum": [
+            1,
+            0
+          ],
+          "residual_meV": 2.7472243943776692e-11
+        },
+        {
+          "dimension": 32886,
+          "energies_meV": [
+            -308.98936048891943
+          ],
+          "momentum": [
+            1,
+            1
+          ],
+          "residual_meV": 2.563148941878808e-11
+        },
+        {
+          "dimension": 32886,
+          "energies_meV": [
+            -307.1380748102455
+          ],
+          "momentum": [
+            1,
+            2
+          ],
+          "residual_meV": 1.8947140118484866e-12
+        },
+        {
+          "dimension": 32886,
+          "energies_meV": [
+            -308.9893608644325
+          ],
+          "momentum": [
+            2,
+            0
+          ],
+          "residual_meV": 5.972117214711534e-11
+        },
+        {
+          "dimension": 32886,
+          "energies_meV": [
+            -307.1380746165587
+          ],
+          "momentum": [
+            2,
+            1
+          ],
+          "residual_meV": 1.9672618589485628e-12
+        },
+        {
+          "dimension": 32886,
+          "energies_meV": [
+            -308.989360250475
+          ],
+          "momentum": [
+            2,
+            2
+          ],
+          "residual_meV": 3.9945835760256183e-11
+        }
+      ]
+    }
+  },
+  "run_id": "fig2_theta3_eps5_nu2of3",
+  "software": {
+    "numpy": "2.5.2",
+    "platform": "Linux-6.8.0-90-generic-x86_64-with-glibc2.39",
+    "python": "3.14.2 (main, Jul 30 2026, 17:01:34) [GCC 13.3.0]",
+    "scipy": "1.18.0"
+  },
+  "status": "validated",
+  "wall_clock_seconds": 74.60643403977156
+}

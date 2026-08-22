@@ -1,0 +1,37 @@
+run_id: fig2_theta3_eps5_nu2of3
+seed: 0
+model:
+  material: tMoTe2
+  theta_deg: 3.0
+  a0_nm: 0.352
+  potential_meV: 11.2
+  tunneling_meV: 13.3
+  phase_deg: -91.0
+  mass_me: 0.62
+  plane_wave_shells: 8
+cluster:
+  n1: 3
+  n2: 3
+  filling_numerator: 2
+  filling_denominator: 3
+  n_holes: 6
+interaction:
+  type: periodic_unscreened_2d_coulomb
+  dielectric_constant: 5.0
+  reciprocal_shells: 8
+  remove_q0: true
+ed:
+  band_projections: [1, 2, 3]
+  all_momentum_sectors: true
+  gamma_eigenvalues: 3
+  other_sector_eigenvalues: 1
+  lanczos_tolerance: 1.0e-12
+  max_iterations: 1800
+validation:
+  paper_digitization_tolerance_meV_per_hole: 0.10
+  residual_tolerance_meV: 1.0e-7
+  paper_fig2_eps5_meV_per_hole:
+    1: -47.15
+    2: -50.06
+    3: -51.83
+  digitization_uncertainty_meV_per_hole: 0.06

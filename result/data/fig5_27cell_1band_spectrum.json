@@ -1,0 +1,1259 @@
+{
+  "status": "paper-aligned one-band reproduction",
+  "paper": "arXiv:2503.13585v3 Supplementary Fig. 5",
+  "theta_deg": 2.6,
+  "dielectric_constant": 5.0,
+  "bands": 1,
+  "cluster": "27-cell 3sqrt(3) x 3sqrt(3)",
+  "supercell_matrix": [
+    [
+      3,
+      -3
+    ],
+    [
+      3,
+      6
+    ]
+  ],
+  "charge_U1": true,
+  "spin_U1": "fully polarized",
+  "translation_sectors": 27,
+  "operator_hermiticity_error": 7.840569854840093e-09,
+  "k_points": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.17998575879240147
+    ],
+    [
+      -5.551115123125783e-17,
+      -0.17998575879240153
+    ],
+    [
+      0.1558722394336381,
+      0.08999287939620074
+    ],
+    [
+      -0.1558722394336381,
+      -0.08999287939620082
+    ],
+    [
+      -0.15587223943363815,
+      0.08999287939620074
+    ],
+    [
+      0.1558722394336381,
+      -0.08999287939620082
+    ],
+    [
+      0.3117444788672762,
+      0.0
+    ],
+    [
+      0.1558722394336381,
+      0.26997863818860224
+    ],
+    [
+      -0.1558722394336381,
+      0.26997863818860224
+    ],
+    [
+      -0.3117444788672762,
+      0.0
+    ],
+    [
+      -0.1558722394336381,
+      -0.26997863818860224
+    ],
+    [
+      0.1558722394336381,
+      -0.26997863818860224
+    ],
+    [
+      0.0,
+      0.35997151758480295
+    ],
+    [
+      0.0,
+      -0.35997151758480295
+    ],
+    [
+      0.3117444788672762,
+      0.17998575879240147
+    ],
+    [
+      -0.3117444788672762,
+      0.17998575879240147
+    ],
+    [
+      -0.31174447886727613,
+      -0.17998575879240153
+    ],
+    [
+      0.3117444788672762,
+      -0.17998575879240153
+    ],
+    [
+      0.31174447886727613,
+      -0.35997151758480295
+    ],
+    [
+      -0.4676167183009142,
+      0.08999287939620074
+    ],
+    [
+      0.4676167183009143,
+      -0.08999287939620082
+    ],
+    [
+      0.15587223943363804,
+      0.44996439698100377
+    ],
+    [
+      -0.15587223943363798,
+      -0.44996439698100377
+    ],
+    [
+      -0.3117444788672762,
+      0.35997151758480295
+    ],
+    [
+      0.0,
+      -0.5399572763772045
+    ],
+    [
+      0.0,
+      0.5399572763772045
+    ]
+  ],
+  "C6_representative_strategy": "one Lanczos solve per geometric C6 orbit; cutoff-level one-body symmetry mismatch is recorded separately",
+  "one_body_C6_max_error_meV": 7.993109452542058e-06,
+  "fillings": {
+    "1/3": {
+      "n_particles": 9,
+      "sectors": [
+        {
+          "sector_index": 0,
+          "representative": 0,
+          "momentum_numerator": [
+            0,
+            0
+          ],
+          "momentum_fraction": [
+            0.0,
+            0.0
+          ],
+          "dimension": 173613,
+          "energies_meV": [
+            -428.35916282548584,
+            -426.31016345477434,
+            -425.8349890462658,
+            -423.8692350930375,
+            -421.1925711753205
+          ],
+          "residual_meV": 4.382730811123017e-08,
+          "symmetry_generated": false
+        },
+        {
+          "sector_index": 1,
+          "representative": 1,
+          "momentum_numerator": [
+            3,
+            6
+          ],
+          "momentum_fraction": [
+            0.1111111111111111,
+            0.2222222222222222
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -420.4777606720055,
+            -419.6553685138631,
+            -419.52663614343834
+          ],
+          "residual_meV": 9.97896455636989e-08,
+          "symmetry_generated": false
+        },
+        {
+          "sector_index": 2,
+          "representative": 1,
+          "momentum_numerator": [
+            24,
+            21
+          ],
+          "momentum_fraction": [
+            -0.11111111111111116,
+            -0.2222222222222222
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -420.4777606720055,
+            -419.6553685138631,
+            -419.52663614343834
+          ],
+          "residual_meV": 9.97896455636989e-08,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 3,
+          "representative": 1,
+          "momentum_numerator": [
+            6,
+            3
+          ],
+          "momentum_fraction": [
+            0.2222222222222222,
+            0.1111111111111111
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -420.4777606720055,
+            -419.6553685138631,
+            -419.52663614343834
+          ],
+          "residual_meV": 9.97896455636989e-08,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 4,
+          "representative": 1,
+          "momentum_numerator": [
+            21,
+            24
+          ],
+          "momentum_fraction": [
+            -0.2222222222222222,
+            -0.11111111111111116
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -420.4777606720055,
+            -419.6553685138631,
+            -419.52663614343834
+          ],
+          "residual_meV": 9.97896455636989e-08,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 5,
+          "representative": 1,
+          "momentum_numerator": [
+            24,
+            3
+          ],
+          "momentum_fraction": [
+            -0.11111111111111116,
+            0.1111111111111111
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -420.4777606720055,
+            -419.6553685138631,
+            -419.52663614343834
+          ],
+          "residual_meV": 9.97896455636989e-08,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 6,
+          "representative": 1,
+          "momentum_numerator": [
+            3,
+            24
+          ],
+          "momentum_fraction": [
+            0.1111111111111111,
+            -0.11111111111111116
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -420.4777606720055,
+            -419.6553685138631,
+            -419.52663614343834
+          ],
+          "residual_meV": 9.97896455636989e-08,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 7,
+          "representative": 7,
+          "momentum_numerator": [
+            9,
+            0
+          ],
+          "momentum_fraction": [
+            0.3333333333333333,
+            0.0
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -420.042437002729,
+            -419.65315880458616,
+            -419.2262921501273
+          ],
+          "residual_meV": 3.537287973478604e-08,
+          "symmetry_generated": false
+        },
+        {
+          "sector_index": 8,
+          "representative": 7,
+          "momentum_numerator": [
+            9,
+            9
+          ],
+          "momentum_fraction": [
+            0.3333333333333333,
+            0.3333333333333333
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -420.042437002729,
+            -419.65315880458616,
+            -419.2262921501273
+          ],
+          "residual_meV": 3.537287973478604e-08,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 9,
+          "representative": 7,
+          "momentum_numerator": [
+            0,
+            9
+          ],
+          "momentum_fraction": [
+            0.0,
+            0.3333333333333333
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -420.042437002729,
+            -419.65315880458616,
+            -419.2262921501273
+          ],
+          "residual_meV": 3.537287973478604e-08,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 10,
+          "representative": 7,
+          "momentum_numerator": [
+            18,
+            0
+          ],
+          "momentum_fraction": [
+            -0.33333333333333337,
+            0.0
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -420.042437002729,
+            -419.65315880458616,
+            -419.2262921501273
+          ],
+          "residual_meV": 3.537287973478604e-08,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 11,
+          "representative": 7,
+          "momentum_numerator": [
+            18,
+            18
+          ],
+          "momentum_fraction": [
+            -0.33333333333333337,
+            -0.33333333333333337
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -420.042437002729,
+            -419.65315880458616,
+            -419.2262921501273
+          ],
+          "residual_meV": 3.537287973478604e-08,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 12,
+          "representative": 7,
+          "momentum_numerator": [
+            0,
+            18
+          ],
+          "momentum_fraction": [
+            0.0,
+            -0.33333333333333337
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -420.042437002729,
+            -419.65315880458616,
+            -419.2262921501273
+          ],
+          "residual_meV": 3.537287973478604e-08,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 13,
+          "representative": 13,
+          "momentum_numerator": [
+            6,
+            12
+          ],
+          "momentum_fraction": [
+            0.2222222222222222,
+            0.4444444444444444
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -420.65159984420046,
+            -420.0162789839795,
+            -419.7891721875954
+          ],
+          "residual_meV": 1.7031825695690197e-07,
+          "symmetry_generated": false
+        },
+        {
+          "sector_index": 14,
+          "representative": 13,
+          "momentum_numerator": [
+            21,
+            15
+          ],
+          "momentum_fraction": [
+            -0.2222222222222222,
+            -0.4444444444444444
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -420.65159984420046,
+            -420.0162789839795,
+            -419.7891721875954
+          ],
+          "residual_meV": 1.7031825695690197e-07,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 15,
+          "representative": 13,
+          "momentum_numerator": [
+            12,
+            6
+          ],
+          "momentum_fraction": [
+            0.4444444444444444,
+            0.2222222222222222
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -420.65159984420046,
+            -420.0162789839795,
+            -419.7891721875954
+          ],
+          "residual_meV": 1.7031825695690197e-07,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 16,
+          "representative": 13,
+          "momentum_numerator": [
+            21,
+            6
+          ],
+          "momentum_fraction": [
+            -0.2222222222222222,
+            0.2222222222222222
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -420.65159984420046,
+            -420.0162789839795,
+            -419.7891721875954
+          ],
+          "residual_meV": 1.7031825695690197e-07,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 17,
+          "representative": 13,
+          "momentum_numerator": [
+            15,
+            21
+          ],
+          "momentum_fraction": [
+            -0.4444444444444444,
+            -0.2222222222222222
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -420.65159984420046,
+            -420.0162789839795,
+            -419.7891721875954
+          ],
+          "residual_meV": 1.7031825695690197e-07,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 18,
+          "representative": 13,
+          "momentum_numerator": [
+            6,
+            21
+          ],
+          "momentum_fraction": [
+            0.2222222222222222,
+            -0.2222222222222222
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -420.65159984420046,
+            -420.0162789839795,
+            -419.7891721875954
+          ],
+          "residual_meV": 1.7031825695690197e-07,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 19,
+          "representative": 19,
+          "momentum_numerator": [
+            3,
+            15
+          ],
+          "momentum_fraction": [
+            0.1111111111111111,
+            -0.4444444444444444
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -421.71992490278956,
+            -421.10204975800906,
+            -420.86982486830294
+          ],
+          "residual_meV": 9.807131695037888e-09,
+          "symmetry_generated": false
+        },
+        {
+          "sector_index": 20,
+          "representative": 19,
+          "momentum_numerator": [
+            15,
+            3
+          ],
+          "momentum_fraction": [
+            -0.4444444444444444,
+            0.1111111111111111
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -421.71992490278956,
+            -421.10204975800906,
+            -420.86982486830294
+          ],
+          "residual_meV": 9.807131695037888e-09,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 21,
+          "representative": 19,
+          "momentum_numerator": [
+            12,
+            24
+          ],
+          "momentum_fraction": [
+            -0.5555555555555556,
+            -0.11111111111111116
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -421.71992490278956,
+            -421.10204975800906,
+            -420.86982486830294
+          ],
+          "residual_meV": 9.807131695037888e-09,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 22,
+          "representative": 19,
+          "momentum_numerator": [
+            12,
+            15
+          ],
+          "momentum_fraction": [
+            -0.5555555555555556,
+            -0.4444444444444444
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -421.71992490278956,
+            -421.10204975800906,
+            -420.86982486830294
+          ],
+          "residual_meV": 9.807131695037888e-09,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 23,
+          "representative": 19,
+          "momentum_numerator": [
+            15,
+            12
+          ],
+          "momentum_fraction": [
+            -0.4444444444444444,
+            -0.5555555555555556
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -421.71992490278956,
+            -421.10204975800906,
+            -420.86982486830294
+          ],
+          "residual_meV": 9.807131695037888e-09,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 24,
+          "representative": 19,
+          "momentum_numerator": [
+            24,
+            12
+          ],
+          "momentum_fraction": [
+            -0.11111111111111116,
+            -0.5555555555555556
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -421.71992490278956,
+            -421.10204975800906,
+            -420.86982486830294
+          ],
+          "residual_meV": 9.807131695037888e-09,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 25,
+          "representative": 25,
+          "momentum_numerator": [
+            18,
+            9
+          ],
+          "momentum_fraction": [
+            -0.33333333333333337,
+            0.3333333333333333
+          ],
+          "dimension": 173610,
+          "energies_meV": [
+            -427.78631755691146,
+            -423.7404586705168,
+            -421.9866136177849
+          ],
+          "residual_meV": 1.635217882791895e-07,
+          "symmetry_generated": false
+        },
+        {
+          "sector_index": 26,
+          "representative": 25,
+          "momentum_numerator": [
+            9,
+            18
+          ],
+          "momentum_fraction": [
+            0.3333333333333333,
+            -0.33333333333333337
+          ],
+          "dimension": 173610,
+          "energies_meV": [
+            -427.78631755691146,
+            -423.7404586705168,
+            -421.9866136177849
+          ],
+          "residual_meV": 1.635217882791895e-07,
+          "symmetry_generated": true
+        }
+      ],
+      "diagnostics": {
+        "Gamma_sector": 0,
+        "K_sector": 25,
+        "Kprime_sector": 26,
+        "ground_energy_meV": -428.35916282548584,
+        "manifold_relative_meV": [
+          0.0,
+          0.5728452685743832,
+          0.5728452685743832
+        ],
+        "manifold_splitting_meV": 0.5728452685743832,
+        "estimated_gap_above_manifold_meV": 1.4761541021371158,
+        "phase_signature": "CDW: Gamma, K, K' quasi-degenerate manifold"
+      }
+    },
+    "2/3": {
+      "n_particles": 18,
+      "particle_hole_acceleration": "exact 9-hole transform",
+      "sectors": [
+        {
+          "sector_index": 0,
+          "representative": 0,
+          "momentum_numerator": [
+            0,
+            0
+          ],
+          "momentum_fraction": [
+            0.0,
+            0.0
+          ],
+          "dimension": 173613,
+          "energies_meV": [
+            -1034.2031437191904,
+            -1034.0947699524604,
+            -1033.9048238034886,
+            -1028.604935790996,
+            -1028.285327662424
+          ],
+          "residual_meV": 1.675905225580772e-06,
+          "symmetry_generated": false
+        },
+        {
+          "sector_index": 1,
+          "representative": 1,
+          "momentum_numerator": [
+            3,
+            6
+          ],
+          "momentum_fraction": [
+            0.1111111111111111,
+            0.2222222222222222
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1027.763538121284,
+            -1027.6345721770938,
+            -1027.2221154997385
+          ],
+          "residual_meV": 4.944011824877356e-07,
+          "symmetry_generated": false
+        },
+        {
+          "sector_index": 2,
+          "representative": 1,
+          "momentum_numerator": [
+            24,
+            21
+          ],
+          "momentum_fraction": [
+            -0.11111111111111116,
+            -0.2222222222222222
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1027.763538121284,
+            -1027.6345721770938,
+            -1027.2221154997385
+          ],
+          "residual_meV": 4.944011824877356e-07,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 3,
+          "representative": 1,
+          "momentum_numerator": [
+            6,
+            3
+          ],
+          "momentum_fraction": [
+            0.2222222222222222,
+            0.1111111111111111
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1027.763538121284,
+            -1027.6345721770938,
+            -1027.2221154997385
+          ],
+          "residual_meV": 4.944011824877356e-07,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 4,
+          "representative": 1,
+          "momentum_numerator": [
+            21,
+            24
+          ],
+          "momentum_fraction": [
+            -0.2222222222222222,
+            -0.11111111111111116
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1027.763538121284,
+            -1027.6345721770938,
+            -1027.2221154997385
+          ],
+          "residual_meV": 4.944011824877356e-07,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 5,
+          "representative": 1,
+          "momentum_numerator": [
+            24,
+            3
+          ],
+          "momentum_fraction": [
+            -0.11111111111111116,
+            0.1111111111111111
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1027.763538121284,
+            -1027.6345721770938,
+            -1027.2221154997385
+          ],
+          "residual_meV": 4.944011824877356e-07,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 6,
+          "representative": 1,
+          "momentum_numerator": [
+            3,
+            24
+          ],
+          "momentum_fraction": [
+            0.1111111111111111,
+            -0.11111111111111116
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1027.763538121284,
+            -1027.6345721770938,
+            -1027.2221154997385
+          ],
+          "residual_meV": 4.944011824877356e-07,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 7,
+          "representative": 7,
+          "momentum_numerator": [
+            9,
+            0
+          ],
+          "momentum_fraction": [
+            0.3333333333333333,
+            0.0
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1027.9915015412528,
+            -1027.7884876085736,
+            -1027.3421578711834
+          ],
+          "residual_meV": 2.1934189205222976e-07,
+          "symmetry_generated": false
+        },
+        {
+          "sector_index": 8,
+          "representative": 7,
+          "momentum_numerator": [
+            9,
+            9
+          ],
+          "momentum_fraction": [
+            0.3333333333333333,
+            0.3333333333333333
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1027.9915015412528,
+            -1027.7884876085736,
+            -1027.3421578711834
+          ],
+          "residual_meV": 2.1934189205222976e-07,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 9,
+          "representative": 7,
+          "momentum_numerator": [
+            0,
+            9
+          ],
+          "momentum_fraction": [
+            0.0,
+            0.3333333333333333
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1027.9915015412528,
+            -1027.7884876085736,
+            -1027.3421578711834
+          ],
+          "residual_meV": 2.1934189205222976e-07,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 10,
+          "representative": 7,
+          "momentum_numerator": [
+            18,
+            0
+          ],
+          "momentum_fraction": [
+            -0.33333333333333337,
+            0.0
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1027.9915015412528,
+            -1027.7884876085736,
+            -1027.3421578711834
+          ],
+          "residual_meV": 2.1934189205222976e-07,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 11,
+          "representative": 7,
+          "momentum_numerator": [
+            18,
+            18
+          ],
+          "momentum_fraction": [
+            -0.33333333333333337,
+            -0.33333333333333337
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1027.9915015412528,
+            -1027.7884876085736,
+            -1027.3421578711834
+          ],
+          "residual_meV": 2.1934189205222976e-07,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 12,
+          "representative": 7,
+          "momentum_numerator": [
+            0,
+            18
+          ],
+          "momentum_fraction": [
+            0.0,
+            -0.33333333333333337
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1027.9915015412528,
+            -1027.7884876085736,
+            -1027.3421578711834
+          ],
+          "residual_meV": 2.1934189205222976e-07,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 13,
+          "representative": 13,
+          "momentum_numerator": [
+            6,
+            12
+          ],
+          "momentum_fraction": [
+            0.2222222222222222,
+            0.4444444444444444
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1028.3733572644164,
+            -1027.9456186900431,
+            -1027.8115586431518
+          ],
+          "residual_meV": 1.6197644352291903e-07,
+          "symmetry_generated": false
+        },
+        {
+          "sector_index": 14,
+          "representative": 13,
+          "momentum_numerator": [
+            21,
+            15
+          ],
+          "momentum_fraction": [
+            -0.2222222222222222,
+            -0.4444444444444444
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1028.3733572644164,
+            -1027.9456186900431,
+            -1027.8115586431518
+          ],
+          "residual_meV": 1.6197644352291903e-07,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 15,
+          "representative": 13,
+          "momentum_numerator": [
+            12,
+            6
+          ],
+          "momentum_fraction": [
+            0.4444444444444444,
+            0.2222222222222222
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1028.3733572644164,
+            -1027.9456186900431,
+            -1027.8115586431518
+          ],
+          "residual_meV": 1.6197644352291903e-07,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 16,
+          "representative": 13,
+          "momentum_numerator": [
+            21,
+            6
+          ],
+          "momentum_fraction": [
+            -0.2222222222222222,
+            0.2222222222222222
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1028.3733572644164,
+            -1027.9456186900431,
+            -1027.8115586431518
+          ],
+          "residual_meV": 1.6197644352291903e-07,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 17,
+          "representative": 13,
+          "momentum_numerator": [
+            15,
+            21
+          ],
+          "momentum_fraction": [
+            -0.4444444444444444,
+            -0.2222222222222222
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1028.3733572644164,
+            -1027.9456186900431,
+            -1027.8115586431518
+          ],
+          "residual_meV": 1.6197644352291903e-07,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 18,
+          "representative": 13,
+          "momentum_numerator": [
+            6,
+            21
+          ],
+          "momentum_fraction": [
+            0.2222222222222222,
+            -0.2222222222222222
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1028.3733572644164,
+            -1027.9456186900431,
+            -1027.8115586431518
+          ],
+          "residual_meV": 1.6197644352291903e-07,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 19,
+          "representative": 19,
+          "momentum_numerator": [
+            3,
+            15
+          ],
+          "momentum_fraction": [
+            0.1111111111111111,
+            -0.4444444444444444
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1029.4457047973046,
+            -1028.8797493984052,
+            -1028.7078067860962
+          ],
+          "residual_meV": 1.0537628639118285e-06,
+          "symmetry_generated": false
+        },
+        {
+          "sector_index": 20,
+          "representative": 19,
+          "momentum_numerator": [
+            15,
+            3
+          ],
+          "momentum_fraction": [
+            -0.4444444444444444,
+            0.1111111111111111
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1029.4457047973046,
+            -1028.8797493984052,
+            -1028.7078067860962
+          ],
+          "residual_meV": 1.0537628639118285e-06,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 21,
+          "representative": 19,
+          "momentum_numerator": [
+            12,
+            24
+          ],
+          "momentum_fraction": [
+            -0.5555555555555556,
+            -0.11111111111111116
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1029.4457047973046,
+            -1028.8797493984052,
+            -1028.7078067860962
+          ],
+          "residual_meV": 1.0537628639118285e-06,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 22,
+          "representative": 19,
+          "momentum_numerator": [
+            12,
+            15
+          ],
+          "momentum_fraction": [
+            -0.5555555555555556,
+            -0.4444444444444444
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1029.4457047973046,
+            -1028.8797493984052,
+            -1028.7078067860962
+          ],
+          "residual_meV": 1.0537628639118285e-06,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 23,
+          "representative": 19,
+          "momentum_numerator": [
+            15,
+            12
+          ],
+          "momentum_fraction": [
+            -0.4444444444444444,
+            -0.5555555555555556
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1029.4457047973046,
+            -1028.8797493984052,
+            -1028.7078067860962
+          ],
+          "residual_meV": 1.0537628639118285e-06,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 24,
+          "representative": 19,
+          "momentum_numerator": [
+            24,
+            12
+          ],
+          "momentum_fraction": [
+            -0.11111111111111116,
+            -0.5555555555555556
+          ],
+          "dimension": 173583,
+          "energies_meV": [
+            -1029.4457047973046,
+            -1028.8797493984052,
+            -1028.7078067860962
+          ],
+          "residual_meV": 1.0537628639118285e-06,
+          "symmetry_generated": true
+        },
+        {
+          "sector_index": 25,
+          "representative": 25,
+          "momentum_numerator": [
+            18,
+            9
+          ],
+          "momentum_fraction": [
+            -0.33333333333333337,
+            0.3333333333333333
+          ],
+          "dimension": 173610,
+          "energies_meV": [
+            -1030.4225015116829,
+            -1030.142548704394,
+            -1029.3874490093872
+          ],
+          "residual_meV": 1.0827961758495349e-07,
+          "symmetry_generated": false
+        },
+        {
+          "sector_index": 26,
+          "representative": 25,
+          "momentum_numerator": [
+            9,
+            18
+          ],
+          "momentum_fraction": [
+            0.3333333333333333,
+            -0.33333333333333337
+          ],
+          "dimension": 173610,
+          "energies_meV": [
+            -1030.4225015116829,
+            -1030.142548704394,
+            -1029.3874490093872
+          ],
+          "residual_meV": 1.0827961758495349e-07,
+          "symmetry_generated": true
+        }
+      ],
+      "diagnostics": {
+        "Gamma_sector": 0,
+        "K_sector": 25,
+        "Kprime_sector": 26,
+        "ground_energy_meV": -1034.2031437191904,
+        "manifold_relative_meV": [
+          0.0,
+          0.10837376672998289,
+          0.29831991570176797
+        ],
+        "manifold_splitting_meV": 0.29831991570176797,
+        "estimated_gap_above_manifold_meV": 3.482322291805758,
+        "phase_signature": "FCI/FQAH: three quasi-degenerate states at Gamma"
+      }
+    }
+  }
+}
