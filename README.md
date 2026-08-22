@@ -1,4 +1,4 @@
-# QNS for moire FIC
+# QNS for moire FCI
 
 Version 1.0.0.
 
