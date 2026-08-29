@@ -73,7 +73,7 @@ def make_combined():
 
 def main():
  style(); model,_=neural_bloch_inputs(); loaded={key:np.load(path) for key,path in FILES.items()}
- groups={'1/3':[('outer',r'outer $P_0$'),('outer1',r'outer $P_1$'),('outer2',r'outer $P_2$')],'2/3':[('outer0',r'outer $P_0$'),('outer1',r'outer $P_1$'),('outer2',r'outer $P_2$')]}
+ groups={'1/3':[('outer',r'outer $P_0$ (selected)'),('outer1',r'outer $P_1$'),('outer2',r'outer $P_2$')],'2/3':[('outer0',r'outer $P_0$'),('outer1',r'outer $P_1$'),('outer2',r'outer $P_2$ (selected)')]}
  rows=[(f,b,m) for f,g in groups.items() for b,m in g]; smax=max(float(loaded[(f,b)]['charge_structure_factor_full'].max()) for f,b,_ in rows)
  rhoall=np.concatenate([loaded[(f,b)]['charge_density_over_mean'].ravel() for f,b,_ in rows]); rmin,rmax=np.percentile(rhoall,[1,99]); FIG.mkdir(parents=True,exist_ok=True)
  for filling,methods in groups.items():

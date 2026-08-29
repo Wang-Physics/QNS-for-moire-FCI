@@ -113,20 +113,22 @@ def make_training_summary():
  groups={'1/3':('outer','outer1','outer2'),'2/3':('outer0','outer1','outer2')}
  selected={'1/3':('full','gamma','c3','outer'),'2/3':('full','gamma','outer2')}
  labels={'full':r'full $M$','gamma':r'no $M$','c3':'internal C3','outer':r'$P_0$','outer2':r'$P_2$'}
- fig,axs=plt.subplots(2,2,figsize=(4.9,3.25)); fig.subplots_adjust(left=.12,right=.98,bottom=.15,top=.88,wspace=.36,hspace=.46)
+ fig,axs=plt.subplots(2,2,figsize=(5.35,3.45)); fig.subplots_adjust(left=.11,right=.985,bottom=.15,top=.90,wspace=.34,hspace=.50)
  for col,filling in enumerate(('1/3','2/3')):
   sector_traces=[json.loads(RUNS[(filling,b)].read_text()) for b in groups[filling]]
   means=np.asarray([np.mean([v['energy_per_particle_meV'] for v in t[-10:]]) for t in sector_traces])
-  rms=np.asarray([np.std([v['energy_per_particle_meV'] for v in t[-10:]]) for t in sector_traces])
-  ax=axs[0,col]; x=np.arange(3); ax.bar(x,means-means.min(),yerr=rms,color=['#D55E00','#7A5195',ORANGE],width=.62,edgecolor='white',error_kw={'elinewidth':.7,'capsize':2})
-  ax.set_xticks(x,[r'$m=0$',r'$m=1$',r'$m=2$']); ax.set_ylabel(r'$\Delta E_{\rm tail}/N_e$ (meV)'); ax.set_title(rf'$\nu={filling}$ outer sectors',fontweight='bold')
+  rms=np.asarray([np.std([v['energy_per_particle_meV'] for v in t[-10:]]) for t in sector_traces]); delta=means-means.min()
+  ax=axs[0,col]; x=np.arange(3); bars=ax.bar(x,delta,yerr=rms,color=['#D55E00','#7A5195',ORANGE],width=.60,edgecolor='white',error_kw={'elinewidth':.75,'capsize':2,'capthick':.75})
+  ax.bar_label(bars,labels=[f'{v:.2f}' for v in delta],padding=2,fontsize=6.8); ax.axhline(0,color='.25',lw=.6)
+  ax.set_ylim(-.12,max(delta+rms)*1.18+.08); ax.set_xticks(x,[r'$m=0$',r'$m=1$',r'$m=2$']); ax.set_ylabel(r'$\Delta E_{\rm tail}/N_e$ (meV)'); ax.set_title(rf'$\nu={filling}$',fontweight='bold')
   keys=selected[filling]; counts=[]
   for b in keys:
    trace=json.loads(RUNS[(filling,b)].read_text()); counts.append(sum(not bool(v['update_accepted']) for v in trace))
-  ax=axs[1,col]; xx=np.arange(len(keys)); ax.bar(xx,counts,color=[COLOR[b] for b in keys],width=.62,edgecolor='white')
-  ax.set_xticks(xx,[labels[b] for b in keys],rotation=18,ha='right'); ax.set_ylabel('rejected updates'); ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+  ax=axs[1,col]; xx=np.arange(len(keys)); bars=ax.bar(xx,counts,color=[COLOR[b] for b in keys],width=.60,edgecolor='white')
+  ax.bar_label(bars,labels=[str(v) for v in counts],padding=2,fontsize=6.8); ax.set_ylim(0,max(max(counts)+4,4))
+  ax.set_xticks(xx,[labels[b] for b in keys],rotation=16,ha='right'); ax.set_ylabel('rejected updates'); ax.yaxis.set_major_locator(MaxNLocator(integer=True))
  for label,ax in zip('abcd',axs.flat):
-  ax.text(-.15,1.04,label,transform=ax.transAxes,fontsize=8.5,fontweight='bold'); ax.grid(axis='y',color='.91',lw=.45); ax.spines['top'].set_visible(False); ax.spines['right'].set_visible(False)
+  ax.text(-.14,1.04,label,transform=ax.transAxes,fontsize=8.5,fontweight='bold'); ax.grid(axis='y',color='.92',lw=.45,zorder=0); ax.spines['top'].set_visible(False); ax.spines['right'].set_visible(False); ax.tick_params(length=2.8)
  FIG.mkdir(parents=True,exist_ok=True)
  fig.savefig(FIG/'fig6_training_summary.pdf',bbox_inches='tight'); fig.savefig(FIG/'fig6_training_summary.png',bbox_inches='tight'); plt.close(fig)
 
