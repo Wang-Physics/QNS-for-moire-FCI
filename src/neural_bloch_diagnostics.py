@@ -46,49 +46,62 @@ def one_body_band_density_matrix(
     sample_rho = torch.zeros(
         len(positions), n_orbitals, n_orbitals, dtype=torch.complex128
     )
-    for _ in range(auxiliary_draws):
-        for start in range(0, len(positions), batch_size):
-            stop = min(start + batch_size, len(positions))
-            current_positions = positions[start:stop]
-            current_layers = layers[start:stop]
-            count = stop - start
-            particle = torch.randint(
-                wavefunction.n_particles, (count,), generator=generator,
-                device=positions.device,
-            )
-            row = torch.arange(count, device=positions.device)
-            proposal_position = torch.rand(
-                count, 2, generator=generator, dtype=positions.dtype,
-                device=positions.device,
-            )
-            proposal_layer = torch.randint(
-                0, 2, (count,), generator=generator, device=positions.device,
-            )
-            replaced_positions = current_positions.clone()
-            replaced_layers = current_layers.clone()
-            replaced_positions[row, particle] = proposal_position
-            replaced_layers[row, particle] = proposal_layer
-            base_logpsi = wavefunction(current_positions, current_layers)
-            replaced_logpsi = wavefunction(replaced_positions, replaced_layers)
-            conjugate_ratio = torch.exp(torch.conj(replaced_logpsi - base_logpsi))
-            current_orbitals = bloch_orbital_values(
-                current_positions[row, particle, None],
-                current_layers[row, particle, None],
-                n_bands, continuum,
-            )[:, 0].reshape(count, n_orbitals)
-            proposal_orbitals = bloch_orbital_values(
-                proposal_position[:, None], proposal_layer[:, None],
-                n_bands, continuum,
-            )[:, 0].reshape(count, n_orbitals)
-            contribution = (
-                2.0 * wavefunction.n_particles
-                * torch.einsum(
-                    "ba,bc,b->bac", torch.conj(current_orbitals),
-                    proposal_orbitals, conjugate_ratio,
-                )
-            )
-            sample_rho[start:stop] += contribution.cpu()
-    sample_rho /= auxiliary_draws
+    # Jointly batch all auxiliary replacements for each configuration block.
+    # The base projected wavefunction is evaluated once, while every replacement
+    # still rebuilds the complete graph, backflow, J/M factors and determinant.
+    for start in range(0, len(positions), batch_size):
+        stop = min(start + batch_size, len(positions))
+        current_positions = positions[start:stop]
+        current_layers = layers[start:stop]
+        count = stop - start
+        base_logpsi = wavefunction(current_positions, current_layers)
+        particle = torch.randint(
+            wavefunction.n_particles, (auxiliary_draws, count),
+            generator=generator, device=positions.device,
+        )
+        proposal_position = torch.rand(
+            auxiliary_draws, count, 2, generator=generator,
+            dtype=positions.dtype, device=positions.device,
+        )
+        proposal_layer = torch.randint(
+            0, 2, (auxiliary_draws, count), generator=generator,
+            device=positions.device,
+        )
+        expanded_positions = current_positions.unsqueeze(0).expand(
+            auxiliary_draws, -1, -1, -1
+        ).clone()
+        expanded_layers = current_layers.unsqueeze(0).expand(
+            auxiliary_draws, -1, -1
+        ).clone()
+        draw = torch.arange(auxiliary_draws, device=positions.device)[:, None]
+        row = torch.arange(count, device=positions.device)[None, :]
+        expanded_positions[draw, row, particle] = proposal_position
+        expanded_layers[draw, row, particle] = proposal_layer
+        replaced_logpsi = wavefunction(
+            expanded_positions.flatten(0, 1), expanded_layers.flatten(0, 1)
+        ).reshape(auxiliary_draws, count)
+        conjugate_ratio = torch.exp(
+            torch.conj(replaced_logpsi - base_logpsi[None])
+        )
+        selected_position = current_positions[
+            torch.arange(count, device=positions.device)[None, :], particle
+        ]
+        selected_layer = current_layers[
+            torch.arange(count, device=positions.device)[None, :], particle
+        ]
+        current_orbitals = bloch_orbital_values(
+            selected_position.flatten(0, 1)[:, None],
+            selected_layer.flatten(0, 1)[:, None], n_bands, continuum,
+        )[:, 0].reshape(auxiliary_draws, count, n_orbitals)
+        proposal_orbitals = bloch_orbital_values(
+            proposal_position.flatten(0, 1)[:, None],
+            proposal_layer.flatten(0, 1)[:, None], n_bands, continuum,
+        )[:, 0].reshape(auxiliary_draws, count, n_orbitals)
+        contribution = 2.0 * wavefunction.n_particles * torch.einsum(
+            "dba,dbc,db->dbac", torch.conj(current_orbitals),
+            proposal_orbitals, conjugate_ratio,
+        )
+        sample_rho[start:stop] = contribution.mean(0).cpu()
     rho = sample_rho.mean(0)
     rho = 0.5 * (rho + torch.conj(rho.transpose(0, 1)))
     diagonal_per_sample = torch.diagonal(sample_rho, dim1=-2, dim2=-1).real
@@ -390,6 +403,8 @@ def run(args: argparse.Namespace) -> dict:
         "projected_bare_band_count": n_bands,
         "projector_uses_fixed_bare_bloch_orbitals": True,
         "replacement_recomputes_complete_neural_ansatz": True,
+        "base_wavefunction_cached_per_configuration_batch": True,
+        "auxiliary_replacements_jointly_batched": True,
         "trace_is_projected_five_band_trace_not_full_basis_trace": True,
         "one_body_density_matrix_trace": float(np.trace(rho).real),
         "one_body_density_matrix_trace_sem": trace_sem,

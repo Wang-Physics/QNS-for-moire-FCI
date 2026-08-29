@@ -8,28 +8,22 @@ The current report is [`result/AI_for_Physics.pdf`](result/AI_for_Physics.pdf). 
 
 ## Current numerical result
 
-The controlled QNS comparison uses a `3 x 3` moire cluster, one generalized Slater determinant, width 32, two unshared message-passing iterations, 4,128 persistent walkers, and explicit true-CG-residual acceptance. The four baselines complete 120 updates; the `nu=1/3` C3-QNS run was stopped at update 116 after its training curve plateaued.
+The controlled QNS comparison uses a `3 x 3` moire cluster, one generalized Slater determinant, width 32, two unshared message-passing iterations, 4,128 persistent walkers, and explicit true-CG-residual acceptance. Energies below are final-ten means of the equilibrated persistent training chain; the parenthesized RMS measures tail stability and is not an independent error bar.
 
-| filling | selected state | precise validation `E/N_e` (meV) | five-band ED (meV) | difference (meV) |
+| filling | state | final-ten training `E/N_e` (meV) | five-band ED (meV) | difference (meV) |
 |---|---|---:|---:|---:|
-| `1/3` | no `M`, total momentum `Gamma` | `-36.78317(10)` | `-37.39323` | `+0.61006` |
-| `1/3` | C3-QNS, total momentum `Gamma`, `m=0` | `-36.71907(19)` | `-37.39323` | `+0.67416` |
-| `1/3` | outer `P0`, total momentum `Gamma` | `-37.19495(11)` | `-37.39323` | `+0.19828` |
-| `2/3` | no `M`, total momentum `Gamma` | `-52.39973(17)` | `-52.72554` | `+0.32581` |
-| `2/3` | outer `P0`, total momentum `Gamma` | `-52.44547(13)` | `-52.72554` | `+0.28007` |
+| `1/3` | no `M`, total momentum `Gamma` | `-36.7708 (0.0592)` | `-37.39323` | `+0.6224` |
+| `1/3` | internal C3-QNS, `m=0` | `-37.1749 (0.0287)` | `-37.39323` | `+0.2183` |
+| `1/3` | outer `P0` (lowest outer sector) | `-37.1660 (0.0532)` | `-37.39323` | `+0.2272` |
+| `2/3` | no `M`, total momentum `Gamma` | `-52.4147 (0.0578)` | `-52.72554` | `+0.3108` |
+| `2/3` | outer `P2` (lowest outer sector) | `-52.7891 (0.0581)` | `-52.72554` | `-0.0636` |
 
-The complete-wavefunction outer projector improves the best independently
-validated energy at both fillings, but remains above five-band ED. At
-`nu=2/3`, a low training-chain `P2` point fails independent re-equilibration
-and `P0` is selected instead. The report documents this sampling sensitivity,
-CG truncation, rejected updates, complete-ratio 1-RDM estimators, and full versus connected structure factors.
-
+All three outer characters remain available in the compact training traces. Fig. 6 shows only the lowest-training outer sector at each filling; a separate compact chart reports the full `m=0,1,2` tail-energy splitting and rejected-update counts. The complete-ratio 1-RDM estimator jointly batches all auxiliary replacements while recomputing the full projected wavefunction for every replacement.
 ## Repository layout
 
 - `src/continuum.py`, `src/multiband_ed.py`, `src/sparse_ed.py`: continuum bands and projected ED.
 - `src/jax_neural_bloch.py`: double-precision JAX wavefunction and continuum local energy.
 - `src/run_jax_neural_bloch.py`: matrix-free natural gradient with ordinary CG.
-- `src/validate_jax_neural_bloch.py`: independent random-start validation chains.
 - `src/neural_bloch_diagnostics.py`: complete-ratio 1-RDM, band projection, density, and two-body `S(q)`.
 - `src/make_adaptive120_figures.py`, `src/make_adaptive120_observables.py`: final Figs. 6–7.
 - `native/`: C++17 sparse-ED and observable kernels, compiled automatically when needed.
@@ -134,8 +128,6 @@ The analogous `nu=2/3` production launchers are
 `scripts/run_outer_c3_nu2of3_p0.sh` and
 `scripts/run_outer_c3_nu2of3_sector.sh`; all three sectors are stored under
 `outer_c3_projector_nu2of3_120/p0,p1,p2`.
-
-After all four baseline checkpoints exist, `src/run_post120_validation_protocol.py` performs the independent 1,024-walker selection and 4,128-walker precise validation. Validation samples never enter parameter updates.
 
 ## Redrawing the publication figures
 

@@ -1,4 +1,4 @@
-"""Baseline, internal-C3 and outer-C3 observables from independent ensembles."""
+"""Filling-resolved outer-C3 sector observables from training ensembles."""
 from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,11 +9,15 @@ DATA=ROOT/'result'/'release_data'/'diagnostics'; FIG=ROOT/'result'/'figures'
 FILES={
  ('1/3','full'):DATA/'nu1of3_full_m.npz',
  ('1/3','gamma'):DATA/'nu1of3_no_m_gamma.npz',
+ ('1/3','outer1'):DATA/'nu1of3_outer_c3_p1.npz',
+ ('1/3','outer2'):DATA/'nu1of3_outer_c3_p2.npz',
  ('1/3','c3'):DATA/'nu1of3_c3_qns.npz',
  ('1/3','outer'):DATA/'nu1of3_outer_c3_p0.npz',
  ('2/3','full'):DATA/'nu2of3_full_m.npz',
  ('2/3','gamma'):DATA/'nu2of3_no_m_gamma.npz',
- ('2/3','outer0'):DATA/'nu2of3_outer_c3_p0.npz'}
+ ('2/3','outer0'):DATA/'nu2of3_outer_c3_p0.npz',
+ ('2/3','outer1'):DATA/'nu2of3_outer_c3_p1.npz',
+ ('2/3','outer2'):DATA/'nu2of3_outer_c3_p2.npz'}
 
 
 def style():
@@ -69,7 +73,7 @@ def make_combined():
 
 def main():
  style(); model,_=neural_bloch_inputs(); loaded={key:np.load(path) for key,path in FILES.items()}
- groups={'1/3':[('full',r'full $M$'),('gamma',r'no $M$, $\Gamma$'),('c3',r'internal C3, $\Gamma$'),('outer',r'outer $P_0$, $\Gamma$')],'2/3':[('full',r'full $M$'),('gamma',r'no $M$, $\Gamma$'),('outer0',r'outer $P_0$, $\Gamma$')]}
+ groups={'1/3':[('outer',r'outer $P_0$'),('outer1',r'outer $P_1$'),('outer2',r'outer $P_2$')],'2/3':[('outer0',r'outer $P_0$'),('outer1',r'outer $P_1$'),('outer2',r'outer $P_2$')]}
  rows=[(f,b,m) for f,g in groups.items() for b,m in g]; smax=max(float(loaded[(f,b)]['charge_structure_factor_full'].max()) for f,b,_ in rows)
  rhoall=np.concatenate([loaded[(f,b)]['charge_density_over_mean'].ravel() for f,b,_ in rows]); rmin,rmax=np.percentile(rhoall,[1,99]); FIG.mkdir(parents=True,exist_ok=True)
  for filling,methods in groups.items():

@@ -154,11 +154,13 @@ class NeuralBlochOneRdmAudit(unittest.TestCase):
             ):
                 one_body_band_density_matrix(
                     wavefunction, None, positions, layers,
-                    n_bands=1, auxiliary_draws=1, batch_size=4, seed=7,
+                    n_bands=1, auxiliary_draws=3, batch_size=4, seed=7,
                 )
         finally:
             for hook in hooks:
                 hook.remove()
+        # One base call plus one jointly batched replacement call: increasing
+        # auxiliary_draws must not multiply the graph evaluations.
         self.assertEqual(counts, {
             "graph": 2, "bloch": 2, "determinant": 2, "backflow": 2, "J": 2
         })
