@@ -1,6 +1,6 @@
 # QNS for moire FCI
 
-Version 1.0.0.
+Version 2.0.0.
 
 This project benchmarks the continuum model and multiband exact diagonalization (ED) of twisted MoTe2 against Luo, Zaklama, and Fu, [arXiv:2503.13585v3](https://arxiv.org/abs/2503.13585), then tests their continuous-coordinate Neural-Bloch variational ansatz at fillings `nu=1/3` and `nu=2/3`.
 
