@@ -17,7 +17,7 @@
 \title{Continuum multiband exact diagonalization of twisted MoTe$_2$\\
 \large An ED benchmark for CDW and fractional Chern-insulator neural states}
 \author{Local numerical benchmark for the Physics-for-AI/QNS programme}
-\date{22 August 2026}
+\date{24 August 2026}
 
 \begin{document}
 \maketitle
@@ -32,21 +32,29 @@ three-state calculation gives Chern numbers near zero and two, but complete
 all-sector spectral isolation, large-gauge sewing and twist-grid convergence
 remain required before assigning a quantized Hall response.
 
-The variational state is one generalized determinant of neural orbitals in the
-full plane-wave continuum basis and follows the Luo--Fu Appendix-B
-construction.  Four 4,128-walker, 120-update runs compare full momentum mixing
-with an exact-$\Gamma$ no-$M$ construction.  Ordinary CG is stopped between
-20 and 60 iterations using an explicitly recomputed true residual; unstable
-directions are rejected and trigger a temporary larger damping and smaller
-learning rate.  Fresh-walker validation selects no $M$ at both fillings.
-Independent 4,128-walker, 300-burn-sweep precise validation gives
-$E/N_e=-36.78317(1019)$ and $-52.39973(1673)$ meV at $\nu=1/3$ and $2/3$,
-remaining 0.6101 and 0.3258 meV per particle above five-band ED.  Full-ratio
-five-band-projected 1-RDM estimates give bare-band-1 weights of 96.63(94)\%
-and 89.12(86)\%, while direct two-body structure factors preserve the
-CDW/FCI contrast.  The current single-seed finite optimization therefore
-shows no variational energy advantage and does not support a converged
-natural-orbital or topological interpretation.
+The variational baseline is one generalized determinant of neural orbitals in
+the full plane-wave continuum basis and follows the Luo--Fu Appendix-B
+construction. Four 4,128-walker, 120-update runs compare full momentum mixing
+with an exact-$\Gamma$ no-$M$ construction. Fresh-walker validation selects no
+$M$ at both fillings, giving $E/N_e=-36.78317(1019)$ and
+$-52.39973(1673)$ meV, respectively 0.6101 and 0.3258 meV per particle above
+five-band ED. An internally equivariant C3-QNS extension at $\nu=1/3$ was
+stopped after 116 accepted updates when its training curve plateaued. Although
+its training energy reaches $-37.21882$ meV per particle and its independent
+$C_3$-character residual is below $7.2\times10^{-5}$, precise validation gives
+only $-36.71907(1850)$ meV, 0.06410 meV above no $M$ and 0.67416 meV above
+five-band ED. The training--validation shift identifies persistent-walker
+sampling lag. An unrestricted no-$M$ network with complete-wavefunction
+$P_m$ projection was then optimized independently in all three $C_3$ sectors.
+Fresh-chain validation selects $m=0$ and gives $E/N_e=-37.194949(10528)$ meV,
+0.41178 meV below no $M$ but still $0.198284(10528)$ meV above five-band ED.
+At $\nu=2/3$, the corresponding three-sector scan also selects $m=0$;
+precise validation gives $-52.445466(13171)$ meV, 0.04574 meV below no $M$
+but $0.280073(13171)$ meV above five-band ED. The low-cost-to-precise shift
+is retained as a sampling-sensitivity diagnostic. Full-ratio
+five-band-projected 1-RDM and direct two-body structure-factor diagnostics
+are reported, but no present ansatz establishes
+a variational advantage or a converged natural-orbital/topological result.
 \end{abstract}
 
 \part{Exact-diagonalization benchmark}
@@ -151,7 +159,7 @@ These are normalized band populations, not overlaps between separately optimized
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{fig2_multiband_ed.pdf}
-\caption{\textbf{Multiband ED on the $3\times3$ cluster.} Top row: $\nu=1/3$; bottom row: $\nu=2/3$. (a,d) Ground-state energy per hole versus retained bands. (b,e) Momentum-sector minima for one-, three- and five-band ED, plotted as $E_K-E_{\rm GS}$ in meV. (c,f) Normalized band-resolved ground-state weights.  Charge-$U(1)$, spin-$U(1)$ and translations are exact; $C_3/C_6$ equivalence accelerates the largest five-band sectors.}
+\caption{\textbf{Multiband ED on the $3\times3$ cluster.} Top row: $\nu=1/3$; bottom row: $\nu=2/3$. (a,d) Ground-state energy per hole versus retained bands; filling labels are placed in the upper-right blank region. (b,e) The lowest three levels in every momentum sector for one-, three- and five-band ED, plotted as $E-E_{\rm GS}$ in meV. Larger opaque markers denote sector ground states; the next two levels are smaller and semitransparent. (c,f) Normalized band-resolved ground-state weights. Charge-$U(1)$, spin-$U(1)$ and translations are exact; $C_3/C_6$ equivalence accelerates the largest five-band sectors.}
 \label{fig:multiband}
 \end{figure*}
 

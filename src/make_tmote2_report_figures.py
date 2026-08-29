@@ -280,6 +280,10 @@ def figure2() -> None:
                 tuple(record["momentum"]): float(record["energies_meV"][0])
                 for record in records
             }
+            spectra = {
+                tuple(record["momentum"]): np.asarray(record["energies_meV"], dtype=float)
+                for record in records
+            }
             ground = min(minima.values())
             ordered = sorted(minima, key=lambda k: k[0] + 3 * k[1])
             x = np.asarray([k[0] + 3 * k[1] for k in ordered], dtype=float)
@@ -290,6 +294,23 @@ def figure2() -> None:
                 facecolor=COLORS[bands], edgecolor="white", linewidth=0.5,
                 zorder=3,
             )
+            for level in (1, 2):
+                available = [k for k in ordered if len(spectra[k]) > level]
+                if not available:
+                    continue
+                x_excited = np.asarray(
+                    [k[0] + 3 * k[1] for k in available], dtype=float
+                )
+                y_excited = np.asarray(
+                    [spectra[k][level] - ground for k in available]
+                )
+                ymax = max(ymax, float(y_excited.max()))
+                axis.scatter(
+                    x_excited + offsets[bands], y_excited, s=14,
+                    marker=MARKERS[bands], facecolor=COLORS[bands],
+                    edgecolor="none", linewidth=0.0, alpha=0.55,
+                    zorder=2,
+                )
         axis.set_xlim(-0.55, 8.55)
         axis.set_ylim(-0.18, ymax + 0.08 * max(ymax, 1.0))
         axis.set_xticks([0, 5, 7])
@@ -315,8 +336,8 @@ def figure2() -> None:
         axis.set_ylabel(r"$w_b=\langle N_b\rangle/N_h$")
         axis.grid(axis="y", color="0.91", lw=0.5)
         axes[row, 0].text(
-            0.96, 0.06, rf"$\nu={filling}$", transform=axes[row, 0].transAxes,
-            rotation=0, ha="right", va="bottom", fontsize=8.5, fontweight="bold",
+            0.96, 0.94, rf"$\nu={filling}$", transform=axes[row, 0].transAxes,
+            rotation=0, ha="right", va="top", fontsize=8.5, fontweight="bold",
         )
     for column, title in enumerate(
         ("energy convergence", "momentum-sector spectrum", "band-resolved weight")

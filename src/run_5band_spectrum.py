@@ -51,12 +51,12 @@ def solve_sector(
     try:
         values, vectors = eigsh(
             hamiltonian.operator,
-            k=1,
+            k=3,
             which="SA",
             v0=initial,
             tol=1.0e-7,
             maxiter=400,
-            ncv=48,
+            ncv=64,
         )
         order = np.argsort(values)
         values, vectors = values[order], vectors[:, order]

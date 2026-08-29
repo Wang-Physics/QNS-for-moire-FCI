@@ -24,7 +24,7 @@ ed:
   band_projections: [1, 2, 3]
   all_momentum_sectors: true
   gamma_eigenvalues: 3
-  other_sector_eigenvalues: 1
+  other_sector_eigenvalues: 3
   lanczos_tolerance: 1.0e-12
   max_iterations: 1800
 validation:

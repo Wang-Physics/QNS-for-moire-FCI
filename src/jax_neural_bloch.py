@@ -11,6 +11,7 @@ import jax.numpy as jnp
 import numpy as np
 import torch
 
+from .c3_symmetry import rotate_fock_state, single_particle_c3
 from .continuum_vmc import ContinuumTorusHamiltonian
 from .neural_bloch import NeuralBlochConfig
 from .run_neural_bloch import neural_bloch_inputs
@@ -25,6 +26,8 @@ class JaxNeuralBlochSpec:
     orbital_hidden: int = 32
     c3_irrep: int | None = None
     fixed_gamma_no_m: bool = False
+    c3_qns: bool = False
+    outer_c3_projector: bool = False
 
 
 def _linear(parameters, values):
@@ -102,32 +105,84 @@ def _bloch_values(cartesian, layers, constants):
     return jnp.transpose(jnp.sum(selected * exponent, axis=-1), (0, 2, 1))
 
 
+def _orbital_factor(parameters, node, momenta, spec):
+    node_k = jnp.broadcast_to(
+        node[:, :, None, :],
+        (len(node), spec.n_particles, len(momenta), spec.width),
+    )
+    k_feature = jnp.broadcast_to(
+        momenta[None, None],
+        (len(node), spec.n_particles, len(momenta), 2),
+    )
+    raw = _linear(
+        parameters[1],
+        jax.nn.gelu(
+            _linear(parameters[0], jnp.concatenate([node_k, k_feature], -1)),
+            approximate=False,
+        ),
+    )
+    return raw[..., 0] + 1j * raw[..., 1]
+
+
 def _unprojected_determinant_values(parameters, positions, layers, constants, spec):
-    cartesian, node = _encoded_graph(parameters, positions, layers, constants)
+    if spec.c3_qns:
+        graphs = []
+        current = positions
+        for _ in range(3):
+            graphs.append(_encoded_graph(parameters, current, layers, constants))
+            current = _c3_rotate_positions(current, constants)
+        cartesian = graphs[0][0]
+    else:
+        cartesian, node = _encoded_graph(parameters, positions, layers, constants)
     values = []
     for index in range(spec.determinants):
-        raw_shift = _linear(parameters["backflow_heads"][index], node)
-        displacement = raw_shift[..., :2] + 1j * raw_shift[..., 2:]
+        if spec.c3_qns:
+            displacements = []
+            orbitals = []
+            for power, (_, rotated_node) in enumerate(graphs):
+                raw_shift = _linear(
+                    parameters["backflow_heads"][index], rotated_node
+                )
+                inverse = constants["c3_inverse_cartesian_powers"][power]
+                real = jnp.einsum("ac,bnc->bna", inverse, raw_shift[..., :2])
+                imag = jnp.einsum("ac,bnc->bna", inverse, raw_shift[..., 2:])
+                displacements.append(real + 1j * imag)
+                orbitals.append(_orbital_factor(
+                    parameters["orbital_mlps"][index], rotated_node,
+                    constants["c3_rotated_momenta"][power], spec,
+                ))
+            displacement = jnp.mean(jnp.stack(displacements), axis=0)
+            orbital = jnp.mean(jnp.stack(orbitals), axis=0)
+        else:
+            raw_shift = _linear(parameters["backflow_heads"][index], node)
+            displacement = raw_shift[..., :2] + 1j * raw_shift[..., 2:]
+            orbital = _orbital_factor(
+                parameters["orbital_mlps"][index], node,
+                constants["momenta"], spec,
+            )
         transformed = cartesian.astype(jnp.complex128) + displacement
         bloch = _bloch_values(transformed, layers, constants)
-        node_k = jnp.broadcast_to(
-            node[:, :, None, :],
-            (len(node), spec.n_particles, len(constants["momenta"]), spec.width),
-        )
-        k_feature = jnp.broadcast_to(
-            constants["momenta"][None, None],
-            (len(node), spec.n_particles, len(constants["momenta"]), 2),
-        )
-        orbital_parameters = parameters["orbital_mlps"][index]
-        raw = _linear(
-            orbital_parameters[1],
-            jax.nn.gelu(
-                _linear(orbital_parameters[0], jnp.concatenate([node_k, k_feature], -1)),
-                approximate=False,
-            ),
-        )
-        orbital = raw[..., 0] + 1j * raw[..., 1]
         q_matrix = bloch * jnp.transpose(orbital, (0, 2, 1))
+        if spec.c3_qns:
+            # The truncated continuum Bloch spinor obeys its sewing relation
+            # at the dressed coordinate r + delta_r, whereas the physical C3
+            # action carries the layer gauge at the original coordinate r.
+            # Multiplying every particle column by exp(i b_l . delta_r), with
+            # (R^T-I)b_l=a_l, converts between these two gauges. This factor
+            # removes the otherwise configuration-dependent phase from the
+            # three-determinant orbit sum.
+            gauge_vectors = constants["c3_backflow_gauge_vectors"][layers]
+            gauge_compensation = jnp.exp(
+                1j * jnp.einsum("bna,bna->bn", displacement, gauge_vectors)
+            )
+            q_matrix = q_matrix * gauge_compensation[:, None, :]
+            orbit_values = []
+            for orbit, weight in zip(
+                constants["c3_orbit_indices"], constants["c3_orbit_weights"]
+            ):
+                orbit_values.append(weight * jnp.linalg.det(q_matrix[:, orbit, :]))
+            values.append(jnp.sum(jnp.stack(orbit_values), axis=0) / 3.0)
+            continue
         if spec.fixed_gamma_no_m:
             generalized = q_matrix[:, constants["fixed_momentum_indices"], :]
         else:
@@ -151,30 +206,44 @@ def _c3_gauge_phase(positions, layers, constants):
     return jnp.exp(1j * jnp.sum(shifts * cartesian, axis=(1, 2)))
 
 
-def determinant_values(parameters, positions, layers, constants, spec):
-    """Raw ansatz or its exact C3-character projection."""
-    if spec.c3_irrep is None:
-        return _unprojected_determinant_values(
-            parameters, positions, layers, constants, spec
-        )
-    root = jnp.exp(-2j * jnp.pi * spec.c3_irrep / 3.0)
+def c3_orbit_positions_and_gauge(positions, layers, constants):
+    """Return C3^a X and the physical continuum gauge for a=0,1,2."""
     current = positions
     gauge = jnp.ones(len(positions), dtype=jnp.complex128)
     rotated_positions = []
-    coefficients = []
-    for power in range(3):
+    gauge_orbit = []
+    for _ in range(3):
         rotated_positions.append(current)
-        coefficients.append(root**power * gauge)
+        gauge_orbit.append(gauge)
         gauge = gauge * _c3_gauge_phase(current, layers, constants)
         current = _c3_rotate_positions(current, constants)
+    return jnp.stack(rotated_positions), jnp.stack(gauge_orbit)
+
+
+def c3_project_from_orbit(raw_orbit, gauge_orbit, irrep):
+    """Apply P_m to physical C3-action values on one configuration orbit."""
+    root = jnp.exp(-2j * jnp.pi * irrep / 3.0)
+    powers = root ** jnp.arange(3, dtype=jnp.float64)
+    return jnp.sum(powers[:, None] * gauge_orbit * raw_orbit, axis=0) / 3.0
+
+
+def determinant_values(parameters, positions, layers, constants, spec):
+    """Return raw, internally equivariant, or outer-P_m projected ansatz."""
+    if spec.c3_qns or not spec.outer_c3_projector:
+        return _unprojected_determinant_values(
+            parameters, positions, layers, constants, spec
+        )
+    rotated, gauge_orbit = c3_orbit_positions_and_gauge(
+        positions, layers, constants
+    )
     raw = _unprojected_determinant_values(
         parameters,
-        jnp.concatenate(rotated_positions, axis=0),
+        rotated.reshape(3 * len(positions), spec.n_particles, 2),
         jnp.tile(layers, (3, 1)),
         constants,
         spec,
     ).reshape(3, len(positions))
-    return jnp.sum(jnp.stack(coefficients) * raw, axis=0) / 3.0
+    return c3_project_from_orbit(raw, gauge_orbit, spec.c3_irrep)
 
 def logpsi(parameters, positions, layers, constants, spec):
     values = determinant_values(parameters, positions, layers, constants, spec)
@@ -269,6 +338,20 @@ def _reference_momenta(energies, fractions, particles):
 def initialize(spec: JaxNeuralBlochSpec, seed: int = 83):
     if spec.c3_irrep is not None and spec.c3_irrep not in (0, 1, 2):
         raise ValueError("c3_irrep must be None, 0, 1, or 2")
+    if spec.c3_qns and not spec.fixed_gamma_no_m:
+        raise ValueError("C3-QNS requires fixed_gamma_no_m=True")
+    if spec.c3_qns and spec.c3_irrep is None:
+        raise ValueError("C3-QNS requires an explicit c3_irrep")
+    if spec.c3_qns and spec.determinants != 1:
+        raise ValueError("C3-QNS uses one shared network and one three-minor orbit")
+    if spec.outer_c3_projector and spec.c3_qns:
+        raise ValueError("outer C3 projection and internal C3-QNS are mutually exclusive")
+    if spec.outer_c3_projector and spec.c3_irrep is None:
+        raise ValueError("outer C3 projection requires an explicit c3_irrep")
+    if spec.c3_irrep is not None and not (
+        spec.c3_qns or spec.outer_c3_projector
+    ):
+        raise ValueError("c3_irrep requires c3_qns or outer_c3_projector")
     continuum, inputs = neural_bloch_inputs()
     torch_hamiltonian = ContinuumTorusHamiltonian(
         continuum, 3, 3, dielectric=5.0, reciprocal_shell_count=8,
@@ -346,6 +429,48 @@ def initialize(spec: JaxNeuralBlochSpec, seed: int = 83):
         cartesian_rotation @ np.asarray(inputs["supercell_lattice"]),
     )
     c3_layer_shifts = np.stack([b1, -b2])
+    rotated_momenta = np.stack([
+        np.asarray(inputs["momenta"]) @ np.linalg.matrix_power(
+            cartesian_rotation, power
+        ).T
+        for power in range(3)
+    ])
+    inverse_cartesian_powers = np.stack([
+        np.linalg.matrix_power(cartesian_rotation.T, power)
+        for power in range(3)
+    ])
+    backflow_gauge_vectors = np.stack([
+        np.linalg.solve(cartesian_rotation.T - np.eye(2), shift)
+        for shift in c3_layer_shifts
+    ])
+    orbit_indices = np.tile(np.asarray(selected, dtype=np.int32), (3, 1))
+    orbit_weights = np.ones(3, dtype=np.complex128)
+    if spec.c3_qns:
+        representation = single_particle_c3(1)
+        inverse_map = np.argsort(representation.orbital_map)
+        inverse_sewing = representation.sewing_phase[inverse_map]
+        momentum_powers = [np.arange(len(inputs["momenta"]), dtype=np.int64)]
+        for _ in range(2):
+            momentum_powers.append(inverse_map[momentum_powers[-1]])
+        rotated_momenta = np.asarray(inputs["momenta"])[
+            np.stack(momentum_powers)
+        ]
+        state0 = sum(1 << int(index) for index in selected)
+        state = state0
+        chi = np.exp(2j * np.pi * int(spec.c3_irrep) / 3.0)
+        weight = 1.0 + 0.0j
+        for power in range(3):
+            occupied = [index for index in range(9) if (state >> index) & 1]
+            if len(occupied) != spec.n_particles:
+                raise RuntimeError("C3 orbit changed the particle number")
+            orbit_indices[power] = occupied
+            orbit_weights[power] = weight
+            state, sewing = rotate_fock_state(
+                state, inverse_map, inverse_sewing
+            )
+            weight = weight * chi / sewing
+        if state != state0 or abs(weight - 1.0) > 1.0e-8:
+            raise RuntimeError("inconsistent C3 sewing orbit closure")
     deltas = np.zeros((spec.n_particles * 2, spec.n_particles, 2))
     for particle in range(spec.n_particles):
         for axis in range(2):
@@ -361,6 +486,11 @@ def initialize(spec: JaxNeuralBlochSpec, seed: int = 83):
         "bloch_coefficients": jnp.asarray(inputs["bloch_coefficients"]),
         "c3_fractional_rotation": jnp.asarray(fractional_rotation),
         "c3_layer_shifts": jnp.asarray(c3_layer_shifts),
+        "c3_rotated_momenta": jnp.asarray(rotated_momenta),
+        "c3_inverse_cartesian_powers": jnp.asarray(inverse_cartesian_powers),
+        "c3_backflow_gauge_vectors": jnp.asarray(backflow_gauge_vectors),
+        "c3_orbit_indices": jnp.asarray(orbit_indices, dtype=jnp.int32),
+        "c3_orbit_weights": jnp.asarray(orbit_weights),
         "fixed_momentum_indices": jnp.asarray(selected, dtype=jnp.int32),
         "node_directions": jnp.asarray(np.stack([b1, b2, b1 + b2])),
         "potential_directions": jnp.asarray(np.stack([b1, b2, -(b1 + b2)])),

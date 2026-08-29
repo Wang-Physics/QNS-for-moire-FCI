@@ -170,6 +170,7 @@ def run(args: argparse.Namespace) -> dict:
         determinants=args.determinants,
         orbital_hidden=args.width,
         c3_irrep=args.c3_irrep,
+        outer_c3_projector=args.c3_irrep is not None,
         correction_init_scale=args.correction_init_scale,
     )
     continuum, wavefunction = build_wavefunction(args.particles, config, args.seed)

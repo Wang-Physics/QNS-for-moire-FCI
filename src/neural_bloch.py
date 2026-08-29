@@ -14,6 +14,8 @@ import numpy as np
 import torch
 from torch import nn
 
+from .c3_symmetry import rotate_fock_state, single_particle_c3
+
 
 @dataclass(frozen=True)
 class NeuralBlochConfig:
@@ -23,6 +25,8 @@ class NeuralBlochConfig:
     orbital_hidden: int = 32
     c3_irrep: int | None = None
     fixed_gamma_no_m: bool = False
+    c3_qns: bool = False
+    outer_c3_projector: bool = False
     correction_init_scale: float | None = None
 
 
@@ -138,6 +142,20 @@ class ManyBodyNeuralBloch(nn.Module):
         self.register_buffer("g_vectors", torch.as_tensor(g_vectors, dtype=dtype))
         if config.c3_irrep is not None and config.c3_irrep not in (0, 1, 2):
             raise ValueError("c3_irrep must be None, 0, 1, or 2")
+        if config.c3_qns and not config.fixed_gamma_no_m:
+            raise ValueError("C3-QNS requires fixed_gamma_no_m=True")
+        if config.c3_qns and config.c3_irrep is None:
+            raise ValueError("C3-QNS requires an explicit c3_irrep")
+        if config.c3_qns and config.determinants != 1:
+            raise ValueError("C3-QNS uses one shared network and one three-minor orbit")
+        if config.outer_c3_projector and config.c3_qns:
+            raise ValueError("outer C3 projection and internal C3-QNS are mutually exclusive")
+        if config.outer_c3_projector and config.c3_irrep is None:
+            raise ValueError("outer C3 projection requires an explicit c3_irrep")
+        if config.c3_irrep is not None and not (
+            config.c3_qns or config.outer_c3_projector
+        ):
+            raise ValueError("c3_irrep requires c3_qns or outer_c3_projector")
         angle = -2.0 * np.pi / 3.0
         cartesian_rotation = np.array(
             [[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]]
@@ -156,6 +174,25 @@ class ManyBodyNeuralBloch(nn.Module):
                 np.stack([primitive_reciprocal[0], -primitive_reciprocal[1]]),
                 dtype=dtype,
             ),
+        )
+        inverse_cartesian_powers = np.stack([
+            np.linalg.matrix_power(cartesian_rotation.T, power)
+            for power in range(3)
+        ])
+        self.register_buffer(
+            "c3_inverse_cartesian_powers",
+            torch.as_tensor(inverse_cartesian_powers, dtype=dtype),
+        )
+        layer_shifts = np.stack([
+            primitive_reciprocal[0], -primitive_reciprocal[1]
+        ])
+        backflow_gauge_vectors = np.stack([
+            np.linalg.solve(cartesian_rotation.T - np.eye(2), shift)
+            for shift in layer_shifts
+        ])
+        self.register_buffer(
+            "c3_backflow_gauge_vectors",
+            torch.as_tensor(backflow_gauge_vectors, dtype=dtype),
         )
         coefficients = np.asarray(bloch_coefficients, dtype=np.complex128)
         expected = (self.n_momenta, 2, self.n_g)
@@ -206,6 +243,43 @@ class ManyBodyNeuralBloch(nn.Module):
         selected = self._reference_momenta(np.asarray(one_body_energies))
         self.register_buffer(
             "fixed_momentum_indices", torch.as_tensor(selected, dtype=torch.long)
+        )
+        orbit_indices = np.tile(np.asarray(selected, dtype=np.int64), (3, 1))
+        orbit_weights = np.ones(3, dtype=np.complex128)
+        rotated_momenta = np.stack([np.asarray(momenta)] * 3)
+        if config.c3_qns:
+            representation = single_particle_c3(1)
+            inverse_map = np.argsort(representation.orbital_map)
+            inverse_sewing = representation.sewing_phase[inverse_map]
+            momentum_powers = [np.arange(self.n_momenta, dtype=np.int64)]
+            for _ in range(2):
+                momentum_powers.append(inverse_map[momentum_powers[-1]])
+            rotated_momenta = np.asarray(momenta)[np.stack(momentum_powers)]
+            state0 = sum(1 << int(index) for index in selected)
+            state = state0
+            chi = np.exp(2j * np.pi * int(config.c3_irrep) / 3.0)
+            weight = 1.0 + 0.0j
+            for power in range(3):
+                occupied = [
+                    index for index in range(self.n_momenta)
+                    if (state >> index) & 1
+                ]
+                orbit_indices[power] = occupied
+                orbit_weights[power] = weight
+                state, sewing = rotate_fock_state(
+                    state, inverse_map, inverse_sewing
+                )
+                weight = weight * chi / sewing
+            if state != state0 or abs(weight - 1.0) > 1.0e-8:
+                raise RuntimeError("inconsistent C3 sewing orbit closure")
+        self.register_buffer(
+            "c3_rotated_momenta", torch.as_tensor(rotated_momenta, dtype=dtype)
+        )
+        self.register_buffer(
+            "c3_orbit_indices", torch.as_tensor(orbit_indices, dtype=torch.long)
+        )
+        self.register_buffer(
+            "c3_orbit_weights", torch.as_tensor(orbit_weights)
         )
         if config.fixed_gamma_no_m:
             self.register_parameter("momentum_real", None)
@@ -358,6 +432,16 @@ class ManyBodyNeuralBloch(nn.Module):
         # selected: batch, particle, momentum, g
         return torch.sum(selected * exponent, dim=-1).permute(0, 2, 1)
 
+    def _orbital_factor(
+        self, orbital_mlp: nn.Module, node: torch.Tensor, momenta: torch.Tensor
+    ) -> torch.Tensor:
+        node_k = node[:, :, None, :].expand(-1, -1, self.n_momenta, -1)
+        k_feature = momenta[None, None].expand(
+            len(node), self.n_particles, -1, -1
+        )
+        raw = orbital_mlp(torch.cat([node_k, k_feature], -1))
+        return torch.complex(raw[..., 0], raw[..., 1])
+
     def _unprojected_determinant_values(
         self, positions: torch.Tensor, layers: torch.Tensor
     ) -> torch.Tensor:
@@ -379,25 +463,61 @@ class ManyBodyNeuralBloch(nn.Module):
             )
             return torch.sum(determinants * weights, dim=-1)
 
-        cartesian, node, _ = self.encoded_graph(positions, layers)
+        if self.config.c3_qns:
+            graphs = []
+            current = positions
+            for _ in range(3):
+                graphs.append(self.encoded_graph(current, layers))
+                current = self.c3_rotate_positions(current)
+            cartesian = graphs[0][0]
+        else:
+            cartesian, node, _ = self.encoded_graph(positions, layers)
         determinant_values = []
         for index, (backflow, orbital_mlp) in enumerate(
             zip(self.backflow_heads, self.orbital_mlps)
         ):
-            displacement_raw = backflow(node)
-            displacement = torch.complex(
-                displacement_raw[..., :2], displacement_raw[..., 2:]
-            )
+            if self.config.c3_qns:
+                displacements = []
+                orbitals = []
+                for power, (_, rotated_node, _) in enumerate(graphs):
+                    raw = backflow(rotated_node)
+                    inverse = self.c3_inverse_cartesian_powers[power]
+                    real = torch.einsum("ac,bnc->bna", inverse, raw[..., :2])
+                    imag = torch.einsum("ac,bnc->bna", inverse, raw[..., 2:])
+                    displacements.append(torch.complex(real, imag))
+                    orbitals.append(self._orbital_factor(
+                        orbital_mlp, rotated_node,
+                        self.c3_rotated_momenta[power],
+                    ))
+                displacement = torch.stack(displacements).mean(0)
+                orbital = torch.stack(orbitals).mean(0)
+            else:
+                displacement_raw = backflow(node)
+                displacement = torch.complex(
+                    displacement_raw[..., :2], displacement_raw[..., 2:]
+                )
+                orbital = self._orbital_factor(orbital_mlp, node, self.momenta)
             transformed = cartesian.to(torch.complex128) + displacement
             bloch = self._bloch_values(transformed, layers)
-
-            node_k = node[:, :, None, :].expand(-1, -1, self.n_momenta, -1)
-            k_feature = self.momenta[None, None].expand(
-                len(node), self.n_particles, -1, -1
-            )
-            orbital_raw = orbital_mlp(torch.cat([node_k, k_feature], -1))
-            orbital = torch.complex(orbital_raw[..., 0], orbital_raw[..., 1])
             q_matrix = bloch * orbital.permute(0, 2, 1)
+            if self.config.c3_qns:
+                gauge_vectors = self.c3_backflow_gauge_vectors[layers].to(
+                    displacement.dtype
+                )
+                compensation = torch.exp(
+                    1j * torch.einsum(
+                        "bna,bna->bn", displacement, gauge_vectors
+                    )
+                )
+                q_matrix = q_matrix * compensation[:, None, :]
+                orbit_values = [
+                    weight * torch.linalg.det(q_matrix[:, orbit, :])
+                    for orbit, weight in zip(
+                        self.c3_orbit_indices, self.c3_orbit_weights
+                    )
+                ]
+                determinant_values.append(torch.stack(orbit_values).sum(0) / 3.0)
+                continue
             if self.config.fixed_gamma_no_m:
                 generalized = q_matrix[:, self.fixed_momentum_indices, :]
             else:
@@ -432,7 +552,7 @@ class ManyBodyNeuralBloch(nn.Module):
         self, positions: torch.Tensor, layers: torch.Tensor
     ) -> torch.Tensor:
         """Return the raw ansatz or its exact C3-character projection."""
-        if self.config.c3_irrep is None:
+        if self.config.c3_qns or not self.config.outer_c3_projector:
             return self._unprojected_determinant_values(positions, layers)
         root = torch.exp(
             torch.as_tensor(

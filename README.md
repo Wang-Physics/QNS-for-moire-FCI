@@ -8,14 +8,21 @@ The current report is [`result/AI_for_Physics.pdf`](result/AI_for_Physics.pdf). 
 
 ## Current numerical result
 
-The controlled QNS comparison uses a `3 x 3` moire cluster, one generalized Slater determinant, width 32, two unshared message-passing iterations, 4,128 persistent walkers, 120 attempted natural-gradient updates, and explicit true-CG-residual acceptance.
+The controlled QNS comparison uses a `3 x 3` moire cluster, one generalized Slater determinant, width 32, two unshared message-passing iterations, 4,128 persistent walkers, and explicit true-CG-residual acceptance. The four baselines complete 120 updates; the `nu=1/3` C3-QNS run was stopped at update 116 after its training curve plateaued.
 
 | filling | selected state | precise validation `E/N_e` (meV) | five-band ED (meV) | difference (meV) |
 |---|---|---:|---:|---:|
 | `1/3` | no `M`, total momentum `Gamma` | `-36.78317(10)` | `-37.39323` | `+0.61006` |
+| `1/3` | C3-QNS, total momentum `Gamma`, `m=0` | `-36.71907(19)` | `-37.39323` | `+0.67416` |
+| `1/3` | outer `P0`, total momentum `Gamma` | `-37.19495(11)` | `-37.39323` | `+0.19828` |
 | `2/3` | no `M`, total momentum `Gamma` | `-52.39973(17)` | `-52.72554` | `+0.32581` |
+| `2/3` | outer `P0`, total momentum `Gamma` | `-52.44547(13)` | `-52.72554` | `+0.28007` |
 
-The present ansatz therefore has not established a variational energy advantage over five-band ED. The report also documents CG truncation, rejected updates, independent validation, full-wavefunction-ratio 1-RDM estimators, and the distinction between full and connected structure factors.
+The complete-wavefunction outer projector improves the best independently
+validated energy at both fillings, but remains above five-band ED. At
+`nu=2/3`, a low training-chain `P2` point fails independent re-equilibration
+and `P0` is selected instead. The report documents this sampling sensitivity,
+CG truncation, rejected updates, complete-ratio 1-RDM estimators, and full versus connected structure factors.
 
 ## Repository layout
 
@@ -70,7 +77,65 @@ python -m src.run_jax_neural_bloch \
 
 Use `--particles 6` for `nu=2/3`; add `--fixed-gamma-no-m` for the no-`M` state. These are expensive CPU calculations. The paper's reported production setting is 1,000 optimization steps; the public benchmark here deliberately reports the completed 120-update audit.
 
-After all four checkpoints exist, `src/run_post120_validation_protocol.py` performs the independent 1,024-walker selection and 4,128-walker precise validation. Validation samples never enter parameter updates.
+## C3-QNS extension
+
+`C3-QNS` keeps the no-`M`, fixed-total-`Gamma` construction but makes the
+backflow and orbital transformation internally equivariant. A Reynolds
+average evaluates the same message-passing network on `X`, `C3 X`, and
+`C3^2 X`; vector outputs are rotated back before averaging. The final wave
+function is a tied sum of the three C3-related Slater minors. Their relative
+coefficients are fixed by the one-band Bloch sewing phases and the requested
+many-body C3 character.
+
+The continuum Bloch sewing relation is evaluated at the dressed coordinate
+`r + delta_r`, while the physical layer gauge acts at `r`. The implementation
+therefore includes the analytic per-column compensation
+`exp(i b_l dot delta_r)`, with `(R^T-I)b_l=a_l`. Omitting this factor gives an
+order-one character error even when the raw displacement is equivariant.
+At the frozen step-116 checkpoint, 512 independent configurations give a maximum character residual `7.12e-5` (95th percentile `1.77e-5`). The Luo-Fu Fourier input encoding remains unchanged; it guarantees
+periodicity and primitive translation symmetry, but does not alone guarantee
+C3 equivariance.
+
+The frozen experiment in this release uses `nu=1/3` only:
+
+```bash
+python -m src.run_jax_neural_bloch \
+  --output-dir result/data/c3_qns_adaptive120_nu1of3 \
+  --particles 3 --fixed-gamma-no-m --c3-irrep 0 --c3-qns \
+  --samples 4128 --steps 120 --burn-sweeps 300 --sweeps-per-step 2 \
+  --wavefunction-batch 258 --local-energy-batch 32 --sr-chunk 258 \
+  --checkpoint-interval 10 --log-interval 10 --adaptive-cg-120-step
+```
+
+The implementation and JAX/PyTorch parity checks are in `tests/test_c3_qns.py`. The stopped run is evaluated from `jax_neural_bloch_step_0116.npz`; the report does not label it as a completed 120-update run.
+
+## Complete-wavefunction outer C3 projection
+
+The new `outer_c3_projector` leaves the periodic no-`M` Luo--Fu network
+internally unrestricted and applies `P_m=(1/3) sum_a omega^(-ma) C3^a` only
+to the complete generalized determinant. The physical `C3` action includes
+the continuum layer-gauge sewing factor. Projected `logpsi` is the single
+source used by local energy, Metropolis ratios, and SR logarithmic derivatives.
+
+`tests/test_outer_c3_projector.py` checks all three characters, `P_m^2=P_m`,
+`P_m P_n=0`, nonzero norms in all sectors, projected local-energy/Metropolis/SR
+paths, and exact recovery of no-`M` when the projector is disabled. Production
+preflight values are stored in `result/data/outer_c3_nu1of3_preflight.json`.
+The three independent `nu=1/3` sector runs are launched with:
+
+```bash
+nohup setsid scripts/run_outer_c3_nu1of3.sh \
+  > result/data/outer_c3_projector_nu1of3_120/launcher.log 2>&1 &
+```
+
+Each sector uses 4,128 walkers, 120 adaptive-CG updates, and a separate CPU
+affinity and checkpoint directory under `outer_c3_projector_nu1of3_120/m0,m1,m2`.
+The analogous `nu=2/3` production launchers are
+`scripts/run_outer_c3_nu2of3_p0.sh` and
+`scripts/run_outer_c3_nu2of3_sector.sh`; all three sectors are stored under
+`outer_c3_projector_nu2of3_120/p0,p1,p2`.
+
+After all four baseline checkpoints exist, `src/run_post120_validation_protocol.py` performs the independent 1,024-walker selection and 4,128-walker precise validation. Validation samples never enter parameter updates.
 
 ## Redrawing the publication figures
 

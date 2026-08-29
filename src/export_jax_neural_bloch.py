@@ -43,6 +43,8 @@ def run(checkpoint: Path, output: Path, seed: int = 83) -> Path:
         orbital_hidden=spec.orbital_hidden,
         c3_irrep=spec.c3_irrep,
         fixed_gamma_no_m=spec.fixed_gamma_no_m,
+        c3_qns=spec.c3_qns,
+        outer_c3_projector=spec.outer_c3_projector,
     )
     _, wavefunction = build_wavefunction(spec.n_particles, config, seed)
     copy_to_torch(parameters, wavefunction)

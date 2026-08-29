@@ -176,13 +176,13 @@ class JaxNeuralBlochParityTests(unittest.TestCase):
     def test_c3_projected_logpsi_matches_pytorch(self):
         spec = JaxNeuralBlochSpec(
             n_particles=2, width=24, message_passing_steps=1,
-            determinants=1, orbital_hidden=24, c3_irrep=2,
+            determinants=1, orbital_hidden=24, c3_irrep=2, outer_c3_projector=True,
         )
         _, torch_state = build_wavefunction(
             2,
             NeuralBlochConfig(
                 width=24, message_passing_steps=1, determinants=1,
-                orbital_hidden=24, c3_irrep=2,
+                orbital_hidden=24, c3_irrep=2, outer_c3_projector=True,
             ),
             seed=43,
         )

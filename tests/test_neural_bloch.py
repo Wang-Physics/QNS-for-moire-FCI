@@ -60,7 +60,7 @@ class NeuralBlochTests(unittest.TestCase):
             6,
             NeuralBlochConfig(
                 width=24, message_passing_steps=1, determinants=12,
-                orbital_hidden=24, c3_irrep=2,
+                orbital_hidden=24, c3_irrep=2, outer_c3_projector=True,
             ),
             seed=37,
         )
@@ -90,7 +90,7 @@ class NeuralBlochTests(unittest.TestCase):
             6,
             NeuralBlochConfig(
                 width=24, message_passing_steps=2, determinants=12,
-                orbital_hidden=24, c3_irrep=2,
+                orbital_hidden=24, c3_irrep=2, outer_c3_projector=True,
             ),
             seed=23,
         )

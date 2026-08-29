@@ -440,6 +440,8 @@ def run(args):
             "production architecture is width=32, message-passing-steps=2, "
             "determinants=1"
         )
+    if args.outer_c3_projector and not args.fixed_gamma_no_m:
+        raise ValueError("production outer C3 sector scan requires --fixed-gamma-no-m")
     if args.samples % args.sr_chunk:
         raise ValueError("samples must be divisible by sr_chunk")
     if args.adaptive_cg_120_step:
@@ -461,6 +463,8 @@ def run(args):
         orbital_hidden=args.width,
         c3_irrep=args.c3_irrep,
         fixed_gamma_no_m=args.fixed_gamma_no_m,
+        c3_qns=args.c3_qns,
+        outer_c3_projector=args.outer_c3_projector,
     )
     parameters, constants = initialize(spec, args.seed)
     natural_gradient = MatrixFreeNaturalGradient(
@@ -569,6 +573,32 @@ def run(args):
         "exploratory_additional_100_step": args.exploratory_additional_100_step,
         "checkpoint_additional_100_step": args.checkpoint_additional_100_step,
         "fixed_gamma_no_m": args.fixed_gamma_no_m,
+        "c3_qns": args.c3_qns,
+        "outer_c3_projector": args.outer_c3_projector,
+        "outer_c3_projector_definition": ({
+            "raw_state": "unchanged periodic fixed-Gamma no-M Luo-Fu QNS",
+            "projector": "P_m=(1/3) sum_a omega^(-ma) C3^a on the complete wavefunction",
+            "physical_action": "C3 includes the continuum layer-gauge sewing factor",
+            "downstream_use": "projected logpsi is used by local energy, Metropolis, and SR scores",
+        } if args.outer_c3_projector else None),
+        "c3_qns_definition": ({
+            "group_average": (
+                "Reynolds average over X, C3 X, and C3^2 X for both complex "
+                "backflow displacement and J_ki"
+            ),
+            "momentum_orbit": (
+                "three C3-closed Gamma minors tied by one-band Bloch sewing "
+                "phases; this is the constrained w sum"
+            ),
+            "physical_gauge_compensation": (
+                "each particle column is multiplied by exp(i b_l dot delta_r), "
+                "where (R^T-I)b_l=a_l"
+            ),
+            "difference_from_luo_fu": (
+                "Luo-Fu Fourier inputs enforce torus periodicity and primitive "
+                "translation symmetry but do not by themselves constrain C3"
+            ),
+        } if args.c3_qns else None),
         "momentum_sector": [0, 0] if args.fixed_gamma_no_m else None,
         "paper_optimization_settings_retained_except_total_steps": (
             args.exploratory_100_step or args.exploratory_additional_100_step
@@ -783,6 +813,17 @@ def parser():
             "remove the trainable momentum-mixing matrix M and select the "
             "lowest one-body orbital set whose total mesh momentum is Gamma"
         ),
+    )
+    result.add_argument(
+        "--c3-qns", action="store_true",
+        help=("internally C3-equivariant no-M Gamma ansatz with a "
+              "Bloch-sewing-weighted three-determinant orbit sum"),
+    )
+    result.add_argument(
+        "--outer-c3-projector", action="store_true",
+        help=("keep the raw periodic no-M QNS unrestricted internally and apply "
+              "P_m to the complete wavefunction; requires --fixed-gamma-no-m "
+              "and --c3-irrep"),
     )
     result.add_argument("--samples", type=int, default=4128)
     result.add_argument("--steps", type=int, default=1000)

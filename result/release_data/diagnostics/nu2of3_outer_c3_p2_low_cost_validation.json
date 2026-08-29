@@ -1,0 +1,21 @@
+{
+  "definition": "independent random-start re-equilibrated validation chain",
+  "saved_final_ensemble": "result/data/outer_c3_projector_nu2of3_validation/low_cost_p2.npz",
+  "checkpoint": "result/data/outer_c3_projector_nu2of3_120/p2/jax_neural_bloch_step_0120.npz",
+  "seed": 28189,
+  "walkers": 1024,
+  "burn_sweeps": 200,
+  "measurement_sweeps_after_burn": 10,
+  "energy_measurements": 10240,
+  "energy_meV": -306.2981683513938,
+  "energy_per_particle_meV": -51.04969472523231,
+  "local_energy_variance_meV2": 39803.451357610276,
+  "naive_walker_sem_meV": 1.9715617658703033,
+  "blocked_sem_meV": 0.3355933417802592,
+  "blocked_sem_per_particle_meV": 0.055932223630043194,
+  "mean_burn_position_acceptance": 0.65041015625,
+  "mean_burn_layer_acceptance": 0.610908203125,
+  "mean_measurement_position_acceptance": 0.6486328125,
+  "mean_measurement_layer_acceptance": 0.628125,
+  "caveat": "one validation chain; repeat independent seeds for a production uncertainty"
+}

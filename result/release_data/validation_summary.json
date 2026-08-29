@@ -96,6 +96,27 @@
       "mean_measurement_position_acceptance": 0.6609375,
       "mean_measurement_layer_acceptance": 0.6265625,
       "caveat": "one validation chain; repeat independent seeds for a production uncertainty"
+    },
+    "nu1of3_c3_qns": {
+      "definition": "independent random-start re-equilibrated validation chain",
+      "saved_final_ensemble": "result/data/c3_qns_step116_validation/low_cost_nu1of3_c3_qns.npz",
+      "checkpoint": "result/data/c3_qns_adaptive120_nu1of3/jax_neural_bloch_step_0116.npz",
+      "seed": 9287,
+      "walkers": 1024,
+      "burn_sweeps": 200,
+      "measurement_sweeps_after_burn": 10,
+      "energy_measurements": 10240,
+      "energy_meV": -108.85175626091159,
+      "energy_per_particle_meV": -36.283918753637195,
+      "local_energy_variance_meV2": 3183.2278890634634,
+      "naive_walker_sem_meV": 0.5575500861280122,
+      "blocked_sem_meV": 0.32887873284939045,
+      "blocked_sem_per_particle_meV": 0.10962624428313016,
+      "mean_burn_position_acceptance": 0.66828125,
+      "mean_burn_layer_acceptance": 0.6191455078125,
+      "mean_measurement_position_acceptance": 0.67177734375,
+      "mean_measurement_layer_acceptance": 0.63623046875,
+      "caveat": "one validation chain; repeat independent seeds for a production uncertainty"
     }
   },
   "selected": {
@@ -144,6 +165,28 @@
       "mean_measurement_position_acceptance": 0.6593749970197678,
       "mean_measurement_layer_acceptance": 0.6305838137865066,
       "caveat": "one validation chain; repeat independent seeds for a production uncertainty"
+    },
+    "nu1of3_c3_qns": {
+      "definition": "independent random-start re-equilibrated validation chain",
+      "saved_final_ensemble": "result/data/c3_qns_step116_validation/precise_nu1of3_c3_qns.npz",
+      "checkpoint": "result/data/c3_qns_adaptive120_nu1of3/jax_neural_bloch_step_0116.npz",
+      "seed": 19287,
+      "walkers": 4128,
+      "burn_sweeps": 300,
+      "measurement_sweeps_after_burn": 20,
+      "energy_measurements": 82560,
+      "energy_meV": -110.15721113292756,
+      "energy_per_particle_meV": -36.71907037764252,
+      "local_energy_variance_meV2": 1721.853930094886,
+      "naive_walker_sem_meV": 0.14441533464962525,
+      "blocked_sem_meV": 0.05549922514647049,
+      "blocked_sem_per_particle_meV": 0.018499741715490164,
+      "mean_burn_position_acceptance": 0.6696027106046677,
+      "mean_burn_layer_acceptance": 0.6228544882933299,
+      "mean_measurement_position_acceptance": 0.6722868174314499,
+      "mean_measurement_layer_acceptance": 0.635574123263359,
+      "caveat": "one validation chain; repeat independent seeds for a production uncertainty"
     }
-  }
+  },
+  "c3_qns_note": "C3-QNS stopped by user after 116 accepted updates; independently validated at both low-cost and precise settings; no-M remains the lower precise nu=1/3 state."
 }
