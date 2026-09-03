@@ -23,14 +23,17 @@ The current source additionally implements three audit corrections: full-$M$
 uses an unbiased complex random initialization; the node aggregation is the
 literal $\sum_jm_{ij}$ in Eq.~(19), including $j=i$; and the random auxiliary
 features $h_i^0,h_{ij}^0$ are explicitly retained in the trainable parameter
-tree. Earlier one-hot-$M$, no-self-message checkpoints are excluded from this
-Part. Figures~\ref{fig:nbresults}, \ref{fig:nbobservables13} and \ref{fig:nbobservables23} and all result
-tables below use the four controlled 4,128-walker, 120-update baselines
-and the internal- and outer-$C_3$ extensions. C3-QNS was halted after 116
-accepted updates when the persistent-chain energy had plateaued; each of the
-three outer sectors at both fillings completed 120 attempted updates. All
-quoted energies use the final-ten equilibrated persistent-chain mean, with
-the corresponding RMS reported as a stability diagnostic.
+tree. Version 3 further replaces the v2 single selected-momentum no-$M$
+determinant by a trainable $M_S$ matrix that linearly combines every selected-
+momentum Slater determinant in the exact total-$\Gamma$ sector. Earlier one-hot-$M$, no-self-message and v2
+single-minor checkpoints are excluded from the v3 comparison.
+
+Both v3 no-$M$ runs and all six v3 outer-$C_3$ branches are complete.  The
+internal-equivariance construction investigated in v2 is omitted from the
+present results because its threefold evaluation was expensive and did not
+improve the controlled energy comparison. Quoted training
+energies use the final ten persistent-chain measurements; the corresponding
+RMS is a stability diagnostic rather than an independent error bar.
 
 
 \section{Configuration, fixed Bloch basis, and conventions}
@@ -193,203 +196,74 @@ generalized Slater determinant is used. Because $M$ is trainable and dense,
 the Cauchy--Binet expansion of $\det(MQ)$ generally contains several
 total-momentum sectors.
 
-The no-$M$ ablation removes the matrix rather than replacing it by another
-trainable map,
+Version 3 removes the dense single-particle matrix $M$ while retaining a
+trainable many-body mixing within the exact total-momentum sector.  Let
+$\mathcal C_\Gamma^{(N_e)}$ be the set of canonical $N_e$-element subsets
+$I$ of the nine mesh momenta satisfying
+$\sum_{\bm k\in I}\bm k=\Gamma$ modulo a primitive reciprocal vector.  The
+v3 no-$M$ state is
 \begin{equation}
- \Psi_{\Gamma}(X)=
- \det_{\alpha i}Q_{\bm k_\alpha i}(X),\qquad
- \sum_{\alpha=1}^{N_e}\bm k_\alpha=\Gamma\pmod{\bm G}.
+ \Psi_{\Gamma}^{\rm v3}(X)=
+ \sum_{I\in\mathcal C_\Gamma^{(N_e)}}(M_S)_{1I}
+ \det_{\bm k\in I,\,i}Q_{\bm k i}(X),
+ \qquad M_S\in\mathbb C^{N_D\times|\mathcal C_\Gamma^{(N_e)}|} .
  \label{eq:nom}
 \end{equation}
-For $N_e=3$, the selected fractional momenta are
-$\{(2,0),(2,1),(2,2)\}/3$; for $N_e=6$ they are
-$\{(1,0),(1,1),(1,2),(2,0),(2,1),(2,2)\}/3$.
-They minimize the sum of bare band-1 energies subject to total momentum
-$\Gamma$. Each generalized orbital retains its own single-particle momentum;
-only the determinant has total momentum zero. No $C_3$ label or ED rotation
-eigenvalue is supplied.
+Both $N_e=3$ and $N_e=6$ have 12 such subsets on the $3\times3$ momentum
+mesh.  The determinant-mixing matrix $M_S$ is initialized with a split-real
+LeCun-normal convention and optimized by the same stochastic-reconfiguration
+update as the graph, backflow and orbital-transformation parameters.  Here
+$N_D=1$, so $M_S$ has shape $1\times12$ and contributes 24 real trainable
+parameters. Thus v3
+fixes total momentum exactly to $\Gamma$ but does not freeze the many-body
+momentum content to one bare Slater determinant. The v2 state, retained only
+as a historical baseline, kept the single subset that minimized the sum of
+bare band-1 energies: $\{(2,0),(2,1),(2,2)\}/3$ for $N_e=3$ and
+$\{(1,0),(1,1),(1,2),(2,0),(2,1),(2,2)\}/3$ for $N_e=6$.
 
-\section{Internally equivariant C3-QNS extension}
-\label{sec:c3qns}
-
-The periodic Fourier encoding in Eqs.~\eqref{eq:nodefeature} and
-\eqref{eq:edgefeature} guarantees torus periodicity and primitive-translation
-symmetry, as intended in Ref.~\cite{luo}. It does \emph{not} by itself impose
-$C_3$ equivariance: the three node harmonics close under rotation, but a
-generic learned linear vector head need not transform as a vector, and the
-nine continuous edge harmonics are not a closed regular representation.
-The present C3-QNS therefore keeps the Luo--Fu message-passing network but
-constrains its use by a Reynolds average.
-
-Let $g=C_{3,A}$ be the $-2\pi/3$ active rotation about the reference stacking
-center $A$, with Cartesian matrix $R$. For a raw network output,
-\begin{align}
- \delta\bm r_i^{C_3}(X)
- &=\frac13\sum_{p=0}^{2}R^{-p}
-   \delta\bm r_i^{\rm raw}(g^pX), \label{eq:c3bf}\\
- J_{\bm k i}^{C_3}(X)
- &=\frac13\sum_{p=0}^{2}
-   J_{m^p\bm k,i}^{\rm raw}(g^pX), \label{eq:c3j}
-\end{align}
-where $m$ is the discrete one-band momentum permutation induced by $g$.
-The same network parameters are used in all three terms. These definitions
-give $\delta\bm r_i^{C_3}(gX)=R\delta\bm r_i^{C_3}(X)$ and the corresponding
-covariance of $J$.
-
-A gauge correction is required after backflow. In the plane-wave convention
-of Part~I, the bare first-band spinor obeys
-\begin{equation}
- \phi^0_{m\bm k}\!\left(g\widetilde{\bm r},l\right)
- =z_{\bm k}e^{-i\bm a_l\cdot\widetilde{\bm r}}
-  \phi^0_{\bm k}(\widetilde{\bm r},l),
- \qquad \widetilde{\bm r}=\bm r+\delta\bm r ,
- \label{eq:c3sewing}
-\end{equation}
-where $z_{\bm k}\in U(1)$ is extracted from the continuum eigenvectors and
-$\bm a_l$ is the reciprocal-momentum shift required to return the rotated
-plane-wave expansion to the code's layer-dependent Bloch gauge. In the
-present convention,
-\begin{equation}
- \bm a_0=\bm b_1,\qquad \bm a_1=-\bm b_2 .
-\end{equation}
-This is the sense in which a \emph{momentum compensation} is required. It
-does not alter the mesh momentum $\bm k$, mix different $\bm k$ values, or
-update the fixed coefficients $u^l_{1\bm k\bm G}$.
-
-To see the mismatch explicitly, backflow equivariance gives
-\begin{equation}
- \widetilde{\bm r}_i(gX)
- =R\bm r_i+R\delta\bm r_i(X)
- =R\widetilde{\bm r}_i(X).
-\end{equation}
-Substitution into Eq.~\eqref{eq:c3sewing} then gives
-\begin{align}
- \phi^0_{m\bm k}\!\left(\widetilde{\bm r}_i(gX),l_i\right)
- &=z_{\bm k}
- e^{-i\bm a_{l_i}\cdot[\bm r_i+\delta\bm r_i(X)]}
- \phi^0_{\bm k}\!\left(\widetilde{\bm r}_i(X),l_i\right)\nonumber\\
- &=z_{\bm k}e^{-i\bm a_{l_i}\cdot\bm r_i}
- \underbrace{e^{-i\bm a_{l_i}\cdot\delta\bm r_i(X)}}_
- {\eta_i(X)}
- \phi^0_{\bm k}\!\left(\widetilde{\bm r}_i(X),l_i\right).
- \label{eq:c3mismatch}
-\end{align}
-The physical continuum $C_3$ action contains the first phase, evaluated at
-the actual electron coordinate $\bm r_i$. The second factor appears only
-because the fixed Bloch orbital was evaluated at the neural coordinate.
-
-Define $h_l(\delta\bm r)=\exp(i\bm b_l\cdot\delta\bm r)$. Cancellation of the
-second factor requires
-\begin{equation}
- \frac{h_l(R\delta\bm r)}{h_l(\delta\bm r)}
- =e^{i\bm a_l\cdot\delta\bm r}.
- \label{eq:c3hcondition}
-\end{equation}
-Since
-$h_l(R\delta\bm r)/h_l(\delta\bm r)
-=\exp\{i[(R^{\mathsf T}-I)\bm b_l]\cdot\delta\bm r\}$,
-we solve the fixed two-dimensional linear system
-\begin{equation}
- (R^{\mathsf T}-I)\bm b_l=\bm a_l
-\end{equation}
-once and form
-\begin{equation}
- \overline Q_{\bm k i}(X)=
- e^{i\bm b_{l_i}\cdot\delta\bm r_i^{C_3}(X)}
- J_{\bm k i}^{C_3}(X)
- \phi^0_{\bm k}\!\left(
- \bm r_i+\delta\bm r_i^{C_3}(X),l_i\right).
- \label{eq:c3qbar}
-\end{equation}
-Equations~\eqref{eq:c3mismatch}--\eqref{eq:c3qbar} imply
-\begin{equation}
- \overline Q_{m\bm k,i}(gX)
- =z_{\bm k}e^{-i\bm a_{l_i}\cdot\bm r_i}
-  \overline Q_{\bm k i}(X).
- \label{eq:c3qcov}
-\end{equation}
-For a many-body minor, the product of the physical phases is
-\begin{equation}
- G_A(X)^{-1}
- =\exp\!\left[-i\sum_i\bm a_{l_i}\cdot\bm r_i\right],
-\end{equation}
-while the product of $z_{\bm k}$ and row-sorting parity gives the
-configuration-independent sewing number $\zeta_p$ used below.
-
-The dot products are bilinear, with no complex conjugation. Because Luo--Fu
-backflow is complex, the compensation can change both phase and amplitude;
-it is fixed analytically by covariance and adds no trainable parameter. In
-code, $\bm b_l$ is constructed once during initialization and the column
-factor is applied at \texttt{src/jax\_neural\_bloch.py:173--177}; the
-independent PyTorch path is
-\texttt{src/neural\_bloch.py:494--503}. Omitting it leaves an order-one,
-configuration-dependent character error despite an equivariant displacement.
-
-Let $S_0=\{\bm k_\alpha\}$ be the same lowest-energy total-$\Gamma$ subset as
-the no-$M$ baseline and $S_p=m^pS_0$. Sorting each minor gives
-\begin{equation}
- \zeta_p=\operatorname{sgn}(m:S_p\to S_{p+1})
- \prod_{\bm k\in S_p}z_{\bm k}.
-\end{equation}
-For requested character $\chi_m=\exp(2\pi i m/3)$,
-\begin{equation}
- c_0=1,\qquad c_{p+1}=\frac{\chi_m}{\zeta_p}c_p,\qquad c_3=c_0 ,
-\end{equation}
-and the final ansatz is
-\begin{equation}
- \boxed{\displaystyle
- \Psi_{C_3,m}(X)=\frac13\sum_{p=0}^{2}
- c_p\,\det\!\left[\overline Q_{\bm k i}(X)\right]_
- {\bm k\in S_p}.}
- \label{eq:c3qns}
-\end{equation}
-This is a constrained realization of the Luo--Fu determinant index $w$: the
-three minors are one symmetry orbit with shared neural parameters and fixed
-sewing weights, rather than three independently optimized determinants.
-The full-$M$ matrix is absent, so total momentum remains $\Gamma$.
-
-Only primitive translations and $C_{3,A}$ are independent generators.
-The other centers satisfy $C_{3,B}=T_{\bm t_{BA}}C_{3,A}$ and
-$C_{3,C}=T_{\bm t_{CA}}C_{3,A}$. Translation symmetry plus
-Eq.~\eqref{eq:c3bf} therefore implies the $B/C$ relations; all three centers
-remain useful regression tests. On random configurations the JAX/PyTorch
-log-wavefunction mismatch is $1.7\times10^{-14}$. For the frozen $\nu=1/3$, $m=0$ checkpoint, a 512-configuration
-independent test gives a maximum complete-state character residual
-$7.12\times10^{-5}$ (95th percentile $1.77\times10^{-5}$), consistent with
-the finite 61-plane-wave truncation. Thus the constraint is numerically
-satisfied; its energetic value remains a separate question.
+The v3 matrix $M_S$ is not the Luo--Fu dense matrix $M$.  A dense $M$
+mixes momenta at the one-particle orbital level and its Cauchy--Binet
+expansion generally spans several total-momentum sectors.  In contrast,
+Eq.~\eqref{eq:nom} uses $M_S$ only at the many-body determinant level and
+contains exactly the 12 minors in the $\Gamma$ sector.  Each
+minor still uses the fully configuration-dependent $Q_{\bm k i}(X)$, so all
+graph, backflow and orbital transformations are recomputed before the linear
+combination is formed.
 
 \section{Complete-wavefunction outer $C_3$ projection}
 \label{sec:outerc3}
 
-The second symmetry construction deliberately removes the internal Reynolds
-averages in Eqs.~\eqref{eq:c3bf}--\eqref{eq:c3j}.  Its raw state is exactly the
-periodic no-$M$, total-$\Gamma$ generalized determinant
+The outer construction applies no internal Reynolds average. In v3 its raw
+state is the periodic, exact-total-$\Gamma$ sector mixture
 \begin{equation}
- D_\theta(X)=\det[Q_{\bm k_\alpha i}(X)]_{\bm k_\alpha\in S_0},
+ D_\theta^{\rm v3}(X)=
+ \sum_{I\in\mathcal C_\Gamma^{(N_e)}}(M_S)_{1I}
+ \det_{\bm k\in I,\,i}Q_{\bm k i}(X),
 \end{equation}
-with an unrestricted Luo--Fu message-passing backflow and $J$ network.  Thus
+with an unrestricted Luo--Fu message-passing backflow and $J$ network. Thus
 neither an individual displacement nor an individual generalized orbital is
-forced to be a $C_3$ eigenobject.
+forced to be a $C_3$ eigenobject, while the complete raw state remains in the
+translation sector $\bm K_{\rm tot}=\Gamma$.
 
 The physical continuum action includes the layer-dependent Bloch-gauge sewing.
 With the code's active-rotation convention, define
 \begin{equation}
- (\mathcal C^aD_\theta)(X)=G_a(X)D_\theta(C_3^aX),
+ (\mathcal C^aD_\theta^{\rm v3})(X)
+ =G_a(X)D_\theta^{\rm v3}(C_3^aX),
 \end{equation}
 where $G_0=1$ and $G_a$ is the accumulated product of the physical layer-gauge
 factor at each preceding point on the configuration orbit.  For
 $\omega=\exp(2\pi i/3)$, the complete-state projector is
 \begin{equation}
  \boxed{\begin{aligned}
- \Psi_{m,\theta}(X)&=P_mD_\theta(X)\\
+ \Psi_{m,\theta}^{\rm v3}(X)&=P_mD_\theta^{\rm v3}(X)\\
  &=\frac13\sum_{a=0}^{2}\omega^{-ma}G_a(X)\\[-2pt]
- &\quad\times D_\theta(C_3^aX),\qquad m=0,1,2 .
+ &\quad\times D_\theta^{\rm v3}(C_3^aX),\qquad m=0,1,2 .
  \end{aligned}}
  \label{eq:outerc3}
 \end{equation}
-The three independently optimized sectors have the same 78,100 real
-parameters as no $M$; projection adds no trainable parameter.  Every raw
+The three independently optimized sectors have the same 78,124 real
+parameters as v3 no $M$; projection adds no trainable parameter. Every raw
 branch is a complete graph/determinant evaluation with shared parameters.
 
 Crucially, all stochastic quantities use Eq.~\eqref{eq:outerc3}, not one raw
@@ -434,24 +308,23 @@ pointwise. This distinction is recorded to make the initialization auditable.
 
 \begin{table}[H]
 \centering
-\caption{Trainable real parameter counts of the strict one-determinant
-implementation.}
+\caption{Trainable real parameter counts. The v3 no-$M$ and outer states use
+the $1\times12$ complex determinant mixer $M_S$.}
 \label{tab:strictparams}
 \resizebox{\columnwidth}{!}{%
-\begin{tabular}{@{}cccccc@{}}
+\begin{tabular}{@{}ccccc@{}}
 \toprule
-filling & $N_e$ & full $M$ & no $M$, $\Gamma$ & internal C3 & outer $P_m$\\
+filling & $N_e$ & full $M$ & no $M$+$M_S$, $\Gamma$ & outer $P_m$+$M_S$\\
 \midrule
-$1/3$ & 3 & 78,154 & 78,100 & 78,100 & 78,100\\
-$2/3$ & 6 & 78,208 & 78,100 & 78,100 & 78,100\\
+$1/3$ & 3 & 78,154 & 78,124 & 78,124\\
+$2/3$ & 6 & 78,208 & 78,124 & 78,124\\
 \bottomrule
 \end{tabular}
 }
 \end{table}
-The difference is exactly $2N_eN_k$ real parameters for the complex
-$N_e\times9$ matrix $M$. The internal Reynolds average and the external
-$P_m$ projector share the raw no-$M$ parameters among all three rotated
-branches, so neither symmetry construction adds a trainable parameter.
+Relative to v2 no-$M$, $M_S\in\mathbb C^{1\times12}$ adds 24 real parameters.
+The external $P_m$ projector shares the same raw parameters among all three
+rotated branches and adds no trainable parameter.
 
 \section{Hamiltonian and local-energy estimator}
 
@@ -665,28 +538,20 @@ A one-update end-to-end smoke test also passed MCMC, local-energy evaluation,
 truncated SR, residual recording, parameter update, and checkpoint writing.
 These checks validate implementation consistency, not physical convergence.
 
-\section{Controlled baseline and C3-QNS experiments}
+\section{Controlled v3 sector-mixer experiments}
 
-Four baseline jobs were trained from independent random walker ensembles with
-the same protocol. Full $M$ has a dense trainable complex momentum matrix and
-therefore mixes many-body momentum sectors; no $M$ removes this matrix and uses
-a fixed orbital set with total momentum $\Gamma$. A fifth job adds internally
-equivariant C3-QNS at $\nu=1/3$. It was stopped at accepted update 116 after
-the requested plateau check. Table~\ref{tab:adaptive-runs} lists the result
-directories; the frozen C3 checkpoint is
-\texttt{jax\_neural\_bloch\_step\_0116.npz}.
-Three additional $\nu=1/3$ jobs use the unrestricted no-$M$ raw network with
-the complete-wavefunction projector $P_m$, $m=0,1,2$. Each completed 120
-updates with 4,128 persistent walkers. The identical three-sector protocol
-was subsequently run at $\nu=2/3$. Sectors are optimized independently after
-the common initialization; their public ordering uses the final-ten training
-mean. All frozen outer-projected checkpoints are
-\texttt{jax\_neural\_bloch\_step\_0120.npz}.
+The historical full-$M$ jobs provide the unrestricted baseline.  The two v3
+no-$M$ jobs train $M_S$ for 120 updates with 4,128 persistent walkers.  For
+each filling, outer-$C_3$ first performs 20 shared raw-state updates, copies
+only the learned parameters into three fresh chains, and then performs 100
+projected updates independently for $m=0,1,2$.  Walker and optimizer states
+are not shared between branches.  Public sector ordering uses the final-ten
+training mean.
 
 \begin{table}[H]
 \centering
-\caption{Authoritative calculations used in this report. C3-QNS was
-stopped at update 116; the four baselines and six outer sectors completed 120 updates.}
+\caption{Authoritative v3 calculations used in this report. Outer branches
+use 20 shared raw updates followed by 100 independently sampled projected updates.}
 \label{tab:adaptive-runs}
 \resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}llll@{}}
@@ -694,16 +559,15 @@ stopped at update 116; the four baselines and six outer sectors completed 120 up
 $\nu$ & ansatz & $\bm K_{\rm tot}$ & result-directory suffix\\
 \midrule
 $1/3$ & full $M$ & mixed & \texttt{adaptive\_cg120\_20260821\_full\_m\_nu1of3}\\
-$1/3$ & no $M$ & $\Gamma$ & \texttt{adaptive\_cg120\_20260821\_no\_m\_gamma\_nu1of3}\\
-$1/3$ & C3-QNS & $\Gamma$, $m=0$ & \texttt{c3\_qns\_adaptive120\_nu1of3}\\
-$1/3$ & outer $P_0$ & $\Gamma$, $m=0$ & \texttt{outer\_c3\_projector\_nu1of3\_120/m0}\\
-$1/3$ & outer $P_1$ & $\Gamma$, $m=1$ & \texttt{outer\_c3\_projector\_nu1of3\_120/m1}\\
-$1/3$ & outer $P_2$ & $\Gamma$, $m=2$ & \texttt{outer\_c3\_projector\_nu1of3\_120/m2}\\
-$2/3$ & outer $P_0$ & $\Gamma$, $m=0$ & \texttt{outer\_c3\_projector\_nu2of3\_120/p0}\\
-$2/3$ & outer $P_1$ & $\Gamma$, $m=1$ & \texttt{outer\_c3\_projector\_nu2of3\_120/p1}\\
-$2/3$ & outer $P_2$ & $\Gamma$, $m=2$ & \texttt{outer\_c3\_projector\_nu2of3\_120/p2}\\
+$1/3$ & no $M$+$M_S$ & $\Gamma$ & \texttt{sector\_mixer\_v3/no\_m/nu1of3}\\
+$1/3$ & outer $P_0$+$M_S$ & $\Gamma$, $m=0$ & \texttt{sector\_mixer\_v3/outer\_c3/nu1of3/m0}\\
+$1/3$ & outer $P_1$+$M_S$ & $\Gamma$, $m=1$ & \texttt{sector\_mixer\_v3/outer\_c3/nu1of3/m1}\\
+$1/3$ & outer $P_2$+$M_S$ & $\Gamma$, $m=2$ & \texttt{sector\_mixer\_v3/outer\_c3/nu1of3/m2}\\
+$2/3$ & outer $P_0$+$M_S$ & $\Gamma$, $m=0$ & \texttt{sector\_mixer\_v3/outer\_c3/nu2of3/m0}\\
+$2/3$ & outer $P_1$+$M_S$ & $\Gamma$, $m=1$ & \texttt{sector\_mixer\_v3/outer\_c3/nu2of3/m1}\\
+$2/3$ & outer $P_2$+$M_S$ & $\Gamma$, $m=2$ & \texttt{sector\_mixer\_v3/outer\_c3/nu2of3/m2}\\
 $2/3$ & full $M$ & mixed & \texttt{adaptive\_cg120\_20260821\_full\_m\_nu2of3}\\
-$2/3$ & no $M$ & $\Gamma$ & \texttt{adaptive\_cg120\_20260821\_no\_m\_gamma\_nu2of3}\\
+$2/3$ & no $M$+$M_S$ & $\Gamma$ & \texttt{sector\_mixer\_v3/no\_m/nu2of3}\\
 \bottomrule
 \end{tabular}%
 }
@@ -712,15 +576,12 @@ $2/3$ & no $M$ & $\Gamma$ & \texttt{adaptive\_cg120\_20260821\_no\_m\_gamma\_nu2
 \subsection{Training-chain diagnostics}
 
 Table~\ref{tab:adaptive-training} summarizes the final ten attempted updates
-for each frozen trace (steps 107--116 for C3-QNS).
+for each frozen trace.
 The mean and RMS describe the persistent training chain and are not independent
 energy estimates.  A rejected update contributes its sampled local energy to
-the diagnostic trace but leaves the parameters unchanged.  The two
-$\nu=1/3$ jobs never activated the rejection rule.  At $\nu=2/3$, both jobs
-rejected 19 of 120 attempted updates; the final full-$M$ attempt was rejected
-because $r_{\rm rel}^{\rm true}=0.0512$ exceeded the 0.05 cap.  The saved
-step-120 checkpoint therefore contains the parameters after the last accepted
-update, not the rejected direction.
+the diagnostic trace but leaves the parameters unchanged. All three v3
+$\nu=1/3$ outer branches accepted every update. At $\nu=2/3$, the v3 outer
+$P_0,P_1,P_2$ branches accumulated 0, 5 and 0 rejected updates, respectively.
 
 \begin{table}[H]
 \centering
@@ -734,35 +595,26 @@ $\nu$ & ansatz & $\langle E/N_e\rangle$ & min. $E/N_e$ & RMS &
 $\langle r_{\rm rel}\rangle$ & $\langle N_{\rm CG}\rangle$ & reject$_{120}$\\
 \midrule
 $1/3$ & full $M$ & $-35.9952$ & $-36.0866$ & 0.0434 & 0.0183 & 48.0 & 0\\
-$1/3$ & no $M$, $\Gamma$ & $-36.7708$ & $-36.9023$ & 0.0592 & 0.0201 & 56.7 & 0\\
-$1/3$ & C3-QNS, $\Gamma$ & $-37.1749$ & $-37.2188$ & 0.0287 & 0.0163 & 37.7 & 0\\
-$1/3$ & outer $P_0$ & $-37.1660$ & $-37.2401$ & 0.0532 & 0.0187 & 34.1 & 0\\
-$1/3$ & outer $P_1$ & $-32.6293$ & $-32.6686$ & 0.0319 & 0.0181 & 50.5 & 0\\
-$1/3$ & outer $P_2$ & $-35.9573$ & $-36.0274$ & 0.0371 & 0.0179 & 48.4 & 0\\
-$2/3$ & outer $P_0$ & $-52.4662$ & $-52.5856$ & 0.0484 & 0.0745 & 50.8 & 17\\
-$2/3$ & outer $P_1$ & $-51.5899$ & $-51.7154$ & 0.0805 & 0.0385 & 55.6 & 23\\
-$2/3$ & outer $P_2$ & $-52.7891$ & $-52.8479$ & 0.0581 & 0.0202 & 53.4 & 8\\
+$1/3$ & no $M$+$M_S$, $\Gamma$ & $-37.3902$ & $-37.4468$ & 0.0287 & 0.0176 & 31.9 & 0\\
+$1/3$ & outer $P_0$+$M_S$ & $-37.3458$ & $-37.4276$ & 0.0516 & 0.0155 & 20.8 & 0\\
+$1/3$ & outer $P_1$+$M_S$ & $-32.4638$ & $-32.5541$ & 0.0570 & 0.0169 & 43.2 & 0\\
+$1/3$ & outer $P_2$+$M_S$ & $-36.0804$ & $-36.1597$ & 0.0465 & 0.0147 & 26.9 & 0\\
+$2/3$ & outer $P_0$+$M_S$ & $-52.5241$ & $-52.5965$ & 0.0620 & 0.0179 & 39.8 & 0\\
+$2/3$ & outer $P_1$+$M_S$ & $-51.5901$ & $-51.6787$ & 0.0678 & 0.0179 & 48.2 & 5\\
+$2/3$ & outer $P_2$+$M_S$ & $-52.8211$ & $-52.9017$ & 0.0477 & 0.0171 & 38.7 & 0\\
 $2/3$ & full $M$ & $-52.0575$ & $-52.1563$ & 0.0817 & 0.0371 & 54.5 & 19\\
-$2/3$ & no $M$, $\Gamma$ & $-52.4147$ & $-52.4842$ & 0.0578 & 0.0397 & 54.9 & 19\\
+$2/3$ & no $M$+$M_S$, $\Gamma$ & $-52.7841$ & $-52.8535$ & 0.0394 & 0.0253 & 58.5 & 4\\
 \bottomrule
 \end{tabular}%
 }
 \end{table}
-The final-ten mean position/layer acceptances are 0.681/0.592,
-0.669/0.618 and 0.672/0.643 for the $\nu=1/3$ full-$M$, no-$M$ and C3-QNS
-states, and 0.651/0.604 and 0.660/0.632 at $\nu=2/3$. The corresponding
-final-ten local-energy variances are 118.0, 104.5, 90.2, 701.0 and
-$718.3~\mathrm{meV}^2$. Thus a smooth energy trace does not establish a
+The v3 no-$M$ final-ten position/layer acceptances are 0.674/0.637 and
+0.656/0.611 at $\nu=1/3$ and $2/3$.  At $\nu=1/3$, outer $P_0,P_1,P_2$
+give 0.676/0.628, 0.696/0.594 and 0.678/0.537, with mean local-energy
+variances 53.2, 114.3 and $72.4~\mathrm{meV}^2$.  At $\nu=2/3$, the
+$P_0,P_1,P_2$ tails give 0.653/0.608, 0.660/0.621 and 0.650/0.613, with
+variances 690.5, 725.7 and $667.6~\mathrm{meV}^2$. Thus a smooth energy trace does not establish a
 zero-variance eigenstate.
-
-At $\nu=2/3$, outer $P_0,P_1,P_2$ have final-ten position/layer
-acceptances 0.651/0.622, 0.663/0.641 and 0.654/0.624, with mean variances
-681.3, 703.9 and $684.8~\mathrm{meV}^2$. Their cumulative rejected-update
-counts are 17, 23 and 8, respectively.
-For outer $P_0,P_1,P_2$, the corresponding final-ten position/layer
-acceptances are 0.671/0.633, 0.695/0.584 and 0.671/0.526; the mean variances
-are 77.7, 120.2 and $99.2~\mathrm{meV}^2$.  All three outer runs accepted all
-120 updates.
 
 \subsection{Training-tail comparison}
 
@@ -771,19 +623,17 @@ comparison now uses the equilibrated persistent training ensemble.  For each
 trace we average the final ten measurements and quote their RMS fluctuation;
 the RMS is a correlated training-chain stability diagnostic, not an
 independent standard error.  Among the three outer sectors, $P_0$ is lowest at
-$\nu=1/3$, with $\langle E/N_e\rangle_{\rm tail}=-37.1660$ meV and
-$\Delta E_{\rm 5b}=+0.2272$ meV.  At $\nu=2/3$, $P_2$ is lowest, with
-$\langle E/N_e\rangle_{\rm tail}=-52.7891$ meV and
-$\Delta E_{\rm 5b}=-0.0636$ meV.  The latter is an optimization-chain result,
+$\nu=1/3$, with $\langle E/N_e\rangle_{\rm tail}=-37.3458$ meV and
+$\Delta E_{\rm 5b}=+0.0474$ meV.  At $\nu=2/3$, $P_2$ is lowest, with
+$\langle E/N_e\rangle_{\rm tail}=-52.8211$ meV and
+$\Delta E_{\rm 5b}=-0.0956$ meV.  The latter is an optimization-chain result,
 not yet a multi-seed variational bound.
 
 Figure~\ref{fig:sector-summary} retains all three $m$ sectors outside Fig.~\ref{fig:nbresults}.
 Its upper row plots their final-ten energy offsets from the lowest sector; the
 lower row reports rejected parameter updates directly, replacing the black
 failure crosses formerly overlaid on the CG traces.
-At $\nu=1/3$, all displayed runs have zero rejected updates.  At $\nu=2/3$,
-full $M$, no $M$ and the selected outer $P_2$ have respectively 19, 19 and
-8 rejected updates.  A rejected update leaves the parameters unchanged but
+At $\nu=1/3$, all displayed v3 runs have zero rejected updates. A rejected update leaves the parameters unchanged but
 its sampled local energy remains part of the diagnostic trace.
 % Preserve the established Fig. 6--7 numbering.
 \setcounter{figure}{5}
@@ -792,9 +642,8 @@ its sampled local energy remains part of the diagnostic trace.
 \includegraphics[width=\textwidth]{fig6_neural_bloch_results.pdf}
 \caption{\textbf{Controlled neural-Bloch optimization, multiband energy,
 band mixing and CG stability.} Top row: $\nu=1/3$; bottom row: $\nu=2/3$.
-Blue, red and green denote full $M$, no $M$ and internal C3-QNS; orange denotes
-the lowest final-ten outer sector, $P_0$ at $\nu=1/3$ and $P_2$ at $\nu=2/3$.
-Internal C3 exists only in the upper row and stops at update 116. (a,e)
+Blue and red denote full $M$ and v3 no $M$+$M_S$; orange denotes the lowest
+final-ten v3 outer sector, $P_0$ at $\nu=1/3$ and $P_2$ at $\nu=2/3$. (a,e)
 Persistent-walker training energies. (b,f) One- through five-band ED energies
 and final-ten training means; shaded widths are the corresponding RMS, not
 independent error bars. (c,g) Bare-band populations from the
@@ -813,9 +662,9 @@ separately in the text.}
 (a,b) Final-ten energy offsets of the externally projected $P_m$ states,
 measured from the lowest sector at each filling. Error bars are RMS
 fluctuations of the correlated training tail, not independent standard errors.
-At $\nu=1/3$, $m=0$ is selected, while $m=1,2$ lie 4.537 and 1.209 meV per
+At $\nu=1/3$, $m=0$ is selected, while $m=1,2$ lie 4.882 and 1.265 meV per
 particle higher. At $\nu=2/3$, $m=2$ is selected, with $m=0,1$ higher by
-0.323 and 1.199 meV per particle. The smaller spread at $\nu=2/3$ is
+0.297 and 1.231 meV per particle. The smaller spread at $\nu=2/3$ is
 compatible with, but does not establish, the expected quasi-degenerate FCI
 manifold. (c,d) Cumulative rejected parameter updates for the methods retained
 in Fig.~\ref{fig:nbresults}; rejection concerns an optimizer step, not a Monte
@@ -825,8 +674,9 @@ Carlo configuration.}
 
 \section{Post-training one- and two-body observables}
 
-Figures~\ref{fig:nbobservables13} and \ref{fig:nbobservables23} display all
-three externally projected sectors. At $\nu=1/3$, the first row is the
+Figure~\ref{fig:nbobservables-baseline} compares full-$M$ and v3 no-$M$+$M_S$
+at both fillings. Figures~\ref{fig:nbobservables13} and
+\ref{fig:nbobservables23} display all three externally projected sectors. At $\nu=1/3$, the first row is the
 training-energy minimum $P_0$ and is the selected out-$C_3$ result; $P_1$ and
 $P_2$ are retained only for a controlled sector comparison. At $\nu=2/3$,
 $P_2$ is the corresponding minimum. The panels are regenerated from the
@@ -849,7 +699,8 @@ For $a=(n,\bm k)$ and $b=(m,\bm q)$, the estimator is
 The factor two accounts for uniform auxiliary sampling of the two layers.  In
 every ratio, replacing one particle triggers a complete new ansatz call: the
 code rebuilds the graph and recomputes all particles' $\delta\bm r_j$,
-$J_{\bm k j}$, the optional $M Q$ contraction and the determinant.  The
+$J_{\bm k j}$, and either the $M Q$ determinant or all $M_S$-weighted sector
+minors. The
 projector is instead the fixed bare function
 \begin{equation}
  \phi^0_{n\bm k}(\bm r,l)=\sum_{\bm G}u^l_{n\bm k\bm G}
@@ -876,34 +727,36 @@ weights use the exact five-band one-body density matrix.}
 $\nu$ & state & trace & $W_1$ & $W_2$ & $W_3$ & $W_4$ & $W_5$ & min eig.\\
 \midrule
 $1/3$ & five-band ED & $3$ & 96.47 & 2.95 & 0.52 & 0.05 & 0.01 & ---\\
-$1/3$ & outer $P_0$ & $2.951(104)$ & $94.77(1.29)$ & $3.39(1.15)$ & $1.68(64)$ & $-0.33(1.43)$ & $-1.12(1.09)$ & $-0.189$\\
-$1/3$ & outer $P_1$ & $3.071(75)$ & $81.15(1.09)$ & $16.91(82)$ & $2.41(72)$ & $1.21(1.28)$ & $0.69(99)$ & $-0.104$\\
-$1/3$ & outer $P_2$ & $2.998(117)$ & $94.25(79)$ & $5.66(1.87)$ & $0.42(1.06)$ & $-0.01(83)$ & $-0.37(55)$ & $-0.125$\\
+$1/3$ & no $M$+$M_S$ & $2.890(98)$ & $95.53(86)$ & $2.75(1.27)$ & $-1.57(89)$ & $0.16(56)$ & $-0.53(82)$ & $-0.084$\\
+$1/3$ & outer $P_0$+$M_S$ & $3.077(105)$ & $97.18(96)$ & $4.70(87)$ & $0.25(1.13)$ & $-0.37(1.17)$ & $0.79(1.41)$ & $-0.080$\\
+$1/3$ & outer $P_1$+$M_S$ & $3.019(67)$ & $83.34(95)$ & $14.99(42)$ & $1.57(89)$ & $0.96(91)$ & $-0.23(73)$ & $-0.098$\\
+$1/3$ & outer $P_2$+$M_S$ & $2.917(95)$ & $96.73(1.13)$ & $1.76(1.52)$ & $-1.36(1.95)$ & $0.76(58)$ & $-0.68(88)$ & $-0.142$\\
 \midrule
 $2/3$ & five-band ED & $6$ & 88.95 & 7.59 & 2.53 & 0.76 & 0.16 & ---\\
-$2/3$ & outer $P_0$ & $5.894(130)$ & $88.68(1.16)$ & $7.60(98)$ & $1.56(92)$ & $0.86(1.27)$ & $-0.47(88)$ & $-0.175$\\
-$2/3$ & outer $P_1$ & $5.898(138)$ & $87.74(1.11)$ & $7.70(1.05)$ & $2.35(1.94)$ & $2.06(33)$ & $-1.55(92)$ & $-0.235$\\
-$2/3$ & outer $P_2$ & $6.144(77)$ & $90.21(1.20)$ & $8.32(72)$ & $3.75(85)$ & $0.45(78)$ & $-0.33(95)$ & $-0.281$\\
+$2/3$ & no $M$+$M_S$ & $5.894(113)$ & $89.03(74)$ & $6.19(1.11)$ & $1.21(89)$ & $0.80(1.08)$ & $1.01(95)$ & $-0.196$\\
+$2/3$ & outer $P_0$+$M_S$ & $6.280(109)$ & $91.93(74)$ & $7.28(1.02)$ & $3.05(75)$ & $1.79(80)$ & $0.61(1.35)$ & $-0.169$\\
+$2/3$ & outer $P_1$+$M_S$ & $5.879(140)$ & $86.97(95)$ & $7.98(79)$ & $1.94(1.49)$ & $0.83(1.25)$ & $0.27(72)$ & $-0.318$\\
+$2/3$ & outer $P_2$+$M_S$ & $5.853(214)$ & $90.19(1.63)$ & $5.13(1.57)$ & $1.21(1.10)$ & $-0.32(77)$ & $1.33(1.14)$ & $-0.354$\\
 \bottomrule
 \end{tabular}%
 }
 \end{table}
-The projected traces are compatible with $N_e$ at the stated precision, but
+Most projected traces are compatible with $N_e$ at the stated precision, but
 the matrices are only Hermitized, not projected onto the positive-semidefinite
-cone.  Their minimum eigenvalues from $-0.104$ to $-0.281$ therefore forbid a
+cone. Their negative minimum eigenvalues therefore forbid a
 stable natural-orbital eigenspace interpretation.  The diagonal band
 populations are more robust and reveal a real sector dependence.  At
-$\nu=1/3$, $P_0$ and $P_2$ retain 94--95\% band-1 weight, whereas $P_1$ has
-only $81.15(1.09)\%$ and transfers $16.91(82)\%$ to band 2; five-band ED has
+$\nu=1/3$, $P_0$ and $P_2$ retain about 97\% band-1 weight, whereas $P_1$ has
+$83.34(95)\%$ and transfers $14.99(42)\%$ to band 2; five-band ED has
 $W_1=96.47\%$ and $W_2=2.95\%$.  At $\nu=2/3$, all three sectors are closer
 to the ED distribution $(88.95,7.59,2.53,0.76,0.16)\%$; the lowest-training
-$P_2$ gives $(90.21,8.32,3.75,0.45,-0.33)\%$, with the final negative entry
+$P_2$ gives $(90.19,5.13,1.21,-0.32,1.33)\%$. Small negative entries remain
 consistent with auxiliary-coordinate noise.
 
 The estimator now caches $\Psi_m(X)$ once per configuration block and jointly
 batches all 16 replacement coordinates.  Each replacement still rebuilds the
-complete graph, all $\delta\bm r_j$, $J$, the projected three-branch
-determinant and the wavefunction ratio.  A 128-configuration, four-draw probe
+complete graph, all $\delta\bm r_j$, $J$, the $M_S$ determinant mixture,
+the projected three-branch sum and the wavefunction ratio. A 128-configuration, four-draw probe
 takes 3.0 seconds; running two 32-thread jobs concurrently completes all six
 4,128-by-16 sector measurements in three batches instead of repeating the
 former nested small-call path.
@@ -928,15 +781,15 @@ reconstructed from the 1-RDM:
 \end{align}
 The ED comparison uses $S_{\rm full}$ with the same normalization.  At
 $\nu=1/3$, outer $P_0,P_1,P_2$ give maximum nonzero-momentum
-$S_{\rm full}=1.5154(78),1.1285(144),1.2863(192)$, respectively, compared
+$S_{\rm full}=1.4845(131),1.1205(120),1.2687(126)$, respectively, compared
 with the five-band ED value 1.4381.  At $\nu=2/3$ the corresponding values are
-$0.7662(85),0.6778(76),0.7124(99)$, compared with ED 0.6197.  The sector
+$0.7585(51),0.6944(145),0.7059(101)$, compared with ED 0.6197.  The sector
 dependence is therefore visible in both the 1-RDM and the genuine two-body
 observable; it is not a plotting artifact.
 
 For $m=0,1,2$, the largest nonzero-$q$ density amplitudes are
-$0.0126(38),0.0136(30),0.0113(25)$ at $\nu=1/3$ and
-$0.00755(256),0.00797(285),0.00412(200)$ at $\nu=2/3$.  These small values
+$0.00385(418),0.00895(399),0.01527(465)$ at $\nu=1/3$ and
+$0.00322(242),0.00240(361),0.00580(197)$ at $\nu=2/3$.  These small values
 show negligible static translation-breaking expectation at the sampled
 reciprocal vectors; the large $S_{\rm full}$ peaks are density fluctuations.
 The real-space panels in Figs.~\ref{fig:nbobservables13} and
@@ -946,10 +799,21 @@ contrast alone.
 
 \begin{figure*}[t]
 \centering
+\includegraphics[width=.98\textwidth]{fig7_neural_bloch_observables.pdf}
+\caption{\textbf{Full-$M$ and v3 no-$M$+$M_S$ observables.} The first two
+rows are $\nu=1/3$ and the last two are $\nu=2/3$; at each filling full $M$
+is followed by no $M$+$M_S$. Columns show bare-band-1 momentum occupation,
+the full static structure factor, and folded charge density. The v3 no-$M$
+panels use the newly evaluated 4,128-configuration final ensembles.}
+\label{fig:nbobservables-baseline}
+\end{figure*}
+
+\begin{figure*}[t]
+\centering
 \includegraphics[width=.98\textwidth]{fig7_neural_bloch_observables_nu1of3.pdf}
 \caption{\textbf{$\nu=1/3$ outer-sector observables from equilibrated
 training samples.} Rows are complete-wavefunction projectors $P_0,P_1,P_2$;
-the first row, $P_0$, is the selected out-$C_3$ state because it has the
+the first row, $P_0$, is explicitly marked as the selected outer-$C_3$ state because it has the
 lowest final-ten training energy.
 Columns show bare-band-1 momentum occupation from the complete-ratio 1-RDM,
 the full static structure factor with ED normalization on the complete
@@ -968,7 +832,8 @@ and global color limits as Fig.~\ref{fig:nbobservables13}.  All panels use
 4,128 configurations and 16 jointly batched auxiliary replacements per
 configuration.  The three sectors are shown separately because both their
 band populations and two-body structure factors differ beyond a simple
-identical-map interpretation.}
+identical-map interpretation. The $P_2$ row is marked as the lowest
+final-ten-energy sector.}
 \label{fig:nbobservables23}
 \end{figure*}
 
@@ -979,27 +844,22 @@ fixed mean-field band-1 plane-wave coefficients, periodic node and edge
 features, trainable random auxiliary features, two unshared width-32 message
 iterations with the literal self-inclusive $\sum_jm_{ij}$, coordinate
 backflow, direct complex $J_{\bm k i}$ applied exactly once, and one final
-generalized Slater determinant. Full $M$ mixes momentum sectors, whereas no
-$M$ uses a fixed total-$\Gamma$ orbital set.
+generalized Slater construction. Full $M$ mixes momenta at the single-particle
+level and therefore generally mixes total-momentum sectors. Version 3 no-$M$
+instead uses $M_S\in\mathbb C^{1\times12}$ to combine all and only the
+selected-momentum determinants in the exact total-$\Gamma$ sector.
 
-C3-QNS adds an internally equivariant Reynolds-averaged backflow/orbital map,
-Bloch-sewing compensation at the dressed coordinate, and a tied sum of three
-$C_3$-related minors. The independent character test reaches a maximum
-residual $7.12\times10^{-5}$, verifying the intended $m=0$ symmetry. It is
-not an outer projection of an unrestricted determinant; it is a stronger
-internal inductive bias.
-The new outer construction instead leaves that raw network unrestricted and
-projects the complete generalized determinant with $P_m$.  Character and
+The outer construction leaves that raw network unrestricted and projects the
+complete $M_S$ determinant mixture with $P_m$. Character and
 projector-algebra residuals are below $6.4\times10^{-14}$ and
 $7.6\times10^{-15}$, all three projected norms are nonzero, and local energy,
 Metropolis ratios and SR derivatives all use the projected state.  It adds no
-trainable parameter to the 78,100-parameter no-$M$ model.
+trainable parameter to the 78,124-parameter v3 no-$M$ model.
 
-On the final-ten training tail, internal C3-QNS is lowest among the
-$\nu=1/3$ curves at $-37.1749$ meV per particle, while outer $P_0$ is the
-lowest of the three complete-wavefunction sectors at $-37.1660$ meV.  Both
-remain about 0.22 meV above five-band ED.  At $\nu=2/3$, outer $P_2$ is the
-lowest training sector at $-52.7891$ meV per particle, 0.0636 meV below the
+On the final-ten training tail, v3 no-$M$ reaches $-37.3902$ meV per particle
+at $\nu=1/3$, while outer $P_0$ is the lowest of the three projected sectors
+at $-37.3458$ meV. At $\nu=2/3$, v3 no-$M$ reaches $-52.7841$ meV and outer
+$P_2$ is the lowest training sector at $-52.8211$ meV, 0.0956 meV below the
 five-band ED benchmark.  This promising crossing is a correlated,
 single-seed optimization-chain result and is not promoted to an independent
 variational bound.
@@ -1013,6 +873,4 @@ determinant.
 The complete-ratio 1-RDM and direct two-body structure factors remain useful
 diagnostics, but their non-PSD noise and the single-seed finite optimization
 preclude a natural-orbital or topological claim. The next controlled tests are
-longer, multi-seed outer-$P_0$ optimization, sector-selection replication,
-and generalized-orbital-subspace equivariance without forcing
-every displacement field to transform independently.
+longer multi-seed optimization and sector-selection replication.

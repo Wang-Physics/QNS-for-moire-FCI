@@ -13,7 +13,7 @@ import torch
 
 from .c3_symmetry import rotate_fock_state, single_particle_c3
 from .continuum_vmc import ContinuumTorusHamiltonian
-from .neural_bloch import NeuralBlochConfig
+from .neural_bloch import NeuralBlochConfig, momentum_sector_combinations
 from .run_neural_bloch import neural_bloch_inputs
 
 
@@ -184,7 +184,12 @@ def _unprojected_determinant_values(parameters, positions, layers, constants, sp
             values.append(jnp.sum(jnp.stack(orbit_values), axis=0) / 3.0)
             continue
         if spec.fixed_gamma_no_m:
-            generalized = q_matrix[:, constants["fixed_momentum_indices"], :]
+            matrices = q_matrix[:, constants["gamma_sector_indices"], :]
+            determinants = jnp.linalg.det(matrices)
+            mixing = (parameters["sector_mixing_real"][index]
+                      + 1j * parameters["sector_mixing_imag"][index])
+            values.append(jnp.einsum("m,bm->b", mixing, determinants))
+            continue
         else:
             mixing = (
                 parameters["momentum_real"][index]
@@ -403,6 +408,9 @@ def initialize(spec: JaxNeuralBlochSpec, seed: int = 83):
         np.asarray(inputs["one_body_energies"]),
         np.asarray(inputs["momentum_fractions"]), spec.n_particles,
     )
+    gamma_sector_indices = momentum_sector_combinations(
+        np.asarray(inputs["momentum_fractions"]), spec.n_particles
+    )
     if not spec.fixed_gamma_no_m:
         # M is complex LeCunNormal.  Each real component has half of the
         # LeCun variance so E|M_{gamma k}|^2 = 1 / N_k.  Luo--Fu specify
@@ -418,6 +426,15 @@ def initialize(spec: JaxNeuralBlochSpec, seed: int = 83):
         ).T.reshape(spec.determinants, spec.n_particles, 9) / jnp.sqrt(2.0)
         parameters["momentum_real"] = momentum_real
         parameters["momentum_imag"] = momentum_imag
+    else:
+        key, real_key, imag_key = jax.random.split(key, 3)
+        shape = (len(gamma_sector_indices), spec.determinants)
+        parameters["sector_mixing_real"] = initializer(
+            real_key, shape, jnp.float64
+        ).T / jnp.sqrt(2.0)
+        parameters["sector_mixing_imag"] = initializer(
+            imag_key, shape, jnp.float64
+        ).T / jnp.sqrt(2.0)
     b1, b2 = continuum.b1, continuum.b2
     angle = -2.0 * np.pi / 3.0
     cartesian_rotation = np.asarray([
@@ -492,6 +509,7 @@ def initialize(spec: JaxNeuralBlochSpec, seed: int = 83):
         "c3_orbit_indices": jnp.asarray(orbit_indices, dtype=jnp.int32),
         "c3_orbit_weights": jnp.asarray(orbit_weights),
         "fixed_momentum_indices": jnp.asarray(selected, dtype=jnp.int32),
+        "gamma_sector_indices": jnp.asarray(gamma_sector_indices, dtype=jnp.int32),
         "node_directions": jnp.asarray(np.stack([b1, b2, b1 + b2])),
         "potential_directions": jnp.asarray(np.stack([b1, b2, -(b1 + b2)])),
         "moire_phase": jnp.asarray(np.deg2rad(continuum.params.phase_deg)),
@@ -545,6 +563,11 @@ def from_torch(wavefunction):
         parameters["momentum_imag"] = jnp.asarray(
             wavefunction.momentum_imag.detach().numpy()
         )
+    if wavefunction.sector_mixing_real is not None:
+        parameters["sector_mixing_real"] = jnp.asarray(
+            wavefunction.sector_mixing_real.detach().numpy())
+        parameters["sector_mixing_imag"] = jnp.asarray(
+            wavefunction.sector_mixing_imag.detach().numpy())
     return parameters
 
 
@@ -581,6 +604,11 @@ def copy_to_torch(parameters, wavefunction):
             wavefunction.momentum_imag.copy_(
                 torch.as_tensor(np.array(parameters["momentum_imag"], copy=True))
             )
+        if wavefunction.sector_mixing_real is not None:
+            wavefunction.sector_mixing_real.copy_(torch.as_tensor(
+                np.array(parameters["sector_mixing_real"], copy=True)))
+            wavefunction.sector_mixing_imag.copy_(torch.as_tensor(
+                np.array(parameters["sector_mixing_imag"], copy=True)))
         wavefunction.determinant_logits.zero_()
     wavefunction.reference_fast_path = False
     return wavefunction

@@ -417,6 +417,16 @@ def run(args):
         and args.steps >= 200
     )
     allowed_adaptive_120 = args.adaptive_cg_120_step and args.steps == 120
+    allowed_outer_shared_20 = (
+        args.outer_shared_pretrain_20 and args.steps == 20
+        and args.fixed_gamma_no_m and not args.outer_c3_projector
+        and args.parameter_init is None and args.resume is None
+    )
+    allowed_outer_branch_100 = (
+        args.outer_branch_100 and args.steps == 100
+        and args.fixed_gamma_no_m and args.outer_c3_projector
+        and args.parameter_init is not None and args.resume is None
+    )
     if (
         args.steps != 1000
         and not args.smoke_test
@@ -424,11 +434,14 @@ def run(args):
         and not allowed_additional_100_steps
         and not allowed_checkpoint_continuation
         and not allowed_adaptive_120
+        and not allowed_outer_shared_20
+        and not allowed_outer_branch_100
     ):
         raise ValueError(
             "use 1000 paper-target updates, --exploratory-100-step with --steps 100, "
             "--exploratory-additional-100-step with a step-100 --resume and --steps 200, "
-            "or --adaptive-cg-120-step with --steps 120 from a fresh initialization"
+            "--adaptive-cg-120-step with --steps 120, or the explicit outer-C3 "
+            "shared-20/branch-100 protocols"
         )
     if abs(args.learning_rate - 2.0e-3) > 1.0e-15 and not args.smoke_test:
         raise ValueError("paper-protocol learning rate is 2e-3")
@@ -444,7 +457,7 @@ def run(args):
         raise ValueError("production outer C3 sector scan requires --fixed-gamma-no-m")
     if args.samples % args.sr_chunk:
         raise ValueError("samples must be divisible by sr_chunk")
-    if args.adaptive_cg_120_step:
+    if args.adaptive_cg_120_step or allowed_outer_shared_20 or allowed_outer_branch_100:
         if args.cg_min_iterations != 20 or args.cg_max_iterations != 60:
             raise ValueError("adaptive protocol requires CG min/max = 20/60")
         if abs(args.cg_true_tolerance - 0.02) > 1.0e-15:
@@ -477,6 +490,15 @@ def run(args):
     resume_layers = None
     resume_sampler_key = None
     resume_optimizer_state = None
+    if args.resume is not None and args.parameter_init is not None:
+        raise ValueError("--resume and --parameter-init are mutually exclusive")
+    if args.parameter_init is not None:
+        with np.load(args.parameter_init) as checkpoint:
+            loaded = np.asarray(checkpoint["flat_parameters"])
+        if loaded.shape != np.asarray(flat_parameters).shape:
+            raise ValueError("parameter-init checkpoint shape does not match")
+        flat_parameters = jnp.asarray(loaded)
+        parameters = natural_gradient.unravel(flat_parameters)
     if args.resume is not None:
         with np.load(args.resume) as checkpoint:
             loaded = np.asarray(checkpoint["flat_parameters"])
@@ -556,6 +578,11 @@ def run(args):
         "cg_iterations_unreported_by_paper": args.cg_iterations,
         "cg_tolerance_unreported_by_paper": args.cg_tolerance,
         "adaptive_cg_120_step": args.adaptive_cg_120_step,
+        "outer_shared_pretrain_20": args.outer_shared_pretrain_20,
+        "outer_branch_100": args.outer_branch_100,
+        "parameter_initialized_from": (
+            None if args.parameter_init is None else str(args.parameter_init)
+        ),
         "adaptive_cg": {
             "preconditioner": "none",
             "minimum_iterations": args.cg_min_iterations,
@@ -566,7 +593,7 @@ def run(args):
             "recovery_damping": args.recovery_damping,
             "recovery_learning_rate": args.recovery_learning_rate,
             "stable_steps_to_restore": args.recovery_stable_steps,
-        } if args.adaptive_cg_120_step else None,
+        } if (args.adaptive_cg_120_step or allowed_outer_shared_20 or allowed_outer_branch_100) else None,
         "validation_during_training": False,
         "smoke_test": args.smoke_test,
         "exploratory_100_step": args.exploratory_100_step,
@@ -656,7 +683,11 @@ def run(args):
             args.local_energy_batch,
         )
         natural_gradient.damping = current_damping
-        if args.adaptive_cg_120_step:
+        adaptive_protocol = (
+            args.adaptive_cg_120_step or allowed_outer_shared_20
+            or allowed_outer_branch_100
+        )
+        if adaptive_protocol:
             direction, diagnostics = natural_gradient.direction(
                 flat_parameters,
                 sampler.positions,
@@ -689,7 +720,7 @@ def run(args):
         else:
             rejected_updates += 1
 
-        if args.adaptive_cg_120_step:
+        if adaptive_protocol:
             (
                 recovery_mode,
                 recovery_stable_count,
@@ -749,7 +780,7 @@ def run(args):
                 },
                 sampler,
             )
-        if args.adaptive_cg_120_step and (step + 1) % 10 == 0:
+        if adaptive_protocol and (step + 1) % 10 == 0:
             print(json.dumps(_ten_step_progress(
                 trace, args.particles, rejected_updates,
                 current_learning_rate, current_damping,
@@ -800,6 +831,10 @@ def parser():
     result.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
     result.add_argument("--particles", type=int, default=6)
     result.add_argument("--resume", type=Path)
+    result.add_argument(
+        "--parameter-init", type=Path,
+        help="load only flat parameters; use fresh walkers and optimizer state",
+    )
     result.add_argument("--width", type=int, default=32)
     result.add_argument("--message-passing-steps", type=int, default=2)
     result.add_argument("--determinants", type=int, default=1)
@@ -847,6 +882,14 @@ def parser():
     result.add_argument("--checkpoint-interval", type=int, default=25)
     result.add_argument("--log-interval", type=int, default=5)
     result.add_argument("--seed", type=int, default=83)
+    result.add_argument(
+        "--outer-shared-pretrain-20", action="store_true",
+        help="outer-C3 lineage only: independent raw 20-step shared pretraining",
+    )
+    result.add_argument(
+        "--outer-branch-100", action="store_true",
+        help="outer-C3 lineage only: 100 projected steps from parameter-only init",
+    )
     result.add_argument(
         "--adaptive-cg-120-step",
         action="store_true",

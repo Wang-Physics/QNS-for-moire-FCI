@@ -1,6 +1,6 @@
 # QNS for moire FCI
 
-Version 2.0.0.
+Version 3 (sector-mixer revision).
 
 This project benchmarks the continuum model and multiband exact diagonalization (ED) of twisted MoTe2 against Luo, Zaklama, and Fu, [arXiv:2503.13585v3](https://arxiv.org/abs/2503.13585), then tests their continuous-coordinate Neural-Bloch variational ansatz at fillings `nu=1/3` and `nu=2/3`.
 
@@ -8,15 +8,20 @@ The current report is [`result/AI_for_Physics.pdf`](result/AI_for_Physics.pdf). 
 
 ## Current numerical result
 
-The controlled QNS comparison uses a `3 x 3` moire cluster, one generalized Slater determinant, width 32, two unshared message-passing iterations, 4,128 persistent walkers, and explicit true-CG-residual acceptance. Energies below are final-ten means of the equilibrated persistent training chain; the parenthesized RMS measures tail stability and is not an independent error bar.
+The controlled QNS comparison uses a `3 x 3` moire cluster, width 32, two
+unshared message-passing iterations, 4,128 persistent walkers, and explicit
+true-CG-residual acceptance. Version 3 adds a trainable complex determinant
+mixer `M_S`: it linearly combines all 12 selected-momentum determinants whose
+total momentum is `Gamma`. This is distinct from the full-`M` matrix, which
+mixes momenta at the one-particle orbital level. Energies below are final-ten
+means of the correlated persistent training chain; RMS measures tail stability.
 
 | filling | state | final-ten training `E/N_e` (meV) | five-band ED (meV) | difference (meV) |
 |---|---|---:|---:|---:|
-| `1/3` | no `M`, total momentum `Gamma` | `-36.7708 (0.0592)` | `-37.39323` | `+0.6224` |
-| `1/3` | internal C3-QNS, `m=0` | `-37.1749 (0.0287)` | `-37.39323` | `+0.2183` |
-| `1/3` | outer `P0` (lowest outer sector) | `-37.1660 (0.0532)` | `-37.39323` | `+0.2272` |
-| `2/3` | no `M`, total momentum `Gamma` | `-52.4147 (0.0578)` | `-52.72554` | `+0.3108` |
-| `2/3` | outer `P2` (lowest outer sector) | `-52.7891 (0.0581)` | `-52.72554` | `-0.0636` |
+| `1/3` | no `M` + `M_S`, `Gamma` | `-37.3902 (0.0287)` | `-37.39323` | `+0.0031` |
+| `1/3` | outer `P0` + `M_S` (lowest outer sector) | `-37.3458 (0.0516)` | `-37.39323` | `+0.0474` |
+| `2/3` | no `M` + `M_S`, `Gamma` | `-52.7841 (0.0394)` | `-52.72554` | `-0.0585` |
+| `2/3` | outer `P2` + `M_S` (lowest outer sector) | `-52.8211 (0.0477)` | `-52.72554` | `-0.0956` |
 
 All three outer characters remain available in the compact training traces. Fig. 6 shows only the lowest-training outer sector at each filling; a separate compact chart reports the full `m=0,1,2` tail-energy splitting and rejected-update counts. The complete-ratio 1-RDM estimator jointly batches all auxiliary replacements while recomputing the full projected wavefunction for every replacement.
 ## Repository layout
@@ -71,43 +76,11 @@ python -m src.run_jax_neural_bloch \
 
 Use `--particles 6` for `nu=2/3`; add `--fixed-gamma-no-m` for the no-`M` state. These are expensive CPU calculations. The paper's reported production setting is 1,000 optimization steps; the public benchmark here deliberately reports the completed 120-update audit.
 
-## C3-QNS extension
-
-`C3-QNS` keeps the no-`M`, fixed-total-`Gamma` construction but makes the
-backflow and orbital transformation internally equivariant. A Reynolds
-average evaluates the same message-passing network on `X`, `C3 X`, and
-`C3^2 X`; vector outputs are rotated back before averaging. The final wave
-function is a tied sum of the three C3-related Slater minors. Their relative
-coefficients are fixed by the one-band Bloch sewing phases and the requested
-many-body C3 character.
-
-The continuum Bloch sewing relation is evaluated at the dressed coordinate
-`r + delta_r`, while the physical layer gauge acts at `r`. The implementation
-therefore includes the analytic per-column compensation
-`exp(i b_l dot delta_r)`, with `(R^T-I)b_l=a_l`. Omitting this factor gives an
-order-one character error even when the raw displacement is equivariant.
-At the frozen step-116 checkpoint, 512 independent configurations give a maximum character residual `7.12e-5` (95th percentile `1.77e-5`). The Luo-Fu Fourier input encoding remains unchanged; it guarantees
-periodicity and primitive translation symmetry, but does not alone guarantee
-C3 equivariance.
-
-The frozen experiment in this release uses `nu=1/3` only:
-
-```bash
-python -m src.run_jax_neural_bloch \
-  --output-dir result/data/c3_qns_adaptive120_nu1of3 \
-  --particles 3 --fixed-gamma-no-m --c3-irrep 0 --c3-qns \
-  --samples 4128 --steps 120 --burn-sweeps 300 --sweeps-per-step 2 \
-  --wavefunction-batch 258 --local-energy-batch 32 --sr-chunk 258 \
-  --checkpoint-interval 10 --log-interval 10 --adaptive-cg-120-step
-```
-
-The implementation and JAX/PyTorch parity checks are in `tests/test_c3_qns.py`. The stopped run is evaluated from `jax_neural_bloch_step_0116.npz`; the report does not label it as a completed 120-update run.
-
 ## Complete-wavefunction outer C3 projection
 
-The new `outer_c3_projector` leaves the periodic no-`M` Luo--Fu network
+The `outer_c3_projector` leaves the periodic no-`M` + `M_S` Luo--Fu network
 internally unrestricted and applies `P_m=(1/3) sum_a omega^(-ma) C3^a` only
-to the complete generalized determinant. The physical `C3` action includes
+to the complete determinant mixture. The physical `C3` action includes
 the continuum layer-gauge sewing factor. Projected `logpsi` is the single
 source used by local energy, Metropolis ratios, and SR logarithmic derivatives.
 

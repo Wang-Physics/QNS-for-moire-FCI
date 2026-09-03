@@ -11,7 +11,6 @@ FILES={
  ('1/3','gamma'):DATA/'nu1of3_no_m_gamma.npz',
  ('1/3','outer1'):DATA/'nu1of3_outer_c3_p1.npz',
  ('1/3','outer2'):DATA/'nu1of3_outer_c3_p2.npz',
- ('1/3','c3'):DATA/'nu1of3_c3_qns.npz',
  ('1/3','outer'):DATA/'nu1of3_outer_c3_p0.npz',
  ('2/3','full'):DATA/'nu2of3_full_m.npz',
  ('2/3','gamma'):DATA/'nu2of3_no_m_gamma.npz',
@@ -38,13 +37,13 @@ def hexagon(ax,model):
 
 def make_combined():
  style(); model,_=neural_bloch_inputs(); loaded={key:np.load(path) for key,path in FILES.items()}
- rows=[('1/3','full',r'full $M$'),('1/3','gamma',r'no $M$, $\Gamma$'),
-       ('1/3','c3',r'internal C3, $\Gamma$'),('1/3','outer',r'outer $P_0$, $\Gamma$'),
-       ('2/3','full',r'full $M$'),('2/3','gamma',r'no $M$, $\Gamma$'),
-       ('2/3','outer0',r'outer $P_0$, $\Gamma$')]
+ rows=[('1/3','full',r'full $M$'),
+       ('1/3','gamma',r'no $M$ + $M_S$'),
+       ('2/3','full',r'full $M$'),
+       ('2/3','gamma',r'no $M$ + $M_S$')]
  smax=max(float(loaded[(f,b)]['charge_structure_factor_full'].max()) for f,b,_ in rows)
  rhoall=np.concatenate([loaded[(f,b)]['charge_density_over_mean'].ravel() for f,b,_ in rows]); rmin,rmax=np.percentile(rhoall,[1,99])
- fig,axs=plt.subplots(len(rows),3,figsize=(7.25,13.1),gridspec_kw={'width_ratios':[1,1,1.22]})
+ fig,axs=plt.subplots(len(rows),3,figsize=(7.25,8.0),gridspec_kw={'width_ratios':[1,1,1.22]})
  fig.subplots_adjust(left=.125,right=.94,bottom=.068,top=.965,wspace=.38,hspace=.22)
  arts=[None,None,None]
  for row,(filling,branch,method) in enumerate(rows):
@@ -73,7 +72,7 @@ def make_combined():
 
 def main():
  style(); model,_=neural_bloch_inputs(); loaded={key:np.load(path) for key,path in FILES.items()}
- groups={'1/3':[('outer',r'outer $P_0$ (selected)'),('outer1',r'outer $P_1$'),('outer2',r'outer $P_2$')],'2/3':[('outer0',r'outer $P_0$'),('outer1',r'outer $P_1$'),('outer2',r'outer $P_2$ (selected)')]}
+ groups={'1/3':[('outer',r'outer $P_0$ (lowest $E_{\rm tail}$)'),('outer1',r'outer $P_1$'),('outer2',r'outer $P_2$')],'2/3':[('outer0',r'outer $P_0$'),('outer1',r'outer $P_1$'),('outer2',r'outer $P_2$ (lowest $E_{\rm tail}$)')]}
  rows=[(f,b,m) for f,g in groups.items() for b,m in g]; smax=max(float(loaded[(f,b)]['charge_structure_factor_full'].max()) for f,b,_ in rows)
  rhoall=np.concatenate([loaded[(f,b)]['charge_density_over_mean'].ravel() for f,b,_ in rows]); rmin,rmax=np.percentile(rhoall,[1,99]); FIG.mkdir(parents=True,exist_ok=True)
  for filling,methods in groups.items():
@@ -95,4 +94,6 @@ def main():
    pos=axs[-1,j].get_position(); cax=fig.add_axes([pos.x0,.022,pos.width,.009]); cb=fig.colorbar(art,cax=cax,orientation='horizontal'); cb.set_ticks(ticks); cb.ax.tick_params(length=2,pad=1); cb.outline.set_linewidth(.55)
   suffix='nu1of3' if filling=='1/3' else 'nu2of3'; fig.savefig(FIG/f'fig7_neural_bloch_observables_{suffix}.pdf',bbox_inches='tight',pad_inches=.08); fig.savefig(FIG/f'fig7_neural_bloch_observables_{suffix}.png',bbox_inches='tight',pad_inches=.08); plt.close(fig)
 
-if __name__=='__main__': main()
+if __name__=='__main__':
+ make_combined()
+ main()

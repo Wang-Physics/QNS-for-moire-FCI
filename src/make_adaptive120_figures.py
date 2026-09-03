@@ -12,7 +12,6 @@ RELEASE=ROOT/'result'/'release_data'
 RUNS={
  ('1/3','full'):RELEASE/'traces'/'nu1of3_full_m.json',
  ('1/3','gamma'):RELEASE/'traces'/'nu1of3_no_m_gamma.json',
- ('1/3','c3'):RELEASE/'traces'/'nu1of3_c3_qns.json',
  ('1/3','outer'):RELEASE/'traces'/'nu1of3_outer_c3_p0.json',
  ('1/3','outer1'):RELEASE/'traces'/'nu1of3_outer_c3_p1.json',
  ('1/3','outer2'):RELEASE/'traces'/'nu1of3_outer_c3_p2.json',
@@ -24,16 +23,15 @@ RUNS={
 DIAG={
  ('1/3','full'):RELEASE/'diagnostics'/'nu1of3_full_m.npz',
  ('1/3','gamma'):RELEASE/'diagnostics'/'nu1of3_no_m_gamma.npz',
- ('1/3','c3'):RELEASE/'diagnostics'/'nu1of3_c3_qns.npz',
  ('1/3','outer'):RELEASE/'diagnostics'/'nu1of3_outer_c3_p0.npz',
  ('2/3','full'):RELEASE/'diagnostics'/'nu2of3_full_m.npz',
  ('2/3','gamma'):RELEASE/'diagnostics'/'nu2of3_no_m_gamma.npz',
  ('2/3','outer0'):RELEASE/'diagnostics'/'nu2of3_outer_c3_p0.npz',
  ('2/3','outer2'):RELEASE/'diagnostics'/'nu2of3_outer_c3_p2.npz'}
-BLUE='#28688C'; RED='#B5423A'; GREEN='#009E73'; ORANGE='#E69F00'; MAGENTA='#CC79A7'
+BLUE='#28688C'; RED='#B5423A'; ORANGE='#E69F00'; MAGENTA='#CC79A7'
 ED={'1/3':-37.3932329459257,'2/3':-52.72553897658505}
-COLOR={'full':BLUE,'gamma':RED,'c3':GREEN,'outer':ORANGE,'outer0':'#D55E00','outer1':'#7A5195','outer2':ORANGE}
-LINESTYLE={'full':'-','gamma':'-','c3':'-','outer':'-','outer0':(0,(3,1.5)),'outer1':(0,(1.2,1.2)),'outer2':(0,(5,1.5))}
+COLOR={'full':BLUE,'gamma':RED,'outer':ORANGE,'outer0':'#D55E00','outer1':'#7A5195','outer2':ORANGE}
+LINESTYLE={'full':'-','gamma':'-','outer':'-','outer0':(0,(3,1.5)),'outer1':(0,(1.2,1.2)),'outer2':(0,(5,1.5))}
 
 
 def style():
@@ -51,9 +49,9 @@ def ed_band_energies(filling):
 def main():
  style()
  fig,axs=plt.subplots(2,4,figsize=(7.25,4.45),gridspec_kw={'width_ratios':[1.18,1,1.05,1.12]})
- fig.subplots_adjust(left=.085,right=.99,bottom=.105,top=.84,wspace=.48,hspace=.43)
+ fig.subplots_adjust(left=.075,right=.99,bottom=.105,top=.84,wspace=.48,hspace=.43)
  for row,filling in enumerate(('1/3','2/3')):
-  branches=('full','gamma','c3','outer') if filling=='1/3' else ('full','gamma','outer2')
+  branches=('full','gamma','outer') if filling=='1/3' else ('full','gamma','outer2')
   traces={b:json.loads(RUNS[(filling,b)].read_text()) for b in branches}
 
   ax=axs[row,0]
@@ -79,8 +77,8 @@ def main():
 
   ax=axs[row,2]; z_gamma=np.load(DIAG[(filling,'gamma')]); x=np.arange(1,6)
   if filling=='1/3':
-   bar_branches=('full','gamma','c3','outer'); width=.15
-   offsets={'full':-2*width,'gamma':-width,'c3':0,'outer':width}; ed_offset=2*width
+   bar_branches=('full','gamma','outer'); width=.19
+   offsets={'full':-1.5*width,'gamma':-.5*width,'outer':.5*width}; ed_offset=1.5*width
   else:
    bar_branches=('full','gamma','outer2'); width=.19
    offsets={'full':-1.5*width,'gamma':-.5*width,'outer2':.5*width}; ed_offset=1.5*width
@@ -100,10 +98,8 @@ def main():
   ax.xaxis.set_major_locator(MaxNLocator(4,integer=True)); ax.set_xlabel('NG update'); ax.set_ylabel(r'true $r_{\rm rel}$')
 
  for j,t in enumerate(('optimization','multiband energy','bare-band weight','CG stability')): axs[0,j].set_title(t,pad=4)
- fig.text(.018,.61,r'$\nu=1/3$',rotation=90,ha='center',va='center',fontsize=8.5,fontweight='bold')
- fig.text(.018,.22,r'$\nu=2/3$',rotation=90,ha='center',va='center',fontsize=8.5,fontweight='bold')
- handles=[Line2D([0],[0],color='.22',marker='o',mfc=MAGENTA,mec='white',lw=.9,label='multiband ED'),Line2D([0],[0],color=BLUE,lw=1,label=r'full $M$'),Line2D([0],[0],color=RED,lw=1,label=r'no $M$'),Line2D([0],[0],color=GREEN,lw=1,label='internal C3'),Line2D([0],[0],color=ORANGE,lw=1,label=r'lowest-training outer $P_m$'),Patch(facecolor='#B9BEC1',label='5-band ED weight')]
- fig.legend(handles=handles,frameon=False,loc='upper center',ncol=6,bbox_to_anchor=(.54,.995),columnspacing=.85,handletextpad=.38,fontsize=6.4)
+ handles=[Line2D([0],[0],color='.22',marker='o',mfc=MAGENTA,mec='white',lw=.9,label='multiband ED'),Line2D([0],[0],color=BLUE,lw=1,label=r'full $M$'),Line2D([0],[0],color=RED,lw=1,label=r'no $M$ + $M_S$'),Line2D([0],[0],color=ORANGE,lw=1,label=r'lowest-training outer $P_m$'),Patch(facecolor='#B9BEC1',label='5-band ED weight')]
+ fig.legend(handles=handles,frameon=False,loc='upper center',ncol=5,bbox_to_anchor=(.54,.995),columnspacing=.95,handletextpad=.38,fontsize=6.4)
  for lab,ax in zip('abcdefgh',axs.flat):
   ax.text(-.15,1.04,lab,transform=ax.transAxes,ha='left',va='bottom',fontsize=8.5,fontweight='bold')
   ax.grid(axis='y',color='.91',lw=.45,zorder=0); ax.spines['top'].set_visible(False); ax.spines['right'].set_visible(False)
@@ -111,8 +107,8 @@ def main():
 
 def make_training_summary():
  groups={'1/3':('outer','outer1','outer2'),'2/3':('outer0','outer1','outer2')}
- selected={'1/3':('full','gamma','c3','outer'),'2/3':('full','gamma','outer2')}
- labels={'full':r'full $M$','gamma':r'no $M$','c3':'internal C3','outer':r'$P_0$','outer2':r'$P_2$'}
+ selected={'1/3':('full','gamma','outer'),'2/3':('full','gamma','outer2')}
+ labels={'full':r'full $M$','gamma':r'no $M$+$M_S$','outer':r'$P_0$','outer2':r'$P_2$'}
  fig,axs=plt.subplots(2,2,figsize=(5.35,3.45)); fig.subplots_adjust(left=.11,right=.985,bottom=.15,top=.90,wspace=.34,hspace=.50)
  for col,filling in enumerate(('1/3','2/3')):
   sector_traces=[json.loads(RUNS[(filling,b)].read_text()) for b in groups[filling]]

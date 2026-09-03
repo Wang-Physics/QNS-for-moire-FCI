@@ -30,6 +30,23 @@ class NeuralBlochConfig:
     correction_init_scale: float | None = None
 
 
+def momentum_sector_combinations(
+    momentum_fractions: np.ndarray, n_particles: int, denominator: int = 3
+) -> np.ndarray:
+    """All canonical momentum subsets with total momentum Gamma."""
+    from itertools import combinations
+
+    integer = np.rint(denominator * np.asarray(momentum_fractions)).astype(int)
+    selected = [
+        occupied
+        for occupied in combinations(range(len(integer)), int(n_particles))
+        if not np.any(integer[list(occupied)].sum(axis=0) % denominator)
+    ]
+    if not selected:
+        raise ValueError("no momentum combination belongs to the Gamma sector")
+    return np.asarray(selected, dtype=np.int64)
+
+
 def _lecun_normal(module: nn.Module) -> None:
     """JAX-compatible LeCunNormal initialization for real linear layers."""
     if isinstance(module, nn.Linear):
@@ -244,6 +261,13 @@ class ManyBodyNeuralBloch(nn.Module):
         self.register_buffer(
             "fixed_momentum_indices", torch.as_tensor(selected, dtype=torch.long)
         )
+        gamma_sector_indices = momentum_sector_combinations(
+            np.asarray(momentum_fractions), self.n_particles
+        )
+        self.register_buffer(
+            "gamma_sector_indices",
+            torch.as_tensor(gamma_sector_indices, dtype=torch.long),
+        )
         orbit_indices = np.tile(np.asarray(selected, dtype=np.int64), (3, 1))
         orbit_weights = np.ones(3, dtype=np.complex128)
         rotated_momenta = np.stack([np.asarray(momenta)] * 3)
@@ -284,7 +308,15 @@ class ManyBodyNeuralBloch(nn.Module):
         if config.fixed_gamma_no_m:
             self.register_parameter("momentum_real", None)
             self.register_parameter("momentum_imag", None)
+            self.sector_mixing_real = nn.Parameter(
+                torch.empty(determinants, len(gamma_sector_indices))
+            )
+            self.sector_mixing_imag = nn.Parameter(
+                torch.empty(determinants, len(gamma_sector_indices))
+            )
         else:
+            self.register_parameter("sector_mixing_real", None)
+            self.register_parameter("sector_mixing_imag", None)
             self.momentum_real = nn.Parameter(
                 torch.empty(determinants, self.n_particles, self.n_momenta)
             )
@@ -301,6 +333,14 @@ class ManyBodyNeuralBloch(nn.Module):
                 component_std = (2.0 * self.n_momenta) ** -0.5
                 truncated_std = component_std / 0.87962566103423978
                 for component in (self.momentum_real, self.momentum_imag):
+                    nn.init.trunc_normal_(
+                        component, mean=0.0, std=truncated_std,
+                        a=-2.0 * truncated_std, b=2.0 * truncated_std,
+                    )
+            else:
+                component_std = (2.0 * len(gamma_sector_indices)) ** -0.5
+                truncated_std = component_std / 0.87962566103423978
+                for component in (self.sector_mixing_real, self.sector_mixing_imag):
                     nn.init.trunc_normal_(
                         component, mean=0.0, std=truncated_std,
                         a=-2.0 * truncated_std, b=2.0 * truncated_std,
@@ -519,7 +559,15 @@ class ManyBodyNeuralBloch(nn.Module):
                 determinant_values.append(torch.stack(orbit_values).sum(0) / 3.0)
                 continue
             if self.config.fixed_gamma_no_m:
-                generalized = q_matrix[:, self.fixed_momentum_indices, :]
+                matrices = q_matrix[:, self.gamma_sector_indices, :]
+                sector_determinants = torch.linalg.det(matrices)
+                mixing = torch.complex(
+                    self.sector_mixing_real[index], self.sector_mixing_imag[index]
+                )
+                determinant_values.append(
+                    torch.einsum("m,bm->b", mixing, sector_determinants)
+                )
+                continue
             else:
                 mixing = torch.complex(
                     self.momentum_real[index], self.momentum_imag[index]

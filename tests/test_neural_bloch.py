@@ -161,14 +161,24 @@ class NeuralBlochTests(unittest.TestCase):
             for parameter in state.parameters():
                 parameter.zero_()
             state.orbital_mlps[0][-1].bias[0] = 0.5
+            state.sector_mixing_real[0].copy_(
+                torch.linspace(0.25, 1.25, len(state.gamma_sector_indices))
+            )
+            state.sector_mixing_imag[0].copy_(
+                torch.linspace(-0.4, 0.3, len(state.gamma_sector_indices))
+            )
         generator = torch.Generator().manual_seed(67)
         positions = torch.rand(3, 2, 2, generator=generator)
         layers = torch.randint(0, 2, (3, 2), generator=generator)
         cartesian = state.cartesian(positions).to(torch.complex128)
-        bare_matrix = state._bloch_values(cartesian, layers)[
-            :, state.fixed_momentum_indices, :
-        ]
-        bare = torch.linalg.det(bare_matrix)
+        all_bare = state._bloch_values(cartesian, layers)
+        sector_determinants = torch.linalg.det(
+            all_bare[:, state.gamma_sector_indices, :]
+        )
+        mixing = torch.complex(
+            state.sector_mixing_real[0], state.sector_mixing_imag[0]
+        )
+        bare = torch.einsum("m,bm->b", mixing, sector_determinants)
         actual = state._unprojected_determinant_values(positions, layers)
         expected = bare * 0.5 ** state.n_particles
         torch.testing.assert_close(actual, expected, rtol=2.0e-12, atol=2.0e-12)
