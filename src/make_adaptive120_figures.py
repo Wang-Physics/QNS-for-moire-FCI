@@ -58,6 +58,7 @@ def main():
   for b in branches:
    t=traces[b]; step=np.array([v['step'] for v in t]); en=np.array([v['energy_per_particle_meV'] for v in t]); acc=np.array([v['update_accepted'] for v in t])
    ax.plot(step,en,color=COLOR[b],ls=LINESTYLE[b],lw=1.0); ax.scatter(step[acc],en[acc],s=4,color=COLOR[b],alpha=.55,edgecolors='none')
+  ax.axvline(20,color='.55',lw=.6,ls=(0,(2,2)),zorder=0)
   all_e=np.concatenate([[v['energy_per_particle_meV'] for v in t] for t in traces.values()])
   ax.set_xlim(0,122); ax.set_ylim(min(all_e.min(),ED[filling])-.15,-20 if filling=='1/3' else -40)
   ax.xaxis.set_major_locator(MaxNLocator(4,integer=True)); ax.yaxis.set_major_locator(MaxNLocator(4))
@@ -93,6 +94,7 @@ def main():
   for b in branches:
    t=traces[b]; step=np.array([v['step'] for v in t]); rr=np.array([v['relative_residual_norm'] for v in t])
    ax.plot(step,rr,color=COLOR[b],ls=LINESTYLE[b],lw=.85)
+  ax.axvline(20,color='.55',lw=.6,ls=(0,(2,2)),zorder=0)
   ax.axhline(.02,color='.35',lw=.65,ls=(0,(2,2))); ax.axhline(.05,color='#D55E00',lw=.65,ls=(0,(3,2)))
   ax.set_yscale('log'); ax.set_xlim(0,122); ax.set_ylim(8e-3,max(.3,max(max(v['relative_residual_norm'] for v in t) for t in traces.values())*1.15))
   ax.xaxis.set_major_locator(MaxNLocator(4,integer=True)); ax.set_xlabel('NG update'); ax.set_ylabel(r'true $r_{\rm rel}$')

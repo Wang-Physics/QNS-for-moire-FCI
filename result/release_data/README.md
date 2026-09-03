@@ -2,8 +2,10 @@
 
 These files are the minimal numerical inputs used by the publication plotting scripts:
 
-- `traces/`: historical full-`M` baselines and v3 no-`M`+$M_S$ and
-  outer-`C3`+$M_S$ training traces at both fillings;
+- `traces/`: historical full-`M` baselines and v3 no-`M`+$M_S$ traces at both
+  fillings. Each outer-`C3`+$M_S$ trace contains the common 20-update raw
+  pretraining prefix followed by its 100 independently sampled projected
+  updates, with `stage` and `stage_step` recording that boundary;
 - `diagnostics/nu*outer_c3_p{0,1,2}.{npz,json}`: complete-ratio 1-RDM,
   band weights, `n_1(k)`, full `S(q)`, and folded density maps measured from
   all six equilibrated final training ensembles;

@@ -1,6 +1,606 @@
 [
   {
     "step": 1,
+    "energy_meV": 190.96775472492547,
+    "energy_per_particle_meV": 63.65591824164182,
+    "sem_meV": 2.186803962398342,
+    "variance_meV2": 19740.556560799374,
+    "step_seconds": 149.47650407999754,
+    "update_accepted": true,
+    "rejected_updates_cumulative": 0,
+    "learning_rate": 0.002,
+    "sr_damping": 0.01,
+    "recovery_mode_before_step": false,
+    "recovery_mode_after_step": false,
+    "recovery_stable_count_after_step": 0,
+    "next_learning_rate": 0.002,
+    "next_sr_damping": 0.01,
+    "position_acceptance": 0.5244670510292053,
+    "layer_acceptance": 0.4246608465909958,
+    "force_norm": 862.4253743312227,
+    "direction_norm": 741.4893578338452,
+    "force_dot_direction": 108571.55990597734,
+    "residual_norm": 16.557665867366943,
+    "relative_residual_norm": 0.019198954901120308,
+    "cg_iterations": 33,
+    "true_residual_checks": 14,
+    "cg_termination_reason": "true_residual_tolerance",
+    "preconditioner": "none",
+    "stage": "shared_raw",
+    "stage_step": 1
+  },
+  {
+    "step": 2,
+    "energy_meV": 111.12056478272783,
+    "energy_per_particle_meV": 37.040188260909275,
+    "sem_meV": 1.4278255825545676,
+    "variance_meV2": 8415.695371246415,
+    "step_seconds": 123.61055313423276,
+    "update_accepted": true,
+    "rejected_updates_cumulative": 0,
+    "learning_rate": 0.002,
+    "sr_damping": 0.01,
+    "recovery_mode_before_step": false,
+    "recovery_mode_after_step": false,
+    "recovery_stable_count_after_step": 0,
+    "next_learning_rate": 0.002,
+    "next_sr_damping": 0.01,
+    "position_acceptance": 0.5267684161663055,
+    "layer_acceptance": 0.4542151242494583,
+    "force_norm": 719.3113669508494,
+    "direction_norm": 533.8683224693234,
+    "force_dot_direction": 42584.08908059565,
+    "residual_norm": 12.797176330399749,
+    "relative_residual_norm": 0.017790871823208904,
+    "cg_iterations": 29,
+    "true_residual_checks": 10,
+    "cg_termination_reason": "true_residual_tolerance",
+    "preconditioner": "none",
+    "stage": "shared_raw",
+    "stage_step": 2
+  },
+  {
+    "step": 3,
+    "energy_meV": 69.0370834711764,
+    "energy_per_particle_meV": 23.012361157058802,
+    "sem_meV": 1.3536602524406773,
+    "variance_meV2": 7564.131014267865,
+    "step_seconds": 127.16403036937118,
+    "update_accepted": true,
+    "rejected_updates_cumulative": 0,
+    "learning_rate": 0.002,
+    "sr_damping": 0.01,
+    "recovery_mode_before_step": false,
+    "recovery_mode_after_step": false,
+    "recovery_stable_count_after_step": 0,
+    "next_learning_rate": 0.002,
+    "next_sr_damping": 0.01,
+    "position_acceptance": 0.536700576543808,
+    "layer_acceptance": 0.450823649764061,
+    "force_norm": 643.3265532962442,
+    "direction_norm": 509.00100549107003,
+    "force_dot_direction": 36425.93094393179,
+    "residual_norm": 11.603020854244681,
+    "relative_residual_norm": 0.018035973790905577,
+    "cg_iterations": 29,
+    "true_residual_checks": 10,
+    "cg_termination_reason": "true_residual_tolerance",
+    "preconditioner": "none",
+    "stage": "shared_raw",
+    "stage_step": 3
+  },
+  {
+    "step": 4,
+    "energy_meV": 34.93259746578341,
+    "energy_per_particle_meV": 11.644199155261136,
+    "sem_meV": 1.1665458776056659,
+    "variance_meV2": 5617.503286658616,
+    "step_seconds": 144.23442788794637,
+    "update_accepted": true,
+    "rejected_updates_cumulative": 0,
+    "learning_rate": 0.002,
+    "sr_damping": 0.01,
+    "recovery_mode_before_step": false,
+    "recovery_mode_after_step": false,
+    "recovery_stable_count_after_step": 0,
+    "next_learning_rate": 0.002,
+    "next_sr_damping": 0.01,
+    "position_acceptance": 0.5552325546741486,
+    "layer_acceptance": 0.44864340126514435,
+    "force_norm": 545.4616236217499,
+    "direction_norm": 485.47288749854164,
+    "force_dot_direction": 26894.37869239058,
+    "residual_norm": 7.905519283240214,
+    "relative_residual_norm": 0.014493263945406894,
+    "cg_iterations": 32,
+    "true_residual_checks": 13,
+    "cg_termination_reason": "true_residual_tolerance",
+    "preconditioner": "none",
+    "stage": "shared_raw",
+    "stage_step": 4
+  },
+  {
+    "step": 5,
+    "energy_meV": 8.550837309295353,
+    "energy_per_particle_meV": 2.850279103098451,
+    "sem_meV": 1.1328018136247444,
+    "variance_meV2": 5297.214509271833,
+    "step_seconds": 137.32629572600126,
+    "update_accepted": true,
+    "rejected_updates_cumulative": 0,
+    "learning_rate": 0.002,
+    "sr_damping": 0.01,
+    "recovery_mode_before_step": false,
+    "recovery_mode_after_step": false,
+    "recovery_stable_count_after_step": 0,
+    "next_learning_rate": 0.002,
+    "next_sr_damping": 0.01,
+    "position_acceptance": 0.5675871968269348,
+    "layer_acceptance": 0.42926356196403503,
+    "force_norm": 528.5347462124029,
+    "direction_norm": 463.662859929721,
+    "force_dot_direction": 26003.251982925533,
+    "residual_norm": 10.213821601423623,
+    "relative_residual_norm": 0.019324787394997458,
+    "cg_iterations": 31,
+    "true_residual_checks": 12,
+    "cg_termination_reason": "true_residual_tolerance",
+    "preconditioner": "none",
+    "stage": "shared_raw",
+    "stage_step": 5
+  },
+  {
+    "step": 6,
+    "energy_meV": -12.628850221792831,
+    "energy_per_particle_meV": -4.20961674059761,
+    "sem_meV": 0.9935042985743123,
+    "variance_meV2": 4074.5456664271064,
+    "step_seconds": 120.35010599344969,
+    "update_accepted": true,
+    "rejected_updates_cumulative": 0,
+    "learning_rate": 0.002,
+    "sr_damping": 0.01,
+    "recovery_mode_before_step": false,
+    "recovery_mode_after_step": false,
+    "recovery_stable_count_after_step": 0,
+    "next_learning_rate": 0.002,
+    "next_sr_damping": 0.01,
+    "position_acceptance": 0.5925387442111969,
+    "layer_acceptance": 0.4207848757505417,
+    "force_norm": 476.0849733605927,
+    "direction_norm": 413.4081655900101,
+    "force_dot_direction": 18564.89583719473,
+    "residual_norm": 7.927662394984372,
+    "relative_residual_norm": 0.016651780330356827,
+    "cg_iterations": 28,
+    "true_residual_checks": 9,
+    "cg_termination_reason": "true_residual_tolerance",
+    "preconditioner": "none",
+    "stage": "shared_raw",
+    "stage_step": 6
+  },
+  {
+    "step": 7,
+    "energy_meV": -30.46921008714167,
+    "energy_per_particle_meV": -10.156403362380557,
+    "sem_meV": 0.8942872846892845,
+    "variance_meV2": 3301.3669579150214,
+    "step_seconds": 102.23703863099217,
+    "update_accepted": true,
+    "rejected_updates_cumulative": 0,
+    "learning_rate": 0.002,
+    "sr_damping": 0.01,
+    "recovery_mode_before_step": false,
+    "recovery_mode_after_step": false,
+    "recovery_stable_count_after_step": 0,
+    "next_learning_rate": 0.002,
+    "next_sr_damping": 0.01,
+    "position_acceptance": 0.6069525182247162,
+    "layer_acceptance": 0.4337451457977295,
+    "force_norm": 480.30462829124093,
+    "direction_norm": 350.7225136701971,
+    "force_dot_direction": 15348.905513338497,
+    "residual_norm": 8.954280495905687,
+    "relative_residual_norm": 0.018642919448354982,
+    "cg_iterations": 25,
+    "true_residual_checks": 6,
+    "cg_termination_reason": "true_residual_tolerance",
+    "preconditioner": "none",
+    "stage": "shared_raw",
+    "stage_step": 7
+  },
+  {
+    "step": 8,
+    "energy_meV": -42.529466375161334,
+    "energy_per_particle_meV": -14.176488791720445,
+    "sem_meV": 0.9011010604509238,
+    "variance_meV2": 3351.866324089777,
+    "step_seconds": 103.62894532829523,
+    "update_accepted": true,
+    "rejected_updates_cumulative": 0,
+    "learning_rate": 0.002,
+    "sr_damping": 0.01,
+    "recovery_mode_before_step": false,
+    "recovery_mode_after_step": false,
+    "recovery_stable_count_after_step": 0,
+    "next_learning_rate": 0.002,
+    "next_sr_damping": 0.01,
+    "position_acceptance": 0.6218507885932922,
+    "layer_acceptance": 0.43168604373931885,
+    "force_norm": 566.9072284545388,
+    "direction_norm": 347.31320833905755,
+    "force_dot_direction": 14979.337862866374,
+    "residual_norm": 9.679254491706406,
+    "relative_residual_norm": 0.017073789159636022,
+    "cg_iterations": 25,
+    "true_residual_checks": 6,
+    "cg_termination_reason": "true_residual_tolerance",
+    "preconditioner": "none",
+    "stage": "shared_raw",
+    "stage_step": 8
+  },
+  {
+    "step": 9,
+    "energy_meV": -54.252609681106485,
+    "energy_per_particle_meV": -18.084203227035495,
+    "sem_meV": 0.7438720464268221,
+    "variance_meV2": 2284.210725367182,
+    "step_seconds": 98.83216501027346,
+    "update_accepted": true,
+    "rejected_updates_cumulative": 0,
+    "learning_rate": 0.002,
+    "sr_damping": 0.01,
+    "recovery_mode_before_step": false,
+    "recovery_mode_after_step": false,
+    "recovery_stable_count_after_step": 0,
+    "next_learning_rate": 0.002,
+    "next_sr_damping": 0.01,
+    "position_acceptance": 0.626937985420227,
+    "layer_acceptance": 0.45360949635505676,
+    "force_norm": 493.7287849826596,
+    "direction_norm": 275.0260270680777,
+    "force_dot_direction": 10163.003060660993,
+    "residual_norm": 7.62289272020654,
+    "relative_residual_norm": 0.015439433454288606,
+    "cg_iterations": 24,
+    "true_residual_checks": 5,
+    "cg_termination_reason": "true_residual_tolerance",
+    "preconditioner": "none",
+    "stage": "shared_raw",
+    "stage_step": 9
+  },
+  {
+    "step": 10,
+    "energy_meV": -64.71915520170843,
+    "energy_per_particle_meV": -21.573051733902812,
+    "sem_meV": 0.6890253653873751,
+    "variance_meV2": 1959.792578719665,
+    "step_seconds": 92.57951793447137,
+    "update_accepted": true,
+    "rejected_updates_cumulative": 0,
+    "learning_rate": 0.002,
+    "sr_damping": 0.01,
+    "recovery_mode_before_step": false,
+    "recovery_mode_after_step": false,
+    "recovery_stable_count_after_step": 0,
+    "next_learning_rate": 0.002,
+    "next_sr_damping": 0.01,
+    "position_acceptance": 0.6483769118785858,
+    "layer_acceptance": 0.4528827518224716,
+    "force_norm": 470.201508983175,
+    "direction_norm": 237.7397447344435,
+    "force_dot_direction": 8859.12314153481,
+    "residual_norm": 9.198466310189762,
+    "relative_residual_norm": 0.019562817503673526,
+    "cg_iterations": 23,
+    "true_residual_checks": 4,
+    "cg_termination_reason": "true_residual_tolerance",
+    "preconditioner": "none",
+    "stage": "shared_raw",
+    "stage_step": 10
+  },
+  {
+    "step": 11,
+    "energy_meV": -73.53745166262955,
+    "energy_per_particle_meV": -24.512483887543183,
+    "sem_meV": 0.6499673249051622,
+    "variance_meV2": 1743.9046567783703,
+    "step_seconds": 80.16279413551092,
+    "update_accepted": true,
+    "rejected_updates_cumulative": 0,
+    "learning_rate": 0.002,
+    "sr_damping": 0.01,
+    "recovery_mode_before_step": false,
+    "recovery_mode_after_step": false,
+    "recovery_stable_count_after_step": 0,
+    "next_learning_rate": 0.002,
+    "next_sr_damping": 0.01,
+    "position_acceptance": 0.6469234526157379,
+    "layer_acceptance": 0.47601743042469025,
+    "force_norm": 443.03213353443624,
+    "direction_norm": 213.82182393593044,
+    "force_dot_direction": 7679.20854091949,
+    "residual_norm": 8.791124598430292,
+    "relative_residual_norm": 0.019843085710953223,
+    "cg_iterations": 21,
+    "true_residual_checks": 2,
+    "cg_termination_reason": "true_residual_tolerance",
+    "preconditioner": "none",
+    "stage": "shared_raw",
+    "stage_step": 11
+  },
+  {
+    "step": 12,
+    "energy_meV": -81.70334046134919,
+    "energy_per_particle_meV": -27.23444682044973,
+    "sem_meV": 0.5263150550383184,
+    "variance_meV2": 1143.487113396431,
+    "step_seconds": 109.3173388466239,
+    "update_accepted": true,
+    "rejected_updates_cumulative": 0,
+    "learning_rate": 0.002,
+    "sr_damping": 0.01,
+    "recovery_mode_before_step": false,
+    "recovery_mode_after_step": false,
+    "recovery_stable_count_after_step": 0,
+    "next_learning_rate": 0.002,
+    "next_sr_damping": 0.01,
+    "position_acceptance": 0.6732073724269867,
+    "layer_acceptance": 0.4854651242494583,
+    "force_norm": 250.85025576827323,
+    "direction_norm": 227.49938468952104,
+    "force_dot_direction": 4928.6538213847025,
+    "residual_norm": 4.681572455292392,
+    "relative_residual_norm": 0.018662817149435424,
+    "cg_iterations": 26,
+    "true_residual_checks": 7,
+    "cg_termination_reason": "true_residual_tolerance",
+    "preconditioner": "none",
+    "stage": "shared_raw",
+    "stage_step": 12
+  },
+  {
+    "step": 13,
+    "energy_meV": -85.96506197016834,
+    "energy_per_particle_meV": -28.65502065672278,
+    "sem_meV": 0.45150123397781605,
+    "variance_meV2": 841.5066877622492,
+    "step_seconds": 103.58959243446589,
+    "update_accepted": true,
+    "rejected_updates_cumulative": 0,
+    "learning_rate": 0.002,
+    "sr_damping": 0.01,
+    "recovery_mode_before_step": false,
+    "recovery_mode_after_step": false,
+    "recovery_stable_count_after_step": 0,
+    "next_learning_rate": 0.002,
+    "next_sr_damping": 0.01,
+    "position_acceptance": 0.6602470874786377,
+    "layer_acceptance": 0.48994670808315277,
+    "force_norm": 205.35197285837125,
+    "direction_norm": 183.81072147290698,
+    "force_dot_direction": 3520.877618310626,
+    "residual_norm": 4.031872279978306,
+    "relative_residual_norm": 0.019633959313159553,
+    "cg_iterations": 25,
+    "true_residual_checks": 6,
+    "cg_termination_reason": "true_residual_tolerance",
+    "preconditioner": "none",
+    "stage": "shared_raw",
+    "stage_step": 13
+  },
+  {
+    "step": 14,
+    "energy_meV": -89.19283512974897,
+    "energy_per_particle_meV": -29.73094504324966,
+    "sem_meV": 0.43580481308858054,
+    "variance_meV2": 784.0138473389205,
+    "step_seconds": 110.0751505792141,
+    "update_accepted": true,
+    "rejected_updates_cumulative": 0,
+    "learning_rate": 0.002,
+    "sr_damping": 0.01,
+    "recovery_mode_before_step": false,
+    "recovery_mode_after_step": false,
+    "recovery_stable_count_after_step": 0,
+    "next_learning_rate": 0.002,
+    "next_sr_damping": 0.01,
+    "position_acceptance": 0.6695736348628998,
+    "layer_acceptance": 0.5077519416809082,
+    "force_norm": 169.93007043701232,
+    "direction_norm": 173.0942672236006,
+    "force_dot_direction": 2797.640238357003,
+    "residual_norm": 3.1659885752816446,
+    "relative_residual_norm": 0.018631126128175038,
+    "cg_iterations": 26,
+    "true_residual_checks": 7,
+    "cg_termination_reason": "true_residual_tolerance",
+    "preconditioner": "none",
+    "stage": "shared_raw",
+    "stage_step": 14
+  },
+  {
+    "step": 15,
+    "energy_meV": -92.02911952545274,
+    "energy_per_particle_meV": -30.676373175150914,
+    "sem_meV": 0.3964477609265906,
+    "variance_meV2": 648.801174449223,
+    "step_seconds": 121.4409066773951,
+    "update_accepted": true,
+    "rejected_updates_cumulative": 0,
+    "learning_rate": 0.002,
+    "sr_damping": 0.01,
+    "recovery_mode_before_step": false,
+    "recovery_mode_after_step": false,
+    "recovery_stable_count_after_step": 0,
+    "next_learning_rate": 0.002,
+    "next_sr_damping": 0.01,
+    "position_acceptance": 0.6642441749572754,
+    "layer_acceptance": 0.5232558250427246,
+    "force_norm": 118.3789727172917,
+    "direction_norm": 167.96370354871152,
+    "force_dot_direction": 2132.9663540645156,
+    "residual_norm": 1.9787199727630496,
+    "relative_residual_norm": 0.01671513046061445,
+    "cg_iterations": 28,
+    "true_residual_checks": 9,
+    "cg_termination_reason": "true_residual_tolerance",
+    "preconditioner": "none",
+    "stage": "shared_raw",
+    "stage_step": 15
+  },
+  {
+    "step": 16,
+    "energy_meV": -93.90066199381938,
+    "energy_per_particle_meV": -31.30022066460646,
+    "sem_meV": 0.3499268589035033,
+    "variance_meV2": 505.46867357079435,
+    "step_seconds": 132.6074279770255,
+    "update_accepted": true,
+    "rejected_updates_cumulative": 0,
+    "learning_rate": 0.002,
+    "sr_damping": 0.01,
+    "recovery_mode_before_step": false,
+    "recovery_mode_after_step": false,
+    "recovery_stable_count_after_step": 0,
+    "next_learning_rate": 0.002,
+    "next_sr_damping": 0.01,
+    "position_acceptance": 0.6770833134651184,
+    "layer_acceptance": 0.5180474817752838,
+    "force_norm": 76.91884362227846,
+    "direction_norm": 149.11732588232803,
+    "force_dot_direction": 1466.9769824945333,
+    "residual_norm": 1.1724854468422554,
+    "relative_residual_norm": 0.015243149683839781,
+    "cg_iterations": 30,
+    "true_residual_checks": 11,
+    "cg_termination_reason": "true_residual_tolerance",
+    "preconditioner": "none",
+    "stage": "shared_raw",
+    "stage_step": 16
+  },
+  {
+    "step": 17,
+    "energy_meV": -96.13562181857841,
+    "energy_per_particle_meV": -32.04520727285947,
+    "sem_meV": 0.3248702736807652,
+    "variance_meV2": 435.67198781000224,
+    "step_seconds": 109.31487627699971,
+    "update_accepted": true,
+    "rejected_updates_cumulative": 0,
+    "learning_rate": 0.002,
+    "sr_damping": 0.01,
+    "recovery_mode_before_step": false,
+    "recovery_mode_after_step": false,
+    "recovery_stable_count_after_step": 0,
+    "next_learning_rate": 0.002,
+    "next_sr_damping": 0.01,
+    "position_acceptance": 0.6723594963550568,
+    "layer_acceptance": 0.5345203578472137,
+    "force_norm": 71.93638997321571,
+    "direction_norm": 125.31499524294769,
+    "force_dot_direction": 1299.287933002653,
+    "residual_norm": 1.358729651191799,
+    "relative_residual_norm": 0.018887932125836435,
+    "cg_iterations": 26,
+    "true_residual_checks": 7,
+    "cg_termination_reason": "true_residual_tolerance",
+    "preconditioner": "none",
+    "stage": "shared_raw",
+    "stage_step": 17
+  },
+  {
+    "step": 18,
+    "energy_meV": -98.00783945013029,
+    "energy_per_particle_meV": -32.669279816710095,
+    "sem_meV": 0.29467797314393673,
+    "variance_meV2": 358.4553252304707,
+    "step_seconds": 115.41324841231108,
+    "update_accepted": true,
+    "rejected_updates_cumulative": 0,
+    "learning_rate": 0.002,
+    "sr_damping": 0.01,
+    "recovery_mode_before_step": false,
+    "recovery_mode_after_step": false,
+    "recovery_stable_count_after_step": 0,
+    "next_learning_rate": 0.002,
+    "next_sr_damping": 0.01,
+    "position_acceptance": 0.6790212988853455,
+    "layer_acceptance": 0.5308866202831268,
+    "force_norm": 60.90862425966241,
+    "direction_norm": 111.32350217019174,
+    "force_dot_direction": 963.6274970959743,
+    "residual_norm": 0.9788086524748384,
+    "relative_residual_norm": 0.016070115921548864,
+    "cg_iterations": 27,
+    "true_residual_checks": 8,
+    "cg_termination_reason": "true_residual_tolerance",
+    "preconditioner": "none",
+    "stage": "shared_raw",
+    "stage_step": 18
+  },
+  {
+    "step": 19,
+    "energy_meV": -98.6452828629549,
+    "energy_per_particle_meV": -32.8817609543183,
+    "sem_meV": 0.2848239170342931,
+    "variance_meV2": 334.8826118145205,
+    "step_seconds": 114.78697394952178,
+    "update_accepted": true,
+    "rejected_updates_cumulative": 0,
+    "learning_rate": 0.002,
+    "sr_damping": 0.01,
+    "recovery_mode_before_step": false,
+    "recovery_mode_after_step": false,
+    "recovery_stable_count_after_step": 0,
+    "next_learning_rate": 0.002,
+    "next_sr_damping": 0.01,
+    "position_acceptance": 0.6750242412090302,
+    "layer_acceptance": 0.5390019416809082,
+    "force_norm": 52.38792641262148,
+    "direction_norm": 106.53904064110999,
+    "force_dot_direction": 828.0808818553419,
+    "residual_norm": 0.8380345856505202,
+    "relative_residual_norm": 0.01599671227774761,
+    "cg_iterations": 27,
+    "true_residual_checks": 8,
+    "cg_termination_reason": "true_residual_tolerance",
+    "preconditioner": "none",
+    "stage": "shared_raw",
+    "stage_step": 19
+  },
+  {
+    "step": 20,
+    "energy_meV": -99.81049972647514,
+    "energy_per_particle_meV": -33.270166575491714,
+    "sem_meV": 0.28729960830545415,
+    "variance_meV2": 340.72951604122534,
+    "step_seconds": 114.97186774760485,
+    "update_accepted": true,
+    "rejected_updates_cumulative": 0,
+    "learning_rate": 0.002,
+    "sr_damping": 0.01,
+    "recovery_mode_before_step": false,
+    "recovery_mode_after_step": false,
+    "recovery_stable_count_after_step": 0,
+    "next_learning_rate": 0.002,
+    "next_sr_damping": 0.01,
+    "position_acceptance": 0.6756298542022705,
+    "layer_acceptance": 0.5289486348628998,
+    "force_norm": 46.453069077527324,
+    "direction_norm": 107.00675941539471,
+    "force_dot_direction": 826.0267045680775,
+    "residual_norm": 0.8683420344079187,
+    "relative_residual_norm": 0.01869288836349454,
+    "cg_iterations": 27,
+    "true_residual_checks": 8,
+    "cg_termination_reason": "true_residual_tolerance",
+    "preconditioner": "none",
+    "stage": "shared_raw",
+    "stage_step": 20
+  },
+  {
+    "step": 21,
     "energy_meV": -97.4779723382556,
     "energy_per_particle_meV": -32.4926574460852,
     "sem_meV": 0.2841533067680379,
@@ -25,10 +625,12 @@
     "cg_iterations": 33,
     "true_residual_checks": 14,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 1
   },
   {
-    "step": 2,
+    "step": 22,
     "energy_meV": -98.51974020354538,
     "energy_per_particle_meV": -32.839913401181796,
     "sem_meV": 0.2350006252714454,
@@ -53,10 +655,12 @@
     "cg_iterations": 26,
     "true_residual_checks": 7,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 2
   },
   {
-    "step": 3,
+    "step": 23,
     "energy_meV": -99.05654144192857,
     "energy_per_particle_meV": -33.01884714730952,
     "sem_meV": 0.22541358780561843,
@@ -81,10 +685,12 @@
     "cg_iterations": 23,
     "true_residual_checks": 4,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 3
   },
   {
-    "step": 4,
+    "step": 24,
     "energy_meV": -99.81587606757937,
     "energy_per_particle_meV": -33.27195868919312,
     "sem_meV": 0.21995232422498695,
@@ -109,10 +715,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 4
   },
   {
-    "step": 5,
+    "step": 25,
     "energy_meV": -100.20306893819455,
     "energy_per_particle_meV": -33.401022979398185,
     "sem_meV": 0.2159474212203003,
@@ -137,10 +745,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 5
   },
   {
-    "step": 6,
+    "step": 26,
     "energy_meV": -100.75866546880769,
     "energy_per_particle_meV": -33.5862218229359,
     "sem_meV": 0.21076829593414131,
@@ -165,10 +775,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 6
   },
   {
-    "step": 7,
+    "step": 27,
     "energy_meV": -101.26448179015591,
     "energy_per_particle_meV": -33.7548272633853,
     "sem_meV": 0.20534554279919567,
@@ -193,10 +805,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 7
   },
   {
-    "step": 8,
+    "step": 28,
     "energy_meV": -101.94586270272401,
     "energy_per_particle_meV": -33.981954234241336,
     "sem_meV": 0.20310280291227217,
@@ -221,10 +835,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 8
   },
   {
-    "step": 9,
+    "step": 29,
     "energy_meV": -102.25779243050789,
     "energy_per_particle_meV": -34.085930810169295,
     "sem_meV": 0.20484043418368478,
@@ -249,10 +865,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 9
   },
   {
-    "step": 10,
+    "step": 30,
     "energy_meV": -102.52573890469213,
     "energy_per_particle_meV": -34.175246301564044,
     "sem_meV": 0.19819256588067574,
@@ -277,10 +895,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 10
   },
   {
-    "step": 11,
+    "step": 31,
     "energy_meV": -102.77143987537623,
     "energy_per_particle_meV": -34.25714662512541,
     "sem_meV": 0.19512981829178813,
@@ -305,10 +925,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 11
   },
   {
-    "step": 12,
+    "step": 32,
     "energy_meV": -103.04701890301456,
     "energy_per_particle_meV": -34.349006301004856,
     "sem_meV": 0.19574295539464404,
@@ -333,10 +955,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 12
   },
   {
-    "step": 13,
+    "step": 33,
     "energy_meV": -103.13897689441073,
     "energy_per_particle_meV": -34.379658964803575,
     "sem_meV": 0.18655724535171958,
@@ -361,10 +985,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 13
   },
   {
-    "step": 14,
+    "step": 34,
     "energy_meV": -103.75732473588866,
     "energy_per_particle_meV": -34.585774911962886,
     "sem_meV": 0.18696921845204306,
@@ -389,10 +1015,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 14
   },
   {
-    "step": 15,
+    "step": 35,
     "energy_meV": -104.11107780477819,
     "energy_per_particle_meV": -34.70369260159273,
     "sem_meV": 0.17846167117870382,
@@ -417,10 +1045,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 15
   },
   {
-    "step": 16,
+    "step": 36,
     "energy_meV": -104.28821284027985,
     "energy_per_particle_meV": -34.762737613426616,
     "sem_meV": 0.17958851906360854,
@@ -445,10 +1075,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 16
   },
   {
-    "step": 17,
+    "step": 37,
     "energy_meV": -104.61393323668759,
     "energy_per_particle_meV": -34.871311078895864,
     "sem_meV": 0.17790532903887646,
@@ -473,10 +1105,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 17
   },
   {
-    "step": 18,
+    "step": 38,
     "energy_meV": -104.81528376425318,
     "energy_per_particle_meV": -34.93842792141773,
     "sem_meV": 0.26942005615666426,
@@ -501,10 +1135,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 18
   },
   {
-    "step": 19,
+    "step": 39,
     "energy_meV": -105.37080798365733,
     "energy_per_particle_meV": -35.12360266121911,
     "sem_meV": 0.2271382907197136,
@@ -529,10 +1165,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 19
   },
   {
-    "step": 20,
+    "step": 40,
     "energy_meV": -105.51666345929662,
     "energy_per_particle_meV": -35.172221153098874,
     "sem_meV": 0.17798907827147678,
@@ -557,10 +1195,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 20
   },
   {
-    "step": 21,
+    "step": 41,
     "energy_meV": -105.6990049587331,
     "energy_per_particle_meV": -35.233001652911035,
     "sem_meV": 0.17146513908506134,
@@ -585,10 +1225,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 21
   },
   {
-    "step": 22,
+    "step": 42,
     "energy_meV": -105.56772331124768,
     "energy_per_particle_meV": -35.189241103749225,
     "sem_meV": 0.1682115244657744,
@@ -613,10 +1255,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 22
   },
   {
-    "step": 23,
+    "step": 43,
     "energy_meV": -105.94075677889215,
     "energy_per_particle_meV": -35.31358559296405,
     "sem_meV": 0.16989642446810002,
@@ -641,10 +1285,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 23
   },
   {
-    "step": 24,
+    "step": 44,
     "energy_meV": -106.21117561561822,
     "energy_per_particle_meV": -35.40372520520607,
     "sem_meV": 0.16780968157908638,
@@ -669,10 +1315,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 24
   },
   {
-    "step": 25,
+    "step": 45,
     "energy_meV": -106.57811348550302,
     "energy_per_particle_meV": -35.52603782850101,
     "sem_meV": 0.16775461686767926,
@@ -697,10 +1345,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 25
   },
   {
-    "step": 26,
+    "step": 46,
     "energy_meV": -106.49992967312839,
     "energy_per_particle_meV": -35.499976557709466,
     "sem_meV": 0.16857104754253963,
@@ -725,10 +1375,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 26
   },
   {
-    "step": 27,
+    "step": 47,
     "energy_meV": -106.94521503206296,
     "energy_per_particle_meV": -35.648405010687654,
     "sem_meV": 0.16437126255013423,
@@ -753,10 +1405,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 27
   },
   {
-    "step": 28,
+    "step": 48,
     "energy_meV": -107.0728543949782,
     "energy_per_particle_meV": -35.69095146499273,
     "sem_meV": 0.15283560845704616,
@@ -781,10 +1435,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 28
   },
   {
-    "step": 29,
+    "step": 49,
     "energy_meV": -106.87680148104151,
     "energy_per_particle_meV": -35.6256004936805,
     "sem_meV": 0.15713357342276352,
@@ -809,10 +1465,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 29
   },
   {
-    "step": 30,
+    "step": 50,
     "energy_meV": -107.47912176517069,
     "energy_per_particle_meV": -35.826373921723565,
     "sem_meV": 0.15203845078999365,
@@ -837,10 +1495,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 30
   },
   {
-    "step": 31,
+    "step": 51,
     "energy_meV": -107.42334993513933,
     "energy_per_particle_meV": -35.80778331171311,
     "sem_meV": 0.15480427296160817,
@@ -865,10 +1525,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 31
   },
   {
-    "step": 32,
+    "step": 52,
     "energy_meV": -107.52097777929139,
     "energy_per_particle_meV": -35.84032592643046,
     "sem_meV": 0.15510408854473895,
@@ -893,10 +1555,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 32
   },
   {
-    "step": 33,
+    "step": 53,
     "energy_meV": -107.71695286654631,
     "energy_per_particle_meV": -35.90565095551543,
     "sem_meV": 0.15266888850784593,
@@ -921,10 +1585,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 33
   },
   {
-    "step": 34,
+    "step": 54,
     "energy_meV": -107.70971922448459,
     "energy_per_particle_meV": -35.903239741494865,
     "sem_meV": 0.14803915290551248,
@@ -949,10 +1615,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 34
   },
   {
-    "step": 35,
+    "step": 55,
     "energy_meV": -107.65515890842565,
     "energy_per_particle_meV": -35.88505296947522,
     "sem_meV": 0.14788261320595245,
@@ -977,10 +1645,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 35
   },
   {
-    "step": 36,
+    "step": 56,
     "energy_meV": -107.74606614348023,
     "energy_per_particle_meV": -35.915355381160076,
     "sem_meV": 0.14793300453587702,
@@ -1005,10 +1675,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 36
   },
   {
-    "step": 37,
+    "step": 57,
     "energy_meV": -107.73557997844968,
     "energy_per_particle_meV": -35.91185999281656,
     "sem_meV": 0.14653724257292713,
@@ -1033,10 +1705,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 37
   },
   {
-    "step": 38,
+    "step": 58,
     "energy_meV": -107.50577407160505,
     "energy_per_particle_meV": -35.83525802386835,
     "sem_meV": 0.14920938119818458,
@@ -1061,10 +1735,12 @@
     "cg_iterations": 21,
     "true_residual_checks": 2,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 38
   },
   {
-    "step": 39,
+    "step": 59,
     "energy_meV": -107.68892332725704,
     "energy_per_particle_meV": -35.89630777575235,
     "sem_meV": 0.14779660794074792,
@@ -1089,10 +1765,12 @@
     "cg_iterations": 21,
     "true_residual_checks": 2,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 39
   },
   {
-    "step": 40,
+    "step": 60,
     "energy_meV": -107.98473504510092,
     "energy_per_particle_meV": -35.99491168170031,
     "sem_meV": 0.14481683183196975,
@@ -1117,10 +1795,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 40
   },
   {
-    "step": 41,
+    "step": 61,
     "energy_meV": -108.05757305357766,
     "energy_per_particle_meV": -36.01919101785922,
     "sem_meV": 0.1418182228047182,
@@ -1145,10 +1825,12 @@
     "cg_iterations": 21,
     "true_residual_checks": 2,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 41
   },
   {
-    "step": 42,
+    "step": 62,
     "energy_meV": -108.13756307349124,
     "energy_per_particle_meV": -36.045854357830414,
     "sem_meV": 0.14369757499046068,
@@ -1173,10 +1855,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 42
   },
   {
-    "step": 43,
+    "step": 63,
     "energy_meV": -108.13870819586668,
     "energy_per_particle_meV": -36.046236065288895,
     "sem_meV": 0.14220983661975092,
@@ -1201,10 +1885,12 @@
     "cg_iterations": 23,
     "true_residual_checks": 4,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 43
   },
   {
-    "step": 44,
+    "step": 64,
     "energy_meV": -108.12989274307299,
     "energy_per_particle_meV": -36.043297581024326,
     "sem_meV": 0.14751549086094645,
@@ -1229,10 +1915,12 @@
     "cg_iterations": 21,
     "true_residual_checks": 2,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 44
   },
   {
-    "step": 45,
+    "step": 65,
     "energy_meV": -107.82692747153615,
     "energy_per_particle_meV": -35.94230915717872,
     "sem_meV": 0.1426194964505694,
@@ -1257,10 +1945,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 45
   },
   {
-    "step": 46,
+    "step": 66,
     "energy_meV": -107.81440560109999,
     "energy_per_particle_meV": -35.938135200366666,
     "sem_meV": 0.14000436514745673,
@@ -1285,10 +1975,12 @@
     "cg_iterations": 20,
     "true_residual_checks": 1,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 46
   },
   {
-    "step": 47,
+    "step": 67,
     "energy_meV": -108.05307596004955,
     "energy_per_particle_meV": -36.01769198668318,
     "sem_meV": 0.14335172979447458,
@@ -1313,10 +2005,12 @@
     "cg_iterations": 23,
     "true_residual_checks": 4,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 47
   },
   {
-    "step": 48,
+    "step": 68,
     "energy_meV": -108.16213356847564,
     "energy_per_particle_meV": -36.054044522825215,
     "sem_meV": 0.1379402938165612,
@@ -1341,10 +2035,12 @@
     "cg_iterations": 21,
     "true_residual_checks": 2,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 48
   },
   {
-    "step": 49,
+    "step": 69,
     "energy_meV": -108.19413753446354,
     "energy_per_particle_meV": -36.06471251148785,
     "sem_meV": 0.14007805759753042,
@@ -1369,10 +2065,12 @@
     "cg_iterations": 24,
     "true_residual_checks": 5,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 49
   },
   {
-    "step": 50,
+    "step": 70,
     "energy_meV": -108.3134132257439,
     "energy_per_particle_meV": -36.104471075247965,
     "sem_meV": 0.13854245386688238,
@@ -1397,10 +2095,12 @@
     "cg_iterations": 25,
     "true_residual_checks": 6,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 50
   },
   {
-    "step": 51,
+    "step": 71,
     "energy_meV": -108.22085320079033,
     "energy_per_particle_meV": -36.07361773359678,
     "sem_meV": 0.14002324590047924,
@@ -1425,10 +2125,12 @@
     "cg_iterations": 24,
     "true_residual_checks": 5,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 51
   },
   {
-    "step": 52,
+    "step": 72,
     "energy_meV": -108.25714445098109,
     "energy_per_particle_meV": -36.08571481699369,
     "sem_meV": 0.13988527546297955,
@@ -1453,10 +2155,12 @@
     "cg_iterations": 23,
     "true_residual_checks": 4,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 52
   },
   {
-    "step": 53,
+    "step": 73,
     "energy_meV": -108.30533475387662,
     "energy_per_particle_meV": -36.10177825129221,
     "sem_meV": 0.13758450387169888,
@@ -1481,10 +2185,12 @@
     "cg_iterations": 23,
     "true_residual_checks": 4,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 53
   },
   {
-    "step": 54,
+    "step": 74,
     "energy_meV": -108.37123193581704,
     "energy_per_particle_meV": -36.12374397860568,
     "sem_meV": 0.13654636922538543,
@@ -1509,10 +2215,12 @@
     "cg_iterations": 25,
     "true_residual_checks": 6,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 54
   },
   {
-    "step": 55,
+    "step": 75,
     "energy_meV": -108.45667595757541,
     "energy_per_particle_meV": -36.15222531919181,
     "sem_meV": 0.1378977497532571,
@@ -1537,10 +2245,12 @@
     "cg_iterations": 29,
     "true_residual_checks": 10,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 55
   },
   {
-    "step": 56,
+    "step": 76,
     "energy_meV": -108.25892641092264,
     "energy_per_particle_meV": -36.08630880364088,
     "sem_meV": 0.1392003020901684,
@@ -1565,10 +2275,12 @@
     "cg_iterations": 22,
     "true_residual_checks": 3,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 56
   },
   {
-    "step": 57,
+    "step": 77,
     "energy_meV": -108.3308429385475,
     "energy_per_particle_meV": -36.110280979515835,
     "sem_meV": 0.1411561141410301,
@@ -1593,10 +2305,12 @@
     "cg_iterations": 25,
     "true_residual_checks": 6,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 57
   },
   {
-    "step": 58,
+    "step": 78,
     "energy_meV": -108.1097315656542,
     "energy_per_particle_meV": -36.0365771885514,
     "sem_meV": 0.13935227088370555,
@@ -1621,10 +2335,12 @@
     "cg_iterations": 24,
     "true_residual_checks": 5,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 58
   },
   {
-    "step": 59,
+    "step": 79,
     "energy_meV": -108.0646602268598,
     "energy_per_particle_meV": -36.02155340895327,
     "sem_meV": 0.14251232274732215,
@@ -1649,10 +2365,12 @@
     "cg_iterations": 29,
     "true_residual_checks": 10,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 59
   },
   {
-    "step": 60,
+    "step": 80,
     "energy_meV": -108.20192311224221,
     "energy_per_particle_meV": -36.06730770408074,
     "sem_meV": 0.13421117247950975,
@@ -1677,10 +2395,12 @@
     "cg_iterations": 27,
     "true_residual_checks": 8,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 60
   },
   {
-    "step": 61,
+    "step": 81,
     "energy_meV": -108.15613614316582,
     "energy_per_particle_meV": -36.05204538105527,
     "sem_meV": 0.13640739355585318,
@@ -1705,10 +2425,12 @@
     "cg_iterations": 28,
     "true_residual_checks": 9,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 61
   },
   {
-    "step": 62,
+    "step": 82,
     "energy_meV": -108.25066215036921,
     "energy_per_particle_meV": -36.08355405012307,
     "sem_meV": 0.13667170185087052,
@@ -1733,10 +2455,12 @@
     "cg_iterations": 26,
     "true_residual_checks": 7,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 62
   },
   {
-    "step": 63,
+    "step": 83,
     "energy_meV": -108.45039620196454,
     "energy_per_particle_meV": -36.150132067321515,
     "sem_meV": 0.13307524114651387,
@@ -1761,10 +2485,12 @@
     "cg_iterations": 25,
     "true_residual_checks": 6,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 63
   },
   {
-    "step": 64,
+    "step": 84,
     "energy_meV": -108.16820874509347,
     "energy_per_particle_meV": -36.05606958169782,
     "sem_meV": 0.13578132614379046,
@@ -1789,10 +2515,12 @@
     "cg_iterations": 29,
     "true_residual_checks": 10,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 64
   },
   {
-    "step": 65,
+    "step": 85,
     "energy_meV": -108.18600527062651,
     "energy_per_particle_meV": -36.0620017568755,
     "sem_meV": 0.13401948547828732,
@@ -1817,10 +2545,12 @@
     "cg_iterations": 27,
     "true_residual_checks": 8,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 65
   },
   {
-    "step": 66,
+    "step": 86,
     "energy_meV": -108.0839285939168,
     "energy_per_particle_meV": -36.027976197972265,
     "sem_meV": 0.13484150804354006,
@@ -1845,10 +2575,12 @@
     "cg_iterations": 29,
     "true_residual_checks": 10,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 66
   },
   {
-    "step": 67,
+    "step": 87,
     "energy_meV": -108.45995477421548,
     "energy_per_particle_meV": -36.15331825807183,
     "sem_meV": 0.13312471230656478,
@@ -1873,10 +2605,12 @@
     "cg_iterations": 27,
     "true_residual_checks": 8,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 67
   },
   {
-    "step": 68,
+    "step": 88,
     "energy_meV": -108.23954548326137,
     "energy_per_particle_meV": -36.07984849442045,
     "sem_meV": 0.12969654288782043,
@@ -1901,10 +2635,12 @@
     "cg_iterations": 27,
     "true_residual_checks": 8,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 68
   },
   {
-    "step": 69,
+    "step": 89,
     "energy_meV": -108.36522089492033,
     "energy_per_particle_meV": -36.121740298306776,
     "sem_meV": 0.1312871544160522,
@@ -1929,10 +2665,12 @@
     "cg_iterations": 25,
     "true_residual_checks": 6,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 69
   },
   {
-    "step": 70,
+    "step": 90,
     "energy_meV": -108.33281755994612,
     "energy_per_particle_meV": -36.11093918664871,
     "sem_meV": 0.1324017886605932,
@@ -1957,10 +2695,12 @@
     "cg_iterations": 29,
     "true_residual_checks": 10,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 70
   },
   {
-    "step": 71,
+    "step": 91,
     "energy_meV": -108.35860100300455,
     "energy_per_particle_meV": -36.119533667668186,
     "sem_meV": 0.13171734205576138,
@@ -1985,10 +2725,12 @@
     "cg_iterations": 25,
     "true_residual_checks": 6,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 71
   },
   {
-    "step": 72,
+    "step": 92,
     "energy_meV": -108.22352484431225,
     "energy_per_particle_meV": -36.07450828143742,
     "sem_meV": 0.13628002776930986,
@@ -2013,10 +2755,12 @@
     "cg_iterations": 27,
     "true_residual_checks": 8,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 72
   },
   {
-    "step": 73,
+    "step": 93,
     "energy_meV": -107.9411576398939,
     "energy_per_particle_meV": -35.980385879964636,
     "sem_meV": 0.13812883138742188,
@@ -2041,10 +2785,12 @@
     "cg_iterations": 25,
     "true_residual_checks": 6,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 73
   },
   {
-    "step": 74,
+    "step": 94,
     "energy_meV": -108.12130283143007,
     "energy_per_particle_meV": -36.040434277143355,
     "sem_meV": 0.1307334953527647,
@@ -2069,10 +2815,12 @@
     "cg_iterations": 29,
     "true_residual_checks": 10,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 74
   },
   {
-    "step": 75,
+    "step": 95,
     "energy_meV": -108.28406184182049,
     "energy_per_particle_meV": -36.09468728060683,
     "sem_meV": 0.13082381892129044,
@@ -2097,10 +2845,12 @@
     "cg_iterations": 27,
     "true_residual_checks": 8,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 75
   },
   {
-    "step": 76,
+    "step": 96,
     "energy_meV": -108.3293789517027,
     "energy_per_particle_meV": -36.109792983900896,
     "sem_meV": 0.13413441636296722,
@@ -2125,10 +2875,12 @@
     "cg_iterations": 29,
     "true_residual_checks": 10,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 76
   },
   {
-    "step": 77,
+    "step": 97,
     "energy_meV": -108.16907889387467,
     "energy_per_particle_meV": -36.056359631291556,
     "sem_meV": 0.1304375215947142,
@@ -2153,10 +2905,12 @@
     "cg_iterations": 28,
     "true_residual_checks": 9,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 77
   },
   {
-    "step": 78,
+    "step": 98,
     "energy_meV": -108.40318459727179,
     "energy_per_particle_meV": -36.134394865757265,
     "sem_meV": 0.13431841142389217,
@@ -2181,10 +2935,12 @@
     "cg_iterations": 22,
     "true_residual_checks": 3,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 78
   },
   {
-    "step": 79,
+    "step": 99,
     "energy_meV": -108.31417979349064,
     "energy_per_particle_meV": -36.104726597830215,
     "sem_meV": 0.13393322656829793,
@@ -2209,10 +2965,12 @@
     "cg_iterations": 29,
     "true_residual_checks": 10,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 79
   },
   {
-    "step": 80,
+    "step": 100,
     "energy_meV": -108.3371470664905,
     "energy_per_particle_meV": -36.112382355496834,
     "sem_meV": 0.12935231908712103,
@@ -2237,10 +2995,12 @@
     "cg_iterations": 23,
     "true_residual_checks": 4,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 80
   },
   {
-    "step": 81,
+    "step": 101,
     "energy_meV": -108.16355261922139,
     "energy_per_particle_meV": -36.054517539740466,
     "sem_meV": 0.1316268867018717,
@@ -2265,10 +3025,12 @@
     "cg_iterations": 25,
     "true_residual_checks": 6,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 81
   },
   {
-    "step": 82,
+    "step": 102,
     "energy_meV": -108.06316575237146,
     "energy_per_particle_meV": -36.02105525079049,
     "sem_meV": 0.13583283195982268,
@@ -2293,10 +3055,12 @@
     "cg_iterations": 25,
     "true_residual_checks": 6,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 82
   },
   {
-    "step": 83,
+    "step": 103,
     "energy_meV": -108.28573384653998,
     "energy_per_particle_meV": -36.09524461551333,
     "sem_meV": 0.1347635199056128,
@@ -2321,10 +3085,12 @@
     "cg_iterations": 29,
     "true_residual_checks": 10,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 83
   },
   {
-    "step": 84,
+    "step": 104,
     "energy_meV": -108.19608197752125,
     "energy_per_particle_meV": -36.06536065917375,
     "sem_meV": 0.13151066509723874,
@@ -2349,10 +3115,12 @@
     "cg_iterations": 27,
     "true_residual_checks": 8,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 84
   },
   {
-    "step": 85,
+    "step": 105,
     "energy_meV": -108.25483876282746,
     "energy_per_particle_meV": -36.08494625427582,
     "sem_meV": 0.13224127003837322,
@@ -2377,10 +3145,12 @@
     "cg_iterations": 28,
     "true_residual_checks": 9,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 85
   },
   {
-    "step": 86,
+    "step": 106,
     "energy_meV": -108.43344505438198,
     "energy_per_particle_meV": -36.144481684793995,
     "sem_meV": 0.13255596799839325,
@@ -2405,10 +3175,12 @@
     "cg_iterations": 28,
     "true_residual_checks": 9,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 86
   },
   {
-    "step": 87,
+    "step": 107,
     "energy_meV": -108.30995720811656,
     "energy_per_particle_meV": -36.10331906937218,
     "sem_meV": 0.1385276851587039,
@@ -2433,10 +3205,12 @@
     "cg_iterations": 29,
     "true_residual_checks": 10,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 87
   },
   {
-    "step": 88,
+    "step": 108,
     "energy_meV": -108.21293143678913,
     "energy_per_particle_meV": -36.07097714559638,
     "sem_meV": 0.13447791021789354,
@@ -2461,10 +3235,12 @@
     "cg_iterations": 28,
     "true_residual_checks": 9,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 88
   },
   {
-    "step": 89,
+    "step": 109,
     "energy_meV": -108.23757278789229,
     "energy_per_particle_meV": -36.07919092929743,
     "sem_meV": 0.13435334772277868,
@@ -2489,10 +3265,12 @@
     "cg_iterations": 25,
     "true_residual_checks": 6,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 89
   },
   {
-    "step": 90,
+    "step": 110,
     "energy_meV": -108.34307641831164,
     "energy_per_particle_meV": -36.11435880610388,
     "sem_meV": 0.13025747291273215,
@@ -2517,10 +3295,12 @@
     "cg_iterations": 29,
     "true_residual_checks": 10,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 90
   },
   {
-    "step": 91,
+    "step": 111,
     "energy_meV": -108.26996631677277,
     "energy_per_particle_meV": -36.08998877225759,
     "sem_meV": 0.13356480779018753,
@@ -2545,10 +3325,12 @@
     "cg_iterations": 25,
     "true_residual_checks": 6,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 91
   },
   {
-    "step": 92,
+    "step": 112,
     "energy_meV": -108.28727636684884,
     "energy_per_particle_meV": -36.09575878894962,
     "sem_meV": 0.13594842766268955,
@@ -2573,10 +3355,12 @@
     "cg_iterations": 29,
     "true_residual_checks": 10,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 92
   },
   {
-    "step": 93,
+    "step": 113,
     "energy_meV": -108.47914083555632,
     "energy_per_particle_meV": -36.159713611852105,
     "sem_meV": 0.13062684422804194,
@@ -2601,10 +3385,12 @@
     "cg_iterations": 28,
     "true_residual_checks": 9,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 93
   },
   {
-    "step": 94,
+    "step": 114,
     "energy_meV": -108.02930706430868,
     "energy_per_particle_meV": -36.00976902143623,
     "sem_meV": 0.12907038868027781,
@@ -2629,10 +3415,12 @@
     "cg_iterations": 29,
     "true_residual_checks": 10,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 94
   },
   {
-    "step": 95,
+    "step": 115,
     "energy_meV": -108.19758709596121,
     "energy_per_particle_meV": -36.065862365320406,
     "sem_meV": 0.1302399843911055,
@@ -2657,10 +3445,12 @@
     "cg_iterations": 29,
     "true_residual_checks": 10,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 95
   },
   {
-    "step": 96,
+    "step": 116,
     "energy_meV": -108.1633936739473,
     "energy_per_particle_meV": -36.054464557982435,
     "sem_meV": 0.1331427662019014,
@@ -2685,10 +3475,12 @@
     "cg_iterations": 22,
     "true_residual_checks": 3,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 96
   },
   {
-    "step": 97,
+    "step": 117,
     "energy_meV": -108.0327498058247,
     "energy_per_particle_meV": -36.01091660194157,
     "sem_meV": 0.132098019912394,
@@ -2713,10 +3505,12 @@
     "cg_iterations": 25,
     "true_residual_checks": 6,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 97
   },
   {
-    "step": 98,
+    "step": 118,
     "energy_meV": -108.22620900096486,
     "energy_per_particle_meV": -36.07540300032162,
     "sem_meV": 0.13219910466942925,
@@ -2741,10 +3535,12 @@
     "cg_iterations": 28,
     "true_residual_checks": 9,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 98
   },
   {
-    "step": 99,
+    "step": 119,
     "energy_meV": -108.2964590054039,
     "energy_per_particle_meV": -36.09881966846797,
     "sem_meV": 0.13068429598567785,
@@ -2769,10 +3565,12 @@
     "cg_iterations": 25,
     "true_residual_checks": 6,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 99
   },
   {
-    "step": 100,
+    "step": 120,
     "energy_meV": -108.42997541748018,
     "energy_per_particle_meV": -36.14332513916006,
     "sem_meV": 0.13630397645636877,
@@ -2797,6 +3595,8 @@
     "cg_iterations": 29,
     "true_residual_checks": 10,
     "cg_termination_reason": "true_residual_tolerance",
-    "preconditioner": "none"
+    "preconditioner": "none",
+    "stage": "projected",
+    "stage_step": 100
   }
 ]
