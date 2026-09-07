@@ -107,27 +107,65 @@ def main():
   ax.grid(axis='y',color='.91',lw=.45,zorder=0); ax.spines['top'].set_visible(False); ax.spines['right'].set_visible(False)
  FIG.mkdir(parents=True,exist_ok=True); fig.savefig(FIG/'fig6_neural_bloch_results.pdf',bbox_inches='tight'); fig.savefig(FIG/'fig6_neural_bloch_results.png',bbox_inches='tight'); plt.close(fig)
 
+def efficiency_timings():
+ timing=json.loads((RELEASE/'summary.json').read_text())['timings_seconds']
+ result={}
+ for filling,key in [('1/3','nu1of3'),('2/3','nu2of3')]:
+  t=timing[key]
+  result[filling]=np.asarray([t['ed_5band_gamma'],t['full_m'],t['no_m_ms'],
+                             t['outer_c3_three_sector_wall']/3])
+ return result
+
+
 def make_training_summary():
  groups={'1/3':('outer','outer1','outer2'),'2/3':('outer0','outer1','outer2')}
- selected={'1/3':('full','gamma','outer'),'2/3':('full','gamma','outer2')}
- labels={'full':r'full $M$','gamma':r'no $M$+$M_S$','outer':r'$P_0$','outer2':r'$P_2$'}
- fig,axs=plt.subplots(2,2,figsize=(5.35,3.45)); fig.subplots_adjust(left=.11,right=.985,bottom=.15,top=.90,wspace=.34,hspace=.50)
- for col,filling in enumerate(('1/3','2/3')):
+ fig,axs=plt.subplots(2,3,figsize=(8.4,5.15))
+ fig.subplots_adjust(left=.065,right=.99,bottom=.12,top=.93,wspace=.43,hspace=.56)
+ timing=efficiency_timings()
+ for row,filling in enumerate(('1/3','2/3')):
   sector_traces=[json.loads(RUNS[(filling,b)].read_text()) for b in groups[filling]]
+  ax=axs[row,0]; sector_colors=['#D55E00','#7A5195',ORANGE]
+  zoom=ax.inset_axes([.36,.44,.62,.47])
+  for m,t in enumerate(sector_traces):
+   step=np.asarray([r['step'] for r in t]); en=np.asarray([r['energy_per_particle_meV'] for r in t])
+   ax.plot(step,en,color=sector_colors[m],lw=1,label=rf'$m={m}$')
+   zoom.plot(step[step>=21],en[step>=21],color=sector_colors[m],lw=.8)
+  ax.axvline(20,color='.55',ls=':',lw=.7)
+  ax.set_xlim(0,122); ax.set_xlabel('NG update'); ax.set_ylabel(r'$E/N_e$ (meV)')
+  ax.set_title(rf'$\nu={filling}$: optimization',fontweight='bold')
+  ax.legend(loc='center right',bbox_to_anchor=(1,.28),fontsize=5.8,ncol=3,frameon=False,handlelength=.9,columnspacing=.5)
+  zoom.set_xlim(20,121); zoom.set_xticks([20,70,120]); zoom.tick_params(labelsize=5.5,length=2,pad=1)
+  zoom.yaxis.set_major_locator(MaxNLocator(3)); zoom.set_title('updates 21--120',fontsize=5.8,pad=2)
+  zoom.spines['top'].set_visible(False); zoom.spines['right'].set_visible(False)
   means=np.asarray([np.mean([v['energy_per_particle_meV'] for v in t[-10:]]) for t in sector_traces])
   rms=np.asarray([np.std([v['energy_per_particle_meV'] for v in t[-10:]]) for t in sector_traces]); delta=means-means.min()
-  ax=axs[0,col]; x=np.arange(3); bars=ax.bar(x,delta,yerr=rms,color=['#D55E00','#7A5195',ORANGE],width=.60,edgecolor='white',error_kw={'elinewidth':.75,'capsize':2,'capthick':.75})
+  ax=axs[row,1]; x=np.arange(3)
+  bars=ax.bar(x,delta,yerr=rms,color=sector_colors,width=.60,edgecolor='white',error_kw={'elinewidth':.75,'capsize':2,'capthick':.75})
   ax.bar_label(bars,labels=[f'{v:.2f}' for v in delta],padding=2,fontsize=6.8); ax.axhline(0,color='.25',lw=.6)
-  ax.set_ylim(-.12,max(delta+rms)*1.18+.08); ax.set_xticks(x,[r'$m=0$',r'$m=1$',r'$m=2$']); ax.set_ylabel(r'$\Delta E_{\rm tail}/N_e$ (meV)'); ax.set_title(rf'$\nu={filling}$',fontweight='bold')
-  keys=selected[filling]; counts=[]
-  for b in keys:
-   trace=json.loads(RUNS[(filling,b)].read_text()); counts.append(sum(not bool(v['update_accepted']) for v in trace))
-  ax=axs[1,col]; xx=np.arange(len(keys)); bars=ax.bar(xx,counts,color=[COLOR[b] for b in keys],width=.60,edgecolor='white')
-  ax.bar_label(bars,labels=[str(v) for v in counts],padding=2,fontsize=6.8); ax.set_ylim(0,max(max(counts)+4,4))
-  ax.set_xticks(xx,[labels[b] for b in keys],rotation=16,ha='right'); ax.set_ylabel('rejected updates'); ax.yaxis.set_major_locator(MaxNLocator(integer=True))
- for label,ax in zip('abcd',axs.flat):
-  ax.text(-.14,1.04,label,transform=ax.transAxes,fontsize=8.5,fontweight='bold'); ax.grid(axis='y',color='.92',lw=.45,zorder=0); ax.spines['top'].set_visible(False); ax.spines['right'].set_visible(False); ax.tick_params(length=2.8)
+  ax.set_ylim(-.12,max(delta+rms)*1.18+.08); ax.set_xticks(x,[r'$m=0$',r'$m=1$',r'$m=2$'])
+  ax.set_ylabel(r'$\Delta E_{\rm tail}/N_e$ (meV)'); ax.set_title(rf'$\nu={filling}$: sector offsets',fontweight='bold')
+
+  ax=axs[row,2]; seconds=timing[filling]
+  bars=ax.bar(np.arange(4),seconds-.1,bottom=.1,color=['#7A7F83',BLUE,RED,ORANGE],
+              width=.60,edgecolor='white',zorder=3)
+  bars[-1].set_hatch('///')
+  for bar,value in zip(bars,seconds):
+   label=f'{value:.2f} s' if value<60 else f'{value/60:.1f} min'
+   ax.annotate(label,(bar.get_x()+bar.get_width()/2,value),xytext=(0,3),textcoords='offset points',
+               ha='center',va='bottom',fontsize=6)
+  ax.set_xticks(np.arange(4),[r'ED'+'\n'+r'$5b,\ \Gamma$',r'full $M$',r'no $M$'+'\n'+r'$+M_S$','Outer\nper sector'])
+  ax.tick_params(axis='x',labelsize=6)
+  ax.set_yscale('log'); ax.set_ylim(.1,6000)
+  ax.set_yticks([.1,1,10,100,1000],['0.1','1','10','100','1000'])
+  ax.minorticks_off(); ax.set_ylabel('wall time (s, log scale)')
+  ax.set_title(rf'$\nu={filling}$: 9-cell timing',fontweight='bold')
+
+ for label,ax in zip('abcdef',axs.flat):
+  ax.text(-.14,1.04,label,transform=ax.transAxes,fontsize=8.5,fontweight='bold')
+  ax.grid(axis='y',color='.92',lw=.45,zorder=0); ax.spines['top'].set_visible(False)
+  ax.spines['right'].set_visible(False); ax.tick_params(length=2.8)
  FIG.mkdir(parents=True,exist_ok=True)
- fig.savefig(FIG/'fig6_training_summary.pdf',bbox_inches='tight'); fig.savefig(FIG/'fig6_training_summary.png',bbox_inches='tight'); plt.close(fig)
+ fig.savefig(FIG/'fig6_training_summary.pdf',bbox_inches='tight')
+ fig.savefig(FIG/'fig6_training_summary.png',bbox_inches='tight'); plt.close(fig)
 
 if __name__=='__main__': main(); make_training_summary()

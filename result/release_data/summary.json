@@ -1,0 +1,142 @@
+{
+  "definition": "v3.2 plotting dataset: seed-260904 baselines; same initialization seed3184, independent parameters, shared normalized mixture20 then private100 for both fillings' outer sectors",
+  "baseline_source": "local production run gpu_vmc_adaptive_cg120_seed260904",
+  "outer_nu1_source": "local production run outer_c3_shared_pool_nu1of3_same_seed3184",
+  "outer_nu2_source": "local production run outer_c3_shared_pool_same_seed3184",
+  "traces": {
+    "nu1of3_full_m": {
+      "updates": 120,
+      "final_10_energy_mean_per_particle_meV": -36.259469422079576,
+      "final_10_energy_minimum_per_particle_meV": -36.30780989066417,
+      "final_10_energy_rms_meV": 0.028567664442910368,
+      "final_10_variance_mean_meV2": 113.15834117052468,
+      "final_10_relative_residual_mean": 0.01865805206037306,
+      "final_10_cg_iterations_mean": 53.2,
+      "rejected_updates": 0,
+      "final_10_position_acceptance_mean": 0.6657218962907792,
+      "final_10_layer_acceptance_mean": 0.5675508677959442
+    },
+    "nu1of3_no_m_gamma": {
+      "updates": 120,
+      "final_10_energy_mean_per_particle_meV": -37.3036747316006,
+      "final_10_energy_minimum_per_particle_meV": -37.360002013366056,
+      "final_10_energy_rms_meV": 0.04208827127939854,
+      "final_10_variance_mean_meV2": 62.367347566175724,
+      "final_10_relative_residual_mean": 0.017811613096702948,
+      "final_10_cg_iterations_mean": 34.3,
+      "rejected_updates": 0,
+      "final_10_position_acceptance_mean": 0.6718871116638183,
+      "final_10_layer_acceptance_mean": 0.6238250941038131
+    },
+    "nu2of3_full_m": {
+      "updates": 120,
+      "final_10_energy_mean_per_particle_meV": -52.121616283219886,
+      "final_10_energy_minimum_per_particle_meV": -52.162173847646635,
+      "final_10_energy_rms_meV": 0.03762134873487894,
+      "final_10_variance_mean_meV2": 718.0405689762495,
+      "final_10_relative_residual_mean": 0.04018248564935593,
+      "final_10_cg_iterations_mean": 51.7,
+      "rejected_updates": 18,
+      "final_10_position_acceptance_mean": 0.6464631825685501,
+      "final_10_layer_acceptance_mean": 0.602846410870552
+    },
+    "nu2of3_no_m_gamma": {
+      "updates": 120,
+      "final_10_energy_mean_per_particle_meV": -52.76659883553342,
+      "final_10_energy_minimum_per_particle_meV": -52.856760977166026,
+      "final_10_energy_rms_meV": 0.0568789200512444,
+      "final_10_variance_mean_meV2": 655.9654687679437,
+      "final_10_relative_residual_mean": 0.035401048392314866,
+      "final_10_cg_iterations_mean": 54.4,
+      "rejected_updates": 16,
+      "final_10_position_acceptance_mean": 0.6493095993995667,
+      "final_10_layer_acceptance_mean": 0.6225654006004333
+    },
+    "nu1of3_outer_c3_p0": {
+      "updates": 120,
+      "final_10_energy_mean_per_particle_meV": -37.34355000918688,
+      "final_10_energy_minimum_per_particle_meV": -37.38513706353645,
+      "final_10_energy_rms_meV": 0.03430033735499351,
+      "final_10_variance_mean_meV2": 55.024287639752956,
+      "final_10_relative_residual_mean": 0.016317809191746604,
+      "final_10_cg_iterations_mean": 24.7,
+      "rejected_updates": 0,
+      "final_10_position_acceptance_mean": 0.6690043598413468,
+      "final_10_layer_acceptance_mean": 0.6389656037092208
+    },
+    "nu1of3_outer_c3_p1": {
+      "updates": 120,
+      "final_10_energy_mean_per_particle_meV": -32.84455094425615,
+      "final_10_energy_minimum_per_particle_meV": -32.953308934143784,
+      "final_10_energy_rms_meV": 0.06710273420119488,
+      "final_10_variance_mean_meV2": 124.39387337045396,
+      "final_10_relative_residual_mean": 0.017316971939819632,
+      "final_10_cg_iterations_mean": 51.3,
+      "rejected_updates": 0,
+      "final_10_position_acceptance_mean": 0.6985949546098709,
+      "final_10_layer_acceptance_mean": 0.5917393356561661
+    },
+    "nu1of3_outer_c3_p2": {
+      "updates": 120,
+      "final_10_energy_mean_per_particle_meV": -36.107723696014986,
+      "final_10_energy_minimum_per_particle_meV": -36.187932459981674,
+      "final_10_energy_rms_meV": 0.04975004642438397,
+      "final_10_variance_mean_meV2": 75.92158967479527,
+      "final_10_relative_residual_mean": 0.016976795916696118,
+      "final_10_cg_iterations_mean": 27.3,
+      "rejected_updates": 0,
+      "final_10_position_acceptance_mean": 0.6787427276372909,
+      "final_10_layer_acceptance_mean": 0.5352834314107895
+    },
+    "nu2of3_outer_c3_p0": {
+      "updates": 120,
+      "final_10_energy_mean_per_particle_meV": -52.59216971197013,
+      "final_10_energy_minimum_per_particle_meV": -52.74161598928517,
+      "final_10_energy_rms_meV": 0.08671490346923663,
+      "final_10_variance_mean_meV2": 652.772975217408,
+      "final_10_relative_residual_mean": 0.01696883390148417,
+      "final_10_cg_iterations_mean": 40.4,
+      "rejected_updates": 0,
+      "final_10_position_acceptance_mean": 0.6484980672597885,
+      "final_10_layer_acceptance_mean": 0.5922117203474044
+    },
+    "nu2of3_outer_c3_p1": {
+      "updates": 120,
+      "final_10_energy_mean_per_particle_meV": -51.57403143581523,
+      "final_10_energy_minimum_per_particle_meV": -51.68475240995999,
+      "final_10_energy_rms_meV": 0.05111081916401475,
+      "final_10_variance_mean_meV2": 735.0644933372082,
+      "final_10_relative_residual_mean": 0.016809839548012302,
+      "final_10_cg_iterations_mean": 52.8,
+      "rejected_updates": 3,
+      "final_10_position_acceptance_mean": 0.6561773210763931,
+      "final_10_layer_acceptance_mean": 0.6130813926458358
+    },
+    "nu2of3_outer_c3_p2": {
+      "updates": 120,
+      "final_10_energy_mean_per_particle_meV": -52.88379780453563,
+      "final_10_energy_minimum_per_particle_meV": -52.97486377423883,
+      "final_10_energy_rms_meV": 0.052961965848897286,
+      "final_10_variance_mean_meV2": 673.4173070257358,
+      "final_10_relative_residual_mean": 0.017153003653021928,
+      "final_10_cg_iterations_mean": 38.9,
+      "rejected_updates": 0,
+      "final_10_position_acceptance_mean": 0.6495033860206604,
+      "final_10_layer_acceptance_mean": 0.6144743204116822
+    }
+  },
+  "timings_seconds": {
+    "nu1of3": {
+      "ed_5band_gamma": 0.3493752650101669,
+      "full_m": 480.0,
+      "no_m_ms": 327.0,
+      "outer_c3_three_sector_wall": 1341.726977208018
+    },
+    "nu2of3": {
+      "ed_5band_gamma": 660.4531921540001,
+      "full_m": 1467.0,
+      "no_m_ms": 1439.0,
+      "outer_c3_three_sector_wall": 4690.638237617997
+    }
+  }
+}

@@ -2,15 +2,18 @@
 
 These files are the minimal numerical inputs used by the publication plotting scripts:
 
-- `traces/`: historical full-`M` baselines and v3 no-`M`+$M_S$ traces at both
-  fillings. Each outer-`C3`+$M_S$ trace contains the common 20-update raw
-  pretraining prefix followed by its 100 independently sampled projected
-  updates, with `stage` and `stage_step` recording that boundary;
+- `traces/`: seed-260904 full-`M` and v3 no-`M`+$M_S$ baselines at both
+  fillings. Each v3.2 outer-`C3`+$M_S$ trace uses the same initialization seed
+  across sectors and contains 20 independent-parameter updates evaluated on a
+  shared mixture-sampled pool followed by 100 private-chain updates, with
+  `stage` and `stage_step` recording that boundary;
 - `diagnostics/nu*outer_c3_p{0,1,2}.{npz,json}`: complete-ratio 1-RDM,
   band weights, `n_1(k)`, full `S(q)`, and folded density maps measured from
   all six equilibrated final training ensembles;
-- the validation-summary JSON files are retained as historical audit artifacts
-  but are not inputs to the current training-tail figures or energy comparison.
+- `summary.json` records the exact final-ten values used by the report, and
+  `report_validation.json` records source-lineage and figure-integrity checks;
+- historical validation-summary JSON files are retained as audit artifacts but
+  are not inputs to the current training-tail figures or energy comparison.
 
 Each outer-sector diagnostic uses 4,128 configurations and 16 jointly batched
 auxiliary replacements per configuration. Every replacement recomputes the

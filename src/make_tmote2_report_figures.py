@@ -496,12 +496,6 @@ def figure3() -> None:
     cb2.update_ticks()
     cb2.set_label(r"$S(\mathbf{q})$", labelpad=2)
     cb2.ax.tick_params(length=2, width=0.55, labelsize=6.5)
-    fig.text(
-        0.60, 0.035,
-        r"weak backgrounds (Fig. 1 palette): band-1 $\Omega$ behind $n(\mathbf{k})$; "
-        r"band-1 $\mathrm{Tr}\,g-|\Omega|$ behind both $S(\mathbf{q})$ rows",
-        ha="center", va="bottom", fontsize=6.8, color="0.35",
-    )
     fig.savefig(FIGURES / "fig3_fig5_spectra_observables.pdf")
     fig.savefig(FIGURES / "fig3_fig5_spectra_observables.png", dpi=500)
     plt.close(fig)

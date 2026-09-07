@@ -1,6 +1,6 @@
 # QNS for moire FCI
 
-Version 3 (sector-mixer revision).
+Version 3.2 (same-seed shared-pool sector-mixer revision).
 
 This project benchmarks the continuum model and multiband exact diagonalization (ED) of twisted MoTe2 against Luo, Zaklama, and Fu, [arXiv:2503.13585v3](https://arxiv.org/abs/2503.13585), then tests their continuous-coordinate Neural-Bloch variational ansatz at fillings `nu=1/3` and `nu=2/3`.
 
@@ -12,18 +12,25 @@ The controlled QNS comparison uses a `3 x 3` moire cluster, width 32, two
 unshared message-passing iterations, 4,128 persistent walkers, and explicit
 true-CG-residual acceptance. Version 3 adds a trainable complex determinant
 mixer `M_S`: it linearly combines all 12 selected-momentum determinants whose
-total momentum is `Gamma`. This is distinct from the full-`M` matrix, which
-mixes momenta at the one-particle orbital level. Energies below are final-ten
-means of the correlated persistent training chain; RMS measures tail stability.
+total momentum is `Gamma`. Version 3.2 initializes the three outer-`C3`
+sectors with the same seed, applies 20 independent-parameter updates using a
+shared mixture-sampled pool, then continues with 100 private-chain updates.
+Energies below are final-ten means of the correlated persistent training
+chain; RMS measures tail stability rather than an independent error bar.
 
 | filling | state | final-ten training `E/N_e` (meV) | five-band ED (meV) | difference (meV) |
 |---|---|---:|---:|---:|
-| `1/3` | no `M` + `M_S`, `Gamma` | `-37.3902 (0.0287)` | `-37.39323` | `+0.0031` |
-| `1/3` | outer `P0` + `M_S` (lowest outer sector) | `-37.3458 (0.0516)` | `-37.39323` | `+0.0474` |
-| `2/3` | no `M` + `M_S`, `Gamma` | `-52.7841 (0.0394)` | `-52.72554` | `-0.0585` |
-| `2/3` | outer `P2` + `M_S` (lowest outer sector) | `-52.8211 (0.0477)` | `-52.72554` | `-0.0956` |
+| `1/3` | no `M` + `M_S`, `Gamma` | `-37.3037 (0.0421)` | `-37.39323` | `+0.0896` |
+| `1/3` | outer `P0` + `M_S` (lowest outer sector) | `-37.3436 (0.0343)` | `-37.39323` | `+0.0497` |
+| `2/3` | no `M` + `M_S`, `Gamma` | `-52.7666 (0.0569)` | `-52.72554` | `-0.0411` |
+| `2/3` | outer `P2` + `M_S` (lowest outer sector) | `-52.8838 (0.0530)` | `-52.72554` | `-0.1583` |
 
-All three outer characters remain available in the compact training traces. Fig. 6 shows only the lowest-training outer sector at each filling; a separate compact chart reports the full `m=0,1,2` tail-energy splitting and rejected-update counts. The complete-ratio 1-RDM estimator jointly batches all auxiliary replacements while recomputing the full projected wavefunction for every replacement.
+All three outer characters remain available in the compact training traces.
+Fig. 6 shows only the lowest-training outer sector at each filling; Fig. 7
+reports all three optimization traces, tail-energy splitting, and separate
+five-band-ED/QNS timing panels for `nu=1/3` and `nu=2/3`. The complete-ratio
+1-RDM estimator jointly batches all auxiliary replacements while recomputing
+the full projected wavefunction for every replacement.
 ## Repository layout
 
 - `src/continuum.py`, `src/multiband_ed.py`, `src/sparse_ed.py`: continuum bands and projected ED.

@@ -17,7 +17,7 @@
 \title{Continuum multiband exact diagonalization of twisted MoTe$_2$\\
 \large An ED benchmark for CDW and fractional Chern-insulator neural states}
 \author{Local numerical benchmark for the Physics-for-AI/QNS programme}
-\date{3 September 2026\\Version 3.0.0}
+\date{6 September 2026\\Version 3.2}
 
 \begin{document}
 \maketitle
@@ -39,15 +39,17 @@ linearly combines all 12 selected-momentum determinants obeying total-momentum
 conservation. Complete-wavefunction $C_3$ projection then resolves its three
 rotation sectors. Following the reference
 optimization convention, reported energies are final-ten means of the
-equilibrated persistent training chain; their RMS is a tail-stability
+persistent training chain; their RMS is a tail-stability
 diagnostic rather than an independent error bar. At $\nu=1/3$, v3 no-$M$ and
-the lowest outer sector $P_0$ give $E/N_e=-37.3902(287)$ and
-$-37.3458(516)$ meV, respectively. At $\nu=2/3$, v3 no-$M$ gives
-$-52.7841(394)$ meV and the lowest outer training sector is $P_2$, with
-$E/N_e=-52.8211(477)$ meV, 0.0956 meV below
-five-band ED on the same training-chain comparison.  Because this is a
-single-seed correlated optimization trace, it is not yet a controlled
-variational bound.  A jointly batched complete-ratio estimator evaluates the
+the lowest outer sector $P_0$ give $E/N_e=-37.3037(421)$ and
+$-37.3436(343)$ meV, respectively. At $\nu=2/3$, v3 no-$M$ gives
+$-52.7666(569)$ meV and the lowest outer training sector is $P_2$, with
+$E/N_e=-52.8838(530)$ meV. Version 3.2 uses independent, same-seed sector
+parameters with 20 shared-mixture-sampling updates followed by 100 private-chain
+updates at both fillings; the local full-$M$ and no-$M$ baselines are retained.
+These are single-seed correlated optimization
+traces rather than controlled variational bounds. A jointly batched
+complete-ratio estimator evaluates the
 five-band-projected 1-RDM for both v3 no-$M$ states and all outer $m=0,1,2$
 sectors while retaining full graph, backflow and determinant recomputation
 for every particle replacement.
@@ -342,9 +344,46 @@ The validated workflow is:
 
 Numerical regression checks support every stage.  The general C6-supercell interaction agrees with the earlier rectangular $3\times3$ implementation to relative error $3.3\times10^{-16}$.  Direct electron and particle--hole spectra agree sector by sector to $3.4\times10^{-13}$ meV.  The finite plane-wave cutoff produces a maximum one-body C6 mismatch of $8.0\times10^{-6}$ meV, and the pre-symmetrization interaction Hermiticity error is $7.8\times10^{-9}$.  The current complete 51-test regression suite passes; the topology outputs additionally record link conditioning, Lanczos residuals and interaction Hermiticity at every twist.
 
+\subsection{Wall-clock baseline for comparison with QNS}
+
+Table~\ref{tab:edruntime} records the measured CPU wall time of the present
+run.  The VMware guest exposed 64 vCPUs and 251 GiB of memory.  The sequential
+stages used 12 OpenMP threads, while the two Berry calculations ran concurrently
+on disjoint 24-vCPU affinity sets.  No GPU was used.  Setup and observable stages
+are identified separately because they should not be confused with Lanczos
+diagonalization when comparing against a future QNS calculation.
+
+\begin{table*}[t]
+\centering
+\caption{Measured ED wall-clock baseline on the current VMware guest.  Berry
+times exclude the 20 min 6 s reboot interval.}
+\label{tab:edruntime}
+\begin{tabular}{@{}llr@{}}
+\toprule
+Calculation & Scope & Wall time \\
+\midrule
+Fig.~2, 1--3 bands & $3\times3$, $\nu=2/3$, all momentum sectors & 45.2 s \\
+Fig.~2, 4 bands & $\Gamma$ sector, cached operator & 15.6 s \\
+Fig.~2, 5 bands & $\Gamma$ sector, dimension 905,100 & 11 min 0.5 s \\
+Fig.~2, 5-band spectrum & cached $\Gamma$ plus two inequivalent sectors & 19 min 12.1 s \\
+Fig.~3, one band & 27 cells, both fillings, momentum spectra & 7 min 21.9 s \\
+Fig.~3 observables & ground manifolds, $n(\bm k)$ and $S(\bm q)$ & 1 min 3.7 s \\
+Fig.~4 Berry, parallel pair & $6\times6$ plaquettes, $7\times7$ endpoints & $\sim$34 min 22 s \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The complete sequential Fig.~2--3 production window was 40 min 48 s.  The
+$\nu=2/3$ and $\nu=1/3$ Berry jobs took approximately 26 min 32 s and
+34 min 20 s of active wall time, respectively, so their parallel critical path
+was 34 min 22 s.  Future QNS comparisons should additionally record accelerator
+allocation, peak memory, compilation or warm-up policy, and final energy error
+relative to this ED baseline.
+
 \input{neural_bloch_part2.tex}
 \begin{thebibliography}{12}
 \bibitem{luo} D. Luo, T. Zaklama, and L. Fu, ``Solving fractional electron states in twisted MoTe$_2$ with deep neural network,'' arXiv:2503.13585v3, \href{https://doi.org/10.48550/arXiv.2503.13585}{doi:10.48550/arXiv.2503.13585}.
+\bibitem{mbar} M. R. Shirts and J. D. Chodera, ``Statistically optimal analysis of samples from multiple equilibrium states,'' J. Chem. Phys. \textbf{129}, 124105 (2008), \href{https://arxiv.org/abs/0801.1426}{arXiv:0801.1426}.
 \bibitem{limomentum} X. Li, Y. Chen, B. Li, H. Chen, F. Wu, J. Chen, and W. Ren,
 "Deep Learning Sheds Light on Integer and Fractional Topological Insulators,"
 arXiv:2503.11756v1,

@@ -1,0 +1,78 @@
+{
+  "status": "passed",
+  "version": "3.2",
+  "pdf_sha256": "5b5b11d75048156babb1e68bf20e02c0869f4bd3ae419712567f395311409321",
+  "figure_numbers": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "sectors": [
+    {
+      "filling": "nu1of3",
+      "sector": 0,
+      "energy_mean": -37.34355000918688,
+      "energy_rms": 0.03430033735499351,
+      "trace_sha256": "ba8185385e32cbff942227ce2cab9c913fa375135459d66623978e9e979a31dd",
+      "diagnostic_sha256": "aa7e6480016ffab8cc14a63557444add62c5e72401facd42a24bd1aa563c58cb"
+    },
+    {
+      "filling": "nu1of3",
+      "sector": 1,
+      "energy_mean": -32.84455094425615,
+      "energy_rms": 0.06710273420119488,
+      "trace_sha256": "134aa2662822552c1daa464c0434f0bce3975e681041ace65117d409de22ef4b",
+      "diagnostic_sha256": "3fe4cec427190c272dfb92633a8769a522c6506815f65b0d8256539c498f688b"
+    },
+    {
+      "filling": "nu1of3",
+      "sector": 2,
+      "energy_mean": -36.107723696014986,
+      "energy_rms": 0.04975004642438397,
+      "trace_sha256": "a0dfab7ebea3f865d402648d5694dffbdf282ca3b968eb473e117cb5e2d0064f",
+      "diagnostic_sha256": "5deaa656f14b96449b3f4114dd7a110ce5d627bd38d055a8631f3bfb830a8d37"
+    },
+    {
+      "filling": "nu2of3",
+      "sector": 0,
+      "energy_mean": -52.59216971197013,
+      "energy_rms": 0.08671490346923663,
+      "trace_sha256": "4786a934106849c8aa07ff25415867579c1e4f3d0f566b23605976fe816d513a",
+      "diagnostic_sha256": "33a6c124ccfada49ff1f292dd46dff66292fed878505d5b872ff8c5aabc3eb75"
+    },
+    {
+      "filling": "nu2of3",
+      "sector": 1,
+      "energy_mean": -51.57403143581523,
+      "energy_rms": 0.05111081916401475,
+      "trace_sha256": "f1edd429c0670b20c97943990fd7201dfe810399270ddf389d4f110a2423c424",
+      "diagnostic_sha256": "be01d7328de9a828d84e1a70f0827281cbe089179ebd450a3bd39c7062d2bdf1"
+    },
+    {
+      "filling": "nu2of3",
+      "sector": 2,
+      "energy_mean": -52.88379780453563,
+      "energy_rms": 0.052961965848897286,
+      "trace_sha256": "afce681cd27ec120910f3218feab03cdff22bd59e9361dde8bb0342788ee86a9",
+      "diagnostic_sha256": "6afc15db6b26e8f1b68c5433d454fdb95f60330e0351f02de91af76393b8522e"
+    }
+  ],
+  "figure_sha256": {
+    "fig1_bands_quantum_geometry.pdf": "7e0f5a3774d279295103432a54f7b43cf68c2503b908b08a2b16e939537eed4f",
+    "fig2_multiband_ed.pdf": "a64473f7802784e35a6c1d0e7272dac6ff52143b278b02b4b0a2d6fe6eb847d1",
+    "fig3_fig5_spectra_observables.pdf": "d9268288d2efa145b8840a284bf1153d6d3d47274b452a346df613d24415ac32",
+    "fig4_manybody_berry_curvature.pdf": "6c0707678bfc5d7a29c293a8c838e10f21b6d2aa2c674f4fabf1912a37ab2016",
+    "fig6_neural_bloch_results.pdf": "ea781ef698c63c395dce7f387338271dc7fe62053cf77f9970b775f7498d781f",
+    "fig6_training_summary.pdf": "fa0ff85e614e275810d522ab36d89e893baec6e4fe8c76c3fb1a1efdfecca582",
+    "fig7_neural_bloch_observables.pdf": "b22dcab61443401512bd1a82ae10bf1adb85e9424fcdfb355b849e47b98ca894",
+    "fig7_neural_bloch_observables_nu1of3.pdf": "8ec7ab7307b57fa3cd9790cd08ee53062e59d5e6f65a97e908e7322d4738b34d",
+    "fig7_neural_bloch_observables_nu2of3.pdf": "4236d57aab9978edc6bca3f9ca0d938b76ecfe4aeb7dacaa10d15bcf4cb8b678"
+  },
+  "note": "Source/rounded-value/figure existence checks; not a convergence or uncertainty validation"
+}
