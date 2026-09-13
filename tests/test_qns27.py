@@ -11,6 +11,7 @@ from src.qns27 import (
     gamma_indices,
     inputs,
     momentum_class_indices,
+    uniform_first_bz_grid,
 )
 from src.jax_neural_bloch import (
     JaxNeuralBlochSpec,
@@ -22,8 +23,11 @@ from src.jax_neural_bloch import (
 )
 from src.qns27_diagnostics import (
     _coordinate_observables,
+    _five_band_orbitals,
     _filling_normalized,
     _first_bz_momenta,
+    _orbital_values,
+    _physical_rotation_residual,
     _rotation_permutation,
 )
 
@@ -78,6 +82,32 @@ class QNS27Checks(unittest.TestCase):
         self.assertAlmostEqual(float(normalized.sum()), 9.0, places=12)
         self.assertTrue(np.all(np.isfinite(sem)))
 
+    def test_projector_uses_physical_first_bz_momenta(self):
+        coefficients, orbital_momenta = _five_band_orbitals()
+        self.assertEqual(coefficients.shape[:2], (27 * 5, 2))
+        np.testing.assert_allclose(
+            orbital_momenta,
+            first_bz_momenta(),
+            rtol=0.0,
+            atol=1.0e-14,
+        )
+
+    def test_optimized_bloch_orbitals_match_v3_expression(self):
+        model, qns_inputs = inputs()
+        coefficients, momenta = _five_band_orbitals()
+        positions = np.asarray([[0.17, 0.31], [0.83, 0.09]])
+        layers = np.asarray([0, 1])
+        actual = _orbital_values(positions, layers, coefficients, momenta, 2)
+        repeated_momenta = np.repeat(momenta, 5, axis=0)
+        plane_momenta = repeated_momenta[:, None, :] + model.g_vectors[None]
+        cartesian = np.einsum(
+            "ac,bc->ba", qns_inputs["supercell_lattice"], positions
+        )
+        phase = np.einsum("ba,oga->bog", cartesian, plane_momenta)
+        selected = coefficients[:, layers, :].transpose(1, 0, 2)
+        expected = np.sum(selected * np.exp(1j * phase), axis=-1)
+        np.testing.assert_allclose(actual, expected, rtol=2e-13, atol=2e-13)
+
     def test_first_bz_fourier_grid_is_c6_closed(self):
         points = first_bz_c6_grid()
         self.assertEqual(points.shape, (37, 2))
@@ -86,32 +116,41 @@ class QNS27Checks(unittest.TestCase):
             permutation = _rotation_permutation(points, turns)
             self.assertEqual(len(np.unique(permutation)), len(points))
 
-    def test_full_structure_factor_uses_real_space_pair_fourier(self):
+        uniform = uniform_first_bz_grid()
+        self.assertEqual(uniform.shape, (91, 2))
+        for turns in (1, 2):
+            permutation = _rotation_permutation(uniform, turns)
+            self.assertEqual(len(np.unique(permutation)), len(uniform))
+
+    def test_structure_factor_uses_final_walker_density_pair_fourier(self):
         _, data = inputs()
         rng = np.random.default_rng(8)
         positions = rng.random((16, 9, 2))
         result = _coordinate_observables(positions, 4)
-        expected = first_bz_momenta()
-        np.testing.assert_allclose(result['structure_q_vectors'], expected, atol=1.0e-14)
+        expected = uniform_first_bz_grid()
+        np.testing.assert_allclose(
+            result['structure_q_vectors_uniform_auxiliary'], expected,
+            atol=1.0e-14,
+        )
         cartesian = np.einsum('ac,bnc->bna', data['supercell_lattice'], positions)
-        rho = np.exp(1j * np.einsum('bna,qa->bnq', cartesian, expected)).sum(axis=1)
-        direct = (np.abs(rho) ** 2 / positions.shape[1]).mean(axis=0)
-        direct[0] = 0.0  # connected convention used only at q=0
+        structure = result['charge_structure_factor_uniform_auxiliary']
+        self.assertEqual(structure.shape, (91,))
+        self.assertAlmostEqual(float(structure[0]), 0.0, places=14)
+        inversion = np.empty(len(expected), dtype=np.int32)
+        for index, point in enumerate(expected):
+            inversion[index] = int(np.argmin(np.linalg.norm(expected + point, axis=1)))
+        np.testing.assert_allclose(structure, structure[inversion], atol=2e-14)
+        ed_grid = first_bz_momenta()
         np.testing.assert_allclose(
-            result['charge_structure_factor_full'], direct,
-            rtol=2e-14, atol=2e-14,
+            result['structure_q_vectors'], ed_grid, atol=1.0e-14
         )
-        audit = first_bz_c6_grid()
-        np.testing.assert_allclose(
-            result['structure_q_vectors_c6_audit'], audit, atol=1.0e-14
-        )
-        audit_rho = np.exp(
-            1j * np.einsum('bna,qa->bnq', cartesian, audit)
+        ed_rho = np.exp(
+            1j * np.einsum('bna,qa->bnq', cartesian, ed_grid)
         ).sum(axis=1)
-        audit_direct = (np.abs(audit_rho) ** 2 / positions.shape[1]).mean(axis=0)
-        audit_direct[0] = 0.0
+        ed_direct = (np.abs(ed_rho) ** 2 / positions.shape[1]).mean(axis=0)
+        ed_direct[0] = 0.0
         np.testing.assert_allclose(
-            result['charge_structure_factor_full_c6_audit'], audit_direct,
+            result['charge_structure_factor'], ed_direct,
             rtol=2e-14, atol=2e-14,
         )
 
@@ -126,6 +165,11 @@ class QNS27Checks(unittest.TestCase):
             (points @ rotation.T)[:, None] - points[None, :], axis=2
         )
         self.assertEqual(np.count_nonzero(distances.min(axis=1) > 1e-10), 6)
+        residual, matched = _physical_rotation_residual(
+            np.zeros(len(points)), points
+        )
+        self.assertEqual(matched, 21)
+        self.assertEqual(residual, 0.0)
 
     def test_v4_gamma_projection_is_translation_invariant(self):
         spec = JaxNeuralBlochSpec(

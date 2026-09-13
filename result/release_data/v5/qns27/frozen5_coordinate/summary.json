@@ -1,0 +1,638 @@
+{
+  "status": "complete",
+  "route": "five frozen-parameter measurement steps for coordinate-only S(q) and density; occupation remains the 4128-by-128 baseline",
+  "sampling": [
+    {
+      "status": "complete",
+      "checkpoint": "result/data/qns27_width64_seed3184/nu1of3_full_m/jax_neural_bloch_final.npz",
+      "output": "result/data/v4_qns27_frozen5_samples/nu1of3_full_m.npz",
+      "training_step": 120,
+      "parameters_frozen": true,
+      "optimizer_updates": 0,
+      "initial_walkers": 4128,
+      "measurement_steps": 5,
+      "sweeps_per_step": 2,
+      "stored_configurations": 20640,
+      "proposal_scale": 0.06,
+      "acceptance": [
+        {
+          "measurement_step": 1,
+          "position_acceptance": 0.4907945692539215,
+          "layer_acceptance": 0.5343992114067078
+        },
+        {
+          "measurement_step": 2,
+          "position_acceptance": 0.489462211728096,
+          "layer_acceptance": 0.5232558250427246
+        },
+        {
+          "measurement_step": 3,
+          "position_acceptance": 0.4857073724269867,
+          "layer_acceptance": 0.5356104671955109
+        },
+        {
+          "measurement_step": 4,
+          "position_acceptance": 0.49430717527866364,
+          "layer_acceptance": 0.5324612259864807
+        },
+        {
+          "measurement_step": 5,
+          "position_acceptance": 0.4932170659303665,
+          "layer_acceptance": 0.5352470874786377
+        }
+      ],
+      "wall_seconds": 5.002237834996777,
+      "storage_order": "walker-major, then measurement time"
+    },
+    {
+      "status": "complete",
+      "checkpoint": "result/data/v4_qns27_seed3184/nu1of3_v4_gamma/jax_neural_bloch_final.npz",
+      "output": "result/data/v4_qns27_frozen5_samples/nu1of3_v4_gamma.npz",
+      "training_step": 120,
+      "parameters_frozen": true,
+      "optimizer_updates": 0,
+      "initial_walkers": 4128,
+      "measurement_steps": 5,
+      "sweeps_per_step": 2,
+      "stored_configurations": 20640,
+      "proposal_scale": 0.06,
+      "acceptance": [
+        {
+          "measurement_step": 1,
+          "position_acceptance": 0.49563953280448914,
+          "layer_acceptance": 0.5405765473842621
+        },
+        {
+          "measurement_step": 2,
+          "position_acceptance": 0.4975775182247162,
+          "layer_acceptance": 0.5406976640224457
+        },
+        {
+          "measurement_step": 3,
+          "position_acceptance": 0.48485949635505676,
+          "layer_acceptance": 0.549660861492157
+        },
+        {
+          "measurement_step": 4,
+          "position_acceptance": 0.5069040656089783,
+          "layer_acceptance": 0.5409399271011353
+        },
+        {
+          "measurement_step": 5,
+          "position_acceptance": 0.4832848757505417,
+          "layer_acceptance": 0.5490552186965942
+        }
+      ],
+      "wall_seconds": 4.956827571004396,
+      "storage_order": "walker-major, then measurement time"
+    },
+    {
+      "status": "complete",
+      "checkpoint": "result/data/v4_qns27_seed3184/nu1of3_v4_outer_c3/p0/jax_neural_bloch_final.npz",
+      "output": "result/data/v4_qns27_frozen5_samples/nu1of3_v4_outer_c3_p0.npz",
+      "training_step": 120,
+      "parameters_frozen": true,
+      "optimizer_updates": 0,
+      "initial_walkers": 4128,
+      "measurement_steps": 5,
+      "sweeps_per_step": 2,
+      "stored_configurations": 20640,
+      "proposal_scale": 0.06,
+      "acceptance": [
+        {
+          "measurement_step": 1,
+          "position_acceptance": 0.47432170808315277,
+          "layer_acceptance": 0.5506298542022705
+        },
+        {
+          "measurement_step": 2,
+          "position_acceptance": 0.4820736348628998,
+          "layer_acceptance": 0.5490552484989166
+        },
+        {
+          "measurement_step": 3,
+          "position_acceptance": 0.4830426275730133,
+          "layer_acceptance": 0.552325576543808
+        },
+        {
+          "measurement_step": 4,
+          "position_acceptance": 0.46681201457977295,
+          "layer_acceptance": 0.546875
+        },
+        {
+          "measurement_step": 5,
+          "position_acceptance": 0.473837211728096,
+          "layer_acceptance": 0.560562014579773
+        }
+      ],
+      "wall_seconds": 11.503964368981542,
+      "storage_order": "walker-major, then measurement time"
+    },
+    {
+      "status": "complete",
+      "checkpoint": "result/data/v4_qns27_seed3184/nu1of3_v4_outer_c3/p1/jax_neural_bloch_final.npz",
+      "output": "result/data/v4_qns27_frozen5_samples/nu1of3_v4_outer_c3_p1.npz",
+      "training_step": 120,
+      "parameters_frozen": true,
+      "optimizer_updates": 0,
+      "initial_walkers": 4128,
+      "measurement_steps": 5,
+      "sweeps_per_step": 2,
+      "stored_configurations": 20640,
+      "proposal_scale": 0.06,
+      "acceptance": [
+        {
+          "measurement_step": 1,
+          "position_acceptance": 0.4946705400943756,
+          "layer_acceptance": 0.5322189927101135
+        },
+        {
+          "measurement_step": 2,
+          "position_acceptance": 0.4907945692539215,
+          "layer_acceptance": 0.5310077369213104
+        },
+        {
+          "measurement_step": 3,
+          "position_acceptance": 0.4906734526157379,
+          "layer_acceptance": 0.5353682339191437
+        },
+        {
+          "measurement_step": 4,
+          "position_acceptance": 0.4870397299528122,
+          "layer_acceptance": 0.5296753942966461
+        },
+        {
+          "measurement_step": 5,
+          "position_acceptance": 0.49006782472133636,
+          "layer_acceptance": 0.5343992114067078
+        }
+      ],
+      "wall_seconds": 11.373285498993937,
+      "storage_order": "walker-major, then measurement time"
+    },
+    {
+      "status": "complete",
+      "checkpoint": "result/data/v4_qns27_seed3184/nu1of3_v4_outer_c3/p2/jax_neural_bloch_final.npz",
+      "output": "result/data/v4_qns27_frozen5_samples/nu1of3_v4_outer_c3_p2.npz",
+      "training_step": 120,
+      "parameters_frozen": true,
+      "optimizer_updates": 0,
+      "initial_walkers": 4128,
+      "measurement_steps": 5,
+      "sweeps_per_step": 2,
+      "stored_configurations": 20640,
+      "proposal_scale": 0.06,
+      "acceptance": [
+        {
+          "measurement_step": 1,
+          "position_acceptance": 0.4938226789236069,
+          "layer_acceptance": 0.5351259708404541
+        },
+        {
+          "measurement_step": 2,
+          "position_acceptance": 0.4897044599056244,
+          "layer_acceptance": 0.5356104671955109
+        },
+        {
+          "measurement_step": 3,
+          "position_acceptance": 0.4984253942966461,
+          "layer_acceptance": 0.5442102551460266
+        },
+        {
+          "measurement_step": 4,
+          "position_acceptance": 0.4970930218696594,
+          "layer_acceptance": 0.5343992114067078
+        },
+        {
+          "measurement_step": 5,
+          "position_acceptance": 0.49430716037750244,
+          "layer_acceptance": 0.5390019416809082
+        }
+      ],
+      "wall_seconds": 11.473418575013056,
+      "storage_order": "walker-major, then measurement time"
+    },
+    {
+      "status": "complete",
+      "checkpoint": "result/data/qns27_width64_seed3184/nu2of3_full_m/jax_neural_bloch_final.npz",
+      "output": "result/data/v4_qns27_frozen5_samples/nu2of3_full_m.npz",
+      "training_step": 120,
+      "parameters_frozen": true,
+      "optimizer_updates": 0,
+      "initial_walkers": 4128,
+      "measurement_steps": 5,
+      "sweeps_per_step": 2,
+      "stored_configurations": 20640,
+      "proposal_scale": 0.06,
+      "acceptance": [
+        {
+          "measurement_step": 1,
+          "position_acceptance": 0.47226259112358093,
+          "layer_acceptance": 0.5398497879505157
+        },
+        {
+          "measurement_step": 2,
+          "position_acceptance": 0.4844961166381836,
+          "layer_acceptance": 0.5511143505573273
+        },
+        {
+          "measurement_step": 3,
+          "position_acceptance": 0.4767441898584366,
+          "layer_acceptance": 0.5508721172809601
+        },
+        {
+          "measurement_step": 4,
+          "position_acceptance": 0.474200576543808,
+          "layer_acceptance": 0.5547480583190918
+        },
+        {
+          "measurement_step": 5,
+          "position_acceptance": 0.4869186133146286,
+          "layer_acceptance": 0.5530523061752319
+        }
+      ],
+      "wall_seconds": 13.865333661990007,
+      "storage_order": "walker-major, then measurement time"
+    },
+    {
+      "status": "complete",
+      "checkpoint": "result/data/v4_qns27_seed3184/nu2of3_v4_gamma/jax_neural_bloch_final.npz",
+      "output": "result/data/v4_qns27_frozen5_samples/nu2of3_v4_gamma.npz",
+      "training_step": 120,
+      "parameters_frozen": true,
+      "optimizer_updates": 0,
+      "initial_walkers": 4128,
+      "measurement_steps": 5,
+      "sweeps_per_step": 2,
+      "stored_configurations": 20640,
+      "proposal_scale": 0.06,
+      "acceptance": [
+        {
+          "measurement_step": 1,
+          "position_acceptance": 0.4778342992067337,
+          "layer_acceptance": 0.5503875911235809
+        },
+        {
+          "measurement_step": 2,
+          "position_acceptance": 0.4712935984134674,
+          "layer_acceptance": 0.5450581610202789
+        },
+        {
+          "measurement_step": 3,
+          "position_acceptance": 0.47468507289886475,
+          "layer_acceptance": 0.5491763651371002
+        },
+        {
+          "measurement_step": 4,
+          "position_acceptance": 0.4828003793954849,
+          "layer_acceptance": 0.5370639562606812
+        },
+        {
+          "measurement_step": 5,
+          "position_acceptance": 0.47456395626068115,
+          "layer_acceptance": 0.5371850728988647
+        }
+      ],
+      "wall_seconds": 14.026825787004782,
+      "storage_order": "walker-major, then measurement time"
+    },
+    {
+      "status": "complete",
+      "checkpoint": "result/data/v4_qns27_seed3184/nu2of3_v4_outer_c3/p0/jax_neural_bloch_final.npz",
+      "output": "result/data/v4_qns27_frozen5_samples/nu2of3_v4_outer_c3_p0.npz",
+      "training_step": 120,
+      "parameters_frozen": true,
+      "optimizer_updates": 0,
+      "initial_walkers": 4128,
+      "measurement_steps": 5,
+      "sweeps_per_step": 2,
+      "stored_configurations": 20640,
+      "proposal_scale": 0.06,
+      "acceptance": [
+        {
+          "measurement_step": 1,
+          "position_acceptance": 0.45772771537303925,
+          "layer_acceptance": 0.5514777302742004
+        },
+        {
+          "measurement_step": 2,
+          "position_acceptance": 0.46426841616630554,
+          "layer_acceptance": 0.5456637740135193
+        },
+        {
+          "measurement_step": 3,
+          "position_acceptance": 0.4623304158449173,
+          "layer_acceptance": 0.5482073724269867
+        },
+        {
+          "measurement_step": 4,
+          "position_acceptance": 0.46293604373931885,
+          "layer_acceptance": 0.5537790656089783
+        },
+        {
+          "measurement_step": 5,
+          "position_acceptance": 0.46002908051013947,
+          "layer_acceptance": 0.5594719052314758
+        }
+      ],
+      "wall_seconds": 38.557112442009384,
+      "storage_order": "walker-major, then measurement time"
+    },
+    {
+      "status": "complete",
+      "checkpoint": "result/data/v4_qns27_seed3184/nu2of3_v4_outer_c3/p1/jax_neural_bloch_final.npz",
+      "output": "result/data/v4_qns27_frozen5_samples/nu2of3_v4_outer_c3_p1.npz",
+      "training_step": 120,
+      "parameters_frozen": true,
+      "optimizer_updates": 0,
+      "initial_walkers": 4128,
+      "measurement_steps": 5,
+      "sweeps_per_step": 2,
+      "stored_configurations": 20640,
+      "proposal_scale": 0.06,
+      "acceptance": [
+        {
+          "measurement_step": 1,
+          "position_acceptance": 0.463299423456192,
+          "layer_acceptance": 0.5473594963550568
+        },
+        {
+          "measurement_step": 2,
+          "position_acceptance": 0.4545784890651703,
+          "layer_acceptance": 0.5438468754291534
+        },
+        {
+          "measurement_step": 3,
+          "position_acceptance": 0.4584544599056244,
+          "layer_acceptance": 0.5462693572044373
+        },
+        {
+          "measurement_step": 4,
+          "position_acceptance": 0.4580910801887512,
+          "layer_acceptance": 0.5478439927101135
+        },
+        {
+          "measurement_step": 5,
+          "position_acceptance": 0.46535852551460266,
+          "layer_acceptance": 0.5420300364494324
+        }
+      ],
+      "wall_seconds": 38.798425292014144,
+      "storage_order": "walker-major, then measurement time"
+    },
+    {
+      "status": "complete",
+      "checkpoint": "result/data/v4_qns27_seed3184/nu2of3_v4_outer_c3/p2/jax_neural_bloch_final.npz",
+      "output": "result/data/v4_qns27_frozen5_samples/nu2of3_v4_outer_c3_p2.npz",
+      "training_step": 120,
+      "parameters_frozen": true,
+      "optimizer_updates": 0,
+      "initial_walkers": 4128,
+      "measurement_steps": 5,
+      "sweeps_per_step": 2,
+      "stored_configurations": 20640,
+      "proposal_scale": 0.06,
+      "acceptance": [
+        {
+          "measurement_step": 1,
+          "position_acceptance": 0.4597868174314499,
+          "layer_acceptance": 0.5482073724269867
+        },
+        {
+          "measurement_step": 2,
+          "position_acceptance": 0.46269379556179047,
+          "layer_acceptance": 0.5537790656089783
+        },
+        {
+          "measurement_step": 3,
+          "position_acceptance": 0.46935561299324036,
+          "layer_acceptance": 0.5436046719551086
+        },
+        {
+          "measurement_step": 4,
+          "position_acceptance": 0.46875,
+          "layer_acceptance": 0.5403342843055725
+        },
+        {
+          "measurement_step": 5,
+          "position_acceptance": 0.46935561299324036,
+          "layer_acceptance": 0.5443314015865326
+        }
+      ],
+      "wall_seconds": 38.50653474198771,
+      "storage_order": "walker-major, then measurement time"
+    }
+  ],
+  "coordinate": [
+    {
+      "status": "complete",
+      "samples": "result/data/v4_qns27_frozen5_samples/nu1of3_full_m.npz",
+      "parameters_frozen": true,
+      "optimizer_updates": 0,
+      "unique_walker_chains": 4128,
+      "measurement_steps": 5,
+      "sweeps_per_step": 2,
+      "coordinate_samples": 20640,
+      "storage_order": "walker-major, then measurement time",
+      "error_blocks": 8,
+      "structure_factor_estimator": "Luo full S(q)=<|sum_i exp(i q.r_i)|^2>/N_e for q!=0, evaluated directly from five measurement-only snapshots of the step-120 frozen wavefunction; no auxiliary coordinate, q+G substitution, Bloch-band projection, or C3 average",
+      "structure_factor_grid_points": 27,
+      "structure_factor_projected_density": false,
+      "structure_factor_periodic_wigner_seitz": true,
+      "structure_factor_c3_matched_physical_points": 21,
+      "structure_factor_raw_c3_residual": 0.039322135007975545,
+      "maximum_nonzero_structure_factor": 1.1487816255100645,
+      "maximum_nonzero_density_amplitude": 0.09342453092110312,
+      "wall_seconds": 4.30481290697935
+    },
+    {
+      "status": "complete",
+      "samples": "result/data/v4_qns27_frozen5_samples/nu1of3_v4_gamma.npz",
+      "parameters_frozen": true,
+      "optimizer_updates": 0,
+      "unique_walker_chains": 4128,
+      "measurement_steps": 5,
+      "sweeps_per_step": 2,
+      "coordinate_samples": 20640,
+      "storage_order": "walker-major, then measurement time",
+      "error_blocks": 8,
+      "structure_factor_estimator": "Luo full S(q)=<|sum_i exp(i q.r_i)|^2>/N_e for q!=0, evaluated directly from five measurement-only snapshots of the step-120 frozen wavefunction; no auxiliary coordinate, q+G substitution, Bloch-band projection, or C3 average",
+      "structure_factor_grid_points": 27,
+      "structure_factor_projected_density": false,
+      "structure_factor_periodic_wigner_seitz": true,
+      "structure_factor_c3_matched_physical_points": 21,
+      "structure_factor_raw_c3_residual": 0.03938554008924733,
+      "maximum_nonzero_structure_factor": 1.1733838147852356,
+      "maximum_nonzero_density_amplitude": 0.005997717834777723,
+      "wall_seconds": 4.318922475998988
+    },
+    {
+      "status": "complete",
+      "samples": "result/data/v4_qns27_frozen5_samples/nu1of3_v4_outer_c3_p0.npz",
+      "parameters_frozen": true,
+      "optimizer_updates": 0,
+      "unique_walker_chains": 4128,
+      "measurement_steps": 5,
+      "sweeps_per_step": 2,
+      "coordinate_samples": 20640,
+      "storage_order": "walker-major, then measurement time",
+      "error_blocks": 8,
+      "structure_factor_estimator": "Luo full S(q)=<|sum_i exp(i q.r_i)|^2>/N_e for q!=0, evaluated directly from five measurement-only snapshots of the step-120 frozen wavefunction; no auxiliary coordinate, q+G substitution, Bloch-band projection, or C3 average",
+      "structure_factor_grid_points": 27,
+      "structure_factor_projected_density": false,
+      "structure_factor_periodic_wigner_seitz": true,
+      "structure_factor_c3_matched_physical_points": 21,
+      "structure_factor_raw_c3_residual": 0.0359300723116287,
+      "maximum_nonzero_structure_factor": 1.5434501995539596,
+      "maximum_nonzero_density_amplitude": 0.008762540785286443,
+      "wall_seconds": 4.315534691006178
+    },
+    {
+      "status": "complete",
+      "samples": "result/data/v4_qns27_frozen5_samples/nu1of3_v4_outer_c3_p1.npz",
+      "parameters_frozen": true,
+      "optimizer_updates": 0,
+      "unique_walker_chains": 4128,
+      "measurement_steps": 5,
+      "sweeps_per_step": 2,
+      "coordinate_samples": 20640,
+      "storage_order": "walker-major, then measurement time",
+      "error_blocks": 8,
+      "structure_factor_estimator": "Luo full S(q)=<|sum_i exp(i q.r_i)|^2>/N_e for q!=0, evaluated directly from five measurement-only snapshots of the step-120 frozen wavefunction; no auxiliary coordinate, q+G substitution, Bloch-band projection, or C3 average",
+      "structure_factor_grid_points": 27,
+      "structure_factor_projected_density": false,
+      "structure_factor_periodic_wigner_seitz": true,
+      "structure_factor_c3_matched_physical_points": 21,
+      "structure_factor_raw_c3_residual": 0.015177966327149295,
+      "maximum_nonzero_structure_factor": 1.212733788262188,
+      "maximum_nonzero_density_amplitude": 0.01002261600348796,
+      "wall_seconds": 4.332059523003409
+    },
+    {
+      "status": "complete",
+      "samples": "result/data/v4_qns27_frozen5_samples/nu1of3_v4_outer_c3_p2.npz",
+      "parameters_frozen": true,
+      "optimizer_updates": 0,
+      "unique_walker_chains": 4128,
+      "measurement_steps": 5,
+      "sweeps_per_step": 2,
+      "coordinate_samples": 20640,
+      "storage_order": "walker-major, then measurement time",
+      "error_blocks": 8,
+      "structure_factor_estimator": "Luo full S(q)=<|sum_i exp(i q.r_i)|^2>/N_e for q!=0, evaluated directly from five measurement-only snapshots of the step-120 frozen wavefunction; no auxiliary coordinate, q+G substitution, Bloch-band projection, or C3 average",
+      "structure_factor_grid_points": 27,
+      "structure_factor_projected_density": false,
+      "structure_factor_periodic_wigner_seitz": true,
+      "structure_factor_c3_matched_physical_points": 21,
+      "structure_factor_raw_c3_residual": 0.016137187734606262,
+      "maximum_nonzero_structure_factor": 1.2112441486638679,
+      "maximum_nonzero_density_amplitude": 0.010397164428488419,
+      "wall_seconds": 4.422468987002503
+    },
+    {
+      "status": "complete",
+      "samples": "result/data/v4_qns27_frozen5_samples/nu2of3_full_m.npz",
+      "parameters_frozen": true,
+      "optimizer_updates": 0,
+      "unique_walker_chains": 4128,
+      "measurement_steps": 5,
+      "sweeps_per_step": 2,
+      "coordinate_samples": 20640,
+      "storage_order": "walker-major, then measurement time",
+      "error_blocks": 8,
+      "structure_factor_estimator": "Luo full S(q)=<|sum_i exp(i q.r_i)|^2>/N_e for q!=0, evaluated directly from five measurement-only snapshots of the step-120 frozen wavefunction; no auxiliary coordinate, q+G substitution, Bloch-band projection, or C3 average",
+      "structure_factor_grid_points": 27,
+      "structure_factor_projected_density": false,
+      "structure_factor_periodic_wigner_seitz": true,
+      "structure_factor_c3_matched_physical_points": 21,
+      "structure_factor_raw_c3_residual": 0.054277110134796636,
+      "maximum_nonzero_structure_factor": 0.7063548759783953,
+      "maximum_nonzero_density_amplitude": 0.027989152365095207,
+      "wall_seconds": 16.978608515986707
+    },
+    {
+      "status": "complete",
+      "samples": "result/data/v4_qns27_frozen5_samples/nu2of3_v4_gamma.npz",
+      "parameters_frozen": true,
+      "optimizer_updates": 0,
+      "unique_walker_chains": 4128,
+      "measurement_steps": 5,
+      "sweeps_per_step": 2,
+      "coordinate_samples": 20640,
+      "storage_order": "walker-major, then measurement time",
+      "error_blocks": 8,
+      "structure_factor_estimator": "Luo full S(q)=<|sum_i exp(i q.r_i)|^2>/N_e for q!=0, evaluated directly from five measurement-only snapshots of the step-120 frozen wavefunction; no auxiliary coordinate, q+G substitution, Bloch-band projection, or C3 average",
+      "structure_factor_grid_points": 27,
+      "structure_factor_projected_density": false,
+      "structure_factor_periodic_wigner_seitz": true,
+      "structure_factor_c3_matched_physical_points": 21,
+      "structure_factor_raw_c3_residual": 0.029930094247198558,
+      "maximum_nonzero_structure_factor": 0.7268639899300603,
+      "maximum_nonzero_density_amplitude": 0.0037491838435504124,
+      "wall_seconds": 17.03515427702223
+    },
+    {
+      "status": "complete",
+      "samples": "result/data/v4_qns27_frozen5_samples/nu2of3_v4_outer_c3_p0.npz",
+      "parameters_frozen": true,
+      "optimizer_updates": 0,
+      "unique_walker_chains": 4128,
+      "measurement_steps": 5,
+      "sweeps_per_step": 2,
+      "coordinate_samples": 20640,
+      "storage_order": "walker-major, then measurement time",
+      "error_blocks": 8,
+      "structure_factor_estimator": "Luo full S(q)=<|sum_i exp(i q.r_i)|^2>/N_e for q!=0, evaluated directly from five measurement-only snapshots of the step-120 frozen wavefunction; no auxiliary coordinate, q+G substitution, Bloch-band projection, or C3 average",
+      "structure_factor_grid_points": 27,
+      "structure_factor_projected_density": false,
+      "structure_factor_periodic_wigner_seitz": true,
+      "structure_factor_c3_matched_physical_points": 21,
+      "structure_factor_raw_c3_residual": 0.009346576616019953,
+      "maximum_nonzero_structure_factor": 0.7573226667944312,
+      "maximum_nonzero_density_amplitude": 0.0038413929518926076,
+      "wall_seconds": 16.99729592699441
+    },
+    {
+      "status": "complete",
+      "samples": "result/data/v4_qns27_frozen5_samples/nu2of3_v4_outer_c3_p1.npz",
+      "parameters_frozen": true,
+      "optimizer_updates": 0,
+      "unique_walker_chains": 4128,
+      "measurement_steps": 5,
+      "sweeps_per_step": 2,
+      "coordinate_samples": 20640,
+      "storage_order": "walker-major, then measurement time",
+      "error_blocks": 8,
+      "structure_factor_estimator": "Luo full S(q)=<|sum_i exp(i q.r_i)|^2>/N_e for q!=0, evaluated directly from five measurement-only snapshots of the step-120 frozen wavefunction; no auxiliary coordinate, q+G substitution, Bloch-band projection, or C3 average",
+      "structure_factor_grid_points": 27,
+      "structure_factor_projected_density": false,
+      "structure_factor_periodic_wigner_seitz": true,
+      "structure_factor_c3_matched_physical_points": 21,
+      "structure_factor_raw_c3_residual": 0.018846484503238115,
+      "maximum_nonzero_structure_factor": 0.7401170882275349,
+      "maximum_nonzero_density_amplitude": 0.004413188587985715,
+      "wall_seconds": 16.93500383599894
+    },
+    {
+      "status": "complete",
+      "samples": "result/data/v4_qns27_frozen5_samples/nu2of3_v4_outer_c3_p2.npz",
+      "parameters_frozen": true,
+      "optimizer_updates": 0,
+      "unique_walker_chains": 4128,
+      "measurement_steps": 5,
+      "sweeps_per_step": 2,
+      "coordinate_samples": 20640,
+      "storage_order": "walker-major, then measurement time",
+      "error_blocks": 8,
+      "structure_factor_estimator": "Luo full S(q)=<|sum_i exp(i q.r_i)|^2>/N_e for q!=0, evaluated directly from five measurement-only snapshots of the step-120 frozen wavefunction; no auxiliary coordinate, q+G substitution, Bloch-band projection, or C3 average",
+      "structure_factor_grid_points": 27,
+      "structure_factor_projected_density": false,
+      "structure_factor_periodic_wigner_seitz": true,
+      "structure_factor_c3_matched_physical_points": 21,
+      "structure_factor_raw_c3_residual": 0.017038071851001868,
+      "maximum_nonzero_structure_factor": 0.7307118472063804,
+      "maximum_nonzero_density_amplitude": 0.003731468250670158,
+      "wall_seconds": 17.007495348982047
+    }
+  ]
+}

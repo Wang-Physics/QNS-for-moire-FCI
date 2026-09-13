@@ -1,0 +1,21 @@
+{
+  "status": "complete",
+  "samples": "result/data/v4_qns27_frozen5_samples/nu1of3_v4_outer_c3_p1.npz",
+  "parameters_frozen": true,
+  "optimizer_updates": 0,
+  "unique_walker_chains": 4128,
+  "measurement_steps": 5,
+  "sweeps_per_step": 2,
+  "coordinate_samples": 20640,
+  "storage_order": "walker-major, then measurement time",
+  "error_blocks": 8,
+  "structure_factor_estimator": "Luo full S(q)=<|sum_i exp(i q.r_i)|^2>/N_e for q!=0, evaluated directly from five measurement-only snapshots of the step-120 frozen wavefunction; no auxiliary coordinate, q+G substitution, Bloch-band projection, or C3 average",
+  "structure_factor_grid_points": 27,
+  "structure_factor_projected_density": false,
+  "structure_factor_periodic_wigner_seitz": true,
+  "structure_factor_c3_matched_physical_points": 21,
+  "structure_factor_raw_c3_residual": 0.015177966327149295,
+  "maximum_nonzero_structure_factor": 1.212733788262188,
+  "maximum_nonzero_density_amplitude": 0.01002261600348796,
+  "wall_seconds": 4.332059523003409
+}

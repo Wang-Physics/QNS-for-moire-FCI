@@ -1,6 +1,6 @@
 # QNS for moire FCI
 
-Version 4.2.1 (single-matrix momentum projection and real-space-correlation observable revision).
+Version 5.0.0 (Bloch occupations and ED-grid density-correlation revision).
 
 This project benchmarks the continuum model and multiband exact diagonalization (ED) of twisted MoTe2 against Luo, Zaklama, and Fu, [arXiv:2503.13585v3](https://arxiv.org/abs/2503.13585), then tests their continuous-coordinate Neural-Bloch variational ansatz at fillings `nu=1/3` and `nu=2/3`.
 
@@ -8,19 +8,27 @@ The current report is [`result/AI_for_Physics.pdf`](result/AI_for_Physics.pdf). 
 
 ## Current numerical result
 
-Version 4 replaces the explicit momentum-combination mixer by one dense
+Version 5 replaces the explicit momentum-combination mixer by one dense
 trainable determinant matrix `M`. The exact finite-translation projector is
 applied to the complete generalized determinant, so its Cauchy--Binet
-expansion contains all and only total-`Gamma` minors. Version 4.2.1 corrects
+expansion contains all and only total-`Gamma` minors. Version 5.0.0 corrects
 the post-training observables. The one-body density matrix is projected onto
-the fixed continuum Bloch states. The first plotted occupation is the sum over
-bands 1--5; the second is the band-1 occupation, conditionally normalized so
-that its 27 values sum to `N_e` for comparison with one-band ED. Its unscaled
-sum `N_e W_1` is saved separately, and no ED momentum profile is fitted.
-`S(q)` is the unbinned Fourier transform of the sampled real-space density-pair
-correlation. Its main 27 vectors are exactly the ED Bloch mesh. A separately
-evaluated 37-vector C6-closed grid audits the six ambiguous boundary rotations;
-no value is replaced by `q+G`.
+fixed continuum Bloch states solved directly at the 27 physical first-BZ
+points; reciprocal vectors occur only inside their plane-wave expansions. The
+first plotted occupation is the raw sum over bands 1--5, whose 27-value trace
+is reported in the panel title. The second is the
+unrescaled physical band-1 projection, whose sum is `N_e W_1`. Raw and
+conditionally normalized variants are retained in the diagnostics, but neither
+plotted occupation is trace-normalized and no ED
+momentum profile is fitted.
+`S(q)` is Luo et al.'s full real-space density-pair structure factor, evaluated
+directly at the same 27 physical first-BZ vectors drawn for ED. The occupation
+baseline uses 4,128 final walkers and 128 auxiliary coordinates per walker.
+For the cheaper coordinate-only observables, step-120 parameters are frozen
+and five measurement-only steps provide 20,640 configurations for `S(q)` and
+the density. No auxiliary coordinate or Bloch-band projection enters `S(q)`,
+and no value is replaced by `q+G`. A uniform 91-point transform is retained
+only as an auxiliary diagnostic and is not plotted.
 
 The nine-cell jobs use width 32 and the 27-cell jobs width 64, with 4,128
 persistent walkers and 120 natural-gradient updates. The three outer-`C3`
@@ -38,11 +46,11 @@ tail-stability diagnostic rather than an independent uncertainty.
 
 Figures 6 and 7 summarize the nine- and 27-cell energies, all three outer
 branches, bare-band weights and timing. Figures 8--10 compare, in order, the
-27-cell five-band-total `n_tot(k)`, filling-normalized first-band `n_1(k)`, full
-`S(q)`, and folded density. The main momentum vectors are checked point by
-point against the 27 ED dots in the hexagonal BZ. The QNS observables are not
-C3 averaged; the only rescaling is the explicitly stated particle-number
-normalization of `n_1(k)`. Thus their visible C3 residuals remain genuine
+27-cell raw five-band-total `n_tot(k)`, unrescaled physical
+first-band `n_1(k)`, full
+`S(q)`, and folded density. Both occupations and `S(q)` use the 27 ED dots.
+The QNS observables are neither C3 averaged nor occupation-trace normalized.
+Thus their visible C3 residuals remain genuine
 diagnostics.
 
 ## Repository layout
@@ -52,8 +60,8 @@ diagnostics.
 - `src/run_jax_neural_bloch.py`: matrix-free natural gradient with ordinary CG.
 - `src/neural_bloch_diagnostics.py`: nine-cell complete-ratio 1-RDM and observables.
 - `src/qns27.py`, `src/qns27_diagnostics.py`: 27-cell geometry, projected training, and observables.
-- `src/assemble_v42_release_data.py`: compact v4.2 figure-data assembly and checksums.
-- `src/make_v42_figures.py`: final Figs. 6–11.
+- `src/assemble_v5_release_data.py`: compact v5 figure-data assembly and checksums.
+- `src/make_v5_figures.py`: final Figs. 6–11.
 - `native/`: C++17 sparse-ED and observable kernels, compiled automatically when needed.
 - `result/release_data/` and selected `result/data/` subtrees: compact publication-facing inputs.
 - `result/figures/`: vector and raster report figures.
@@ -80,9 +88,10 @@ python -m unittest discover -s tests -v
 
 Small ED fixtures required by regression tests are versioned under `result/data/`. Large walkers, checkpoints, many-body twist eigenvectors, and raw training directories are intentionally ignored.
 
-## Reproducing the v4 runs
+## Reproducing the v5 runs
 
-The v4 launchers preserve the exact local settings used for the report:
+The v5 workflow preserves the exact local settings used for the report;
+historical on-disk run names retain their `v4_` prefixes for provenance:
 
 ```bash
 python scripts/launch_v4_9cell.py
@@ -126,7 +135,7 @@ The analogous `nu=2/3` production launchers are
 Figs. 6–11 can be regenerated from the compact published inputs:
 
 ```bash
-python -m src.make_v42_figures
+python -m src.make_v5_figures
 ```
 
 Build the report with:

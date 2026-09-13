@@ -51,13 +51,22 @@ def jobs() -> list[dict]:
 def run_one(job: dict, gpu: int) -> dict:
     output = DEST / job["stem"]
     completed = output / "qns27_diagnostics.json"
+    auxiliary_draws = 128
     if completed.exists():
         record = json.loads(completed.read_text())
         if (
             record.get("status") == "complete"
             and "momentum_occupation_band1_normalized_sum" in record
-            and "momentum_occupation_first_five_sum" in record
+            and "momentum_occupation_first_five_raw_sum" in record
+            and "momentum_occupation_first_five_raw_sum_sem" in record
+            and "momentum_occupation_first_five_normalized_sum" in record
             and "structure_factor_raw_c3_residual" in record
+            and record.get("structure_factor_grid_points") == 27
+            and record.get("structure_factor_projected_density") is False
+            and record.get("auxiliary_draws_per_sample") == auxiliary_draws
+            and record.get("auxiliary_sampling", "").startswith(
+                "Cranley-Patterson"
+            )
         ):
             return record
     source = job["source"]
@@ -79,8 +88,8 @@ def run_one(job: dict, gpu: int) -> dict:
         str(ROOT / ".venv/bin/python"), "-m", "src.qns27_diagnostics",
         "--checkpoint", str(checkpoint), "--samples", str(samples),
         "--output-dir", str(output), "--samples-count", "4128",
-        "--auxiliary-draws", "16", "--error-blocks", "8",
-        "--wavefunction-batch", "43", "--orbital-batch", "128",
+        "--auxiliary-draws", str(auxiliary_draws), "--error-blocks", "8",
+        "--wavefunction-batch", "43", "--orbital-batch", "512",
         "--seed", str(4885 + 101 * len(job["stem"])),
     ]
     write_json(output / "job.json", {

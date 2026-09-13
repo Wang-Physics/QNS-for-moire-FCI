@@ -1,0 +1,42 @@
+{
+  "status": "complete",
+  "checkpoint": "result/data/v4_qns27_seed3184/nu1of3_v4_outer_c3/p2/jax_neural_bloch_final.npz",
+  "output": "result/data/v4_qns27_frozen5_samples/nu1of3_v4_outer_c3_p2.npz",
+  "training_step": 120,
+  "parameters_frozen": true,
+  "optimizer_updates": 0,
+  "initial_walkers": 4128,
+  "measurement_steps": 5,
+  "sweeps_per_step": 2,
+  "stored_configurations": 20640,
+  "proposal_scale": 0.06,
+  "acceptance": [
+    {
+      "measurement_step": 1,
+      "position_acceptance": 0.4938226789236069,
+      "layer_acceptance": 0.5351259708404541
+    },
+    {
+      "measurement_step": 2,
+      "position_acceptance": 0.4897044599056244,
+      "layer_acceptance": 0.5356104671955109
+    },
+    {
+      "measurement_step": 3,
+      "position_acceptance": 0.4984253942966461,
+      "layer_acceptance": 0.5442102551460266
+    },
+    {
+      "measurement_step": 4,
+      "position_acceptance": 0.4970930218696594,
+      "layer_acceptance": 0.5343992114067078
+    },
+    {
+      "measurement_step": 5,
+      "position_acceptance": 0.49430716037750244,
+      "layer_acceptance": 0.5390019416809082
+    }
+  ],
+  "wall_seconds": 11.473418575013056,
+  "storage_order": "walker-major, then measurement time"
+}

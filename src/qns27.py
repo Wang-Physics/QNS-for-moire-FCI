@@ -119,6 +119,34 @@ def first_bz_c6_grid():
     return points
 
 
+@lru_cache(None)
+def uniform_first_bz_grid(divisions: int = 9):
+    """Uniform C6-closed triangular sampling of the physical first BZ.
+
+    Points are integer combinations of ``b1/divisions`` and
+    ``b2/divisions`` clipped by the Wigner--Seitz hexagon.  Unlike the 27
+    Bloch momentum classes, this is a continuous-q visualization grid and is
+    not interpreted modulo a reciprocal lattice vector.
+    """
+    if divisions < 3 or divisions % 3:
+        raise ValueError("BZ grid divisions must be a positive multiple of 3")
+    model, _ = inputs()
+    points = np.asarray([
+        (i * model.b1 + j * model.b2) / divisions
+        for i in range(-divisions, divisions + 1)
+        for j in range(-divisions, divisions + 1)
+        if model.inside_hexagon(
+            (i * model.b1 + j * model.b2) / divisions
+        )
+    ])
+    angles = np.mod(np.arctan2(points[:, 1], points[:, 0]), 2.0 * np.pi)
+    order = np.lexsort((angles, np.round(np.linalg.norm(points, axis=1), 13)))
+    points = points[order]
+    if not np.allclose(points[0], 0.0, rtol=0.0, atol=1.0e-14):
+        raise RuntimeError("uniform first-BZ grid must start at Gamma")
+    return points
+
+
 def momentum_class_indices(points):
     """Map physical first-BZ vectors to the 27 reciprocal-lattice classes."""
     points = np.asarray(points, dtype=float)

@@ -20,7 +20,7 @@ auxiliary replacements per configuration. Every replacement recomputes the
 complete projected wavefunction. Raw coordinates, checkpoints, and optimizer
 states are intentionally omitted from Git.
 
-`v42/` is the self-contained input bundle for Figs. 6--11 of report v4.2.
+`v5/` is the self-contained input bundle for Figs. 6--11 of report v5.
 Its 27-cell diagnostics store direct layer-summed `G=0` plane-wave `n(k)` and
-full `S(q)` at the exact 27 displayed first-BZ vectors. `v42/manifest.json`
+full `S(q)` at the exact 27 displayed first-BZ vectors. `v5/manifest.json`
 records the source path, byte count, and SHA-256 digest of every bundled file.
