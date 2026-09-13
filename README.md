@@ -1,6 +1,6 @@
 # QNS for moire FCI
 
-Version 4.2 (single-matrix momentum projection and direct plane-wave observable revision).
+Version 4.2.1 (single-matrix momentum projection and real-space-correlation observable revision).
 
 This project benchmarks the continuum model and multiband exact diagonalization (ED) of twisted MoTe2 against Luo, Zaklama, and Fu, [arXiv:2503.13585v3](https://arxiv.org/abs/2503.13585), then tests their continuous-coordinate Neural-Bloch variational ansatz at fillings `nu=1/3` and `nu=2/3`.
 
@@ -11,13 +11,16 @@ The current report is [`result/AI_for_Physics.pdf`](result/AI_for_Physics.pdf). 
 Version 4 replaces the explicit momentum-combination mixer by one dense
 trainable determinant matrix `M`. The exact finite-translation projector is
 applied to the complete generalized determinant, so its Cauchy--Binet
-expansion contains all and only total-`Gamma` minors. Version 4.2 also corrects
-the post-training observables. `n(k)` is the direct plane-wave Fourier
-transform of the one-body density matrix at the 27 displayed first-BZ
-momenta, summed over the two layers with only `G=0`. `S(q)` is the direct
-Fourier transform of the static density--density correlation at those same
-physical vectors. Neither observable folds or sums reciprocal images;
-Bloch-state projection is used only for bare-band weights.
+expansion contains all and only total-`Gamma` minors. Version 4.2.1 corrects
+the post-training observables. The one-body density matrix is projected onto
+the fixed continuum Bloch states. The first plotted occupation is the sum over
+bands 1--5; the second is the band-1 occupation, conditionally normalized so
+that its 27 values sum to `N_e` for comparison with one-band ED. Its unscaled
+sum `N_e W_1` is saved separately, and no ED momentum profile is fitted.
+`S(q)` is the unbinned Fourier transform of the sampled real-space density-pair
+correlation. Its main 27 vectors are exactly the ED Bloch mesh. A separately
+evaluated 37-vector C6-closed grid audits the six ambiguous boundary rotations;
+no value is replaced by `q+G`.
 
 The nine-cell jobs use width 32 and the 27-cell jobs width 64, with 4,128
 persistent walkers and 120 natural-gradient updates. The three outer-`C3`
@@ -34,11 +37,14 @@ tail-stability diagnostic rather than an independent uncertainty.
 | 27 | `2/3` | `P1 P_Gamma[M]` | `-60.4155 (0.0391)` | one-band: `-57.45573` |
 
 Figures 6 and 7 summarize the nine- and 27-cell energies, all three outer
-branches, bare-band weights and timing. Figures 8--10 compare the 27-cell
-direct `G=0` plane-wave `n(k)`, full `S(q)` and folded density. The stored
-Fourier vectors are checked point by point against the dots drawn in the
-hexagonal BZ, including the five boundary/corner indices that previously
-used a different representative by one reciprocal lattice vector.
+branches, bare-band weights and timing. Figures 8--10 compare, in order, the
+27-cell five-band-total `n_tot(k)`, filling-normalized first-band `n_1(k)`, full
+`S(q)`, and folded density. The main momentum vectors are checked point by
+point against the 27 ED dots in the hexagonal BZ. The QNS observables are not
+C3 averaged; the only rescaling is the explicitly stated particle-number
+normalization of `n_1(k)`. Thus their visible C3 residuals remain genuine
+diagnostics.
+
 ## Repository layout
 
 - `src/continuum.py`, `src/multiband_ed.py`, `src/sparse_ed.py`: continuum bands and projected ED.

@@ -1,6 +1,6 @@
 {
-  "version": "4.2.0",
-  "observable_definition": "direct G=0 layer-summed plane-wave n(k) and full S(q), both at the exact 27 plotted first-BZ vectors with no reciprocal-image sum",
+  "version": "4.2.1",
+  "observable_definition": "Bloch-projected n_tot(k) summed over bands 1:5 and first-band n_1(k) conditionally normalized to N_e; full S(q) is the unbinned Fourier transform of the real-space density-pair correlation at the same 27 physical momenta as ED, with a separate directly evaluated 37-vector C6 audit; no C3 averaging or ED-profile fit",
   "files": {
     "nine/summary.json": {
       "bytes": 15329,
@@ -108,53 +108,53 @@
       "source": "result/data/local_v4_final/diagnostics/nu2of3_v4_outer_c3_p2.npz"
     },
     "qns27/diagnostics/nu1of3_full_m.npz": {
-      "bytes": 37460,
-      "sha256": "bd800bc40e06abcfe7fb122d6b395e36800696e54a0f8b84de3a3630f5d80ba7",
+      "bytes": 39444,
+      "sha256": "1aeaf37e2a7805f2a639a50fee7a0ea1f1b6b98cbcad6e5e25b166c9e0d773a3",
       "source": "result/data/v4_qns27_observables/nu1of3_full_m/qns27_diagnostics.npz"
     },
     "qns27/diagnostics/nu1of3_full_m.json": {
-      "bytes": 1757,
-      "sha256": "552cffec3b504c739d536fc67aac24bdab6dd95c2c80066fc83c8358fd21dae7",
+      "bytes": 2163,
+      "sha256": "eb73a5bc8e9ddb781a0a62e7d74dd7f3e00d8bd66070463b96f1e704e3df1eb9",
       "source": "result/data/v4_qns27_observables/nu1of3_full_m/qns27_diagnostics.json"
     },
     "qns27/diagnostics/nu1of3_v4_gamma.npz": {
-      "bytes": 37479,
-      "sha256": "f7a50dd1a020ffc301c524fb1cf53d17f11ce8e52583f60baedd887efcdc69b3",
+      "bytes": 39457,
+      "sha256": "af0ccbda32b9fae9afe85bd8dd1f6ff3700aba76257de28be31c5771ba19bc16",
       "source": "result/data/v4_qns27_observables/nu1of3_v4_gamma/qns27_diagnostics.npz"
     },
     "qns27/diagnostics/nu1of3_v4_gamma.json": {
-      "bytes": 1753,
-      "sha256": "186acbb96937a78c8942346f7aa3a0abbf62527477898d5eb7a6b54882137dd9",
+      "bytes": 2174,
+      "sha256": "7a20d4707f77866a540f7206f2b3504ccd8bd70b3c095d4107385de8715aa63d",
       "source": "result/data/v4_qns27_observables/nu1of3_v4_gamma/qns27_diagnostics.json"
     },
     "qns27/diagnostics/nu1of3_v4_outer_c3_p0.npz": {
-      "bytes": 37511,
-      "sha256": "69b0247cf1be26d38c178a5bea5f044f4203e019cb1dd9547159e5f2a37917e3",
+      "bytes": 39493,
+      "sha256": "1bf7e186f93b8faaa0c8fc5b85bbd666c9ba661459d918bdb2a3df719f2e6f30",
       "source": "result/data/v4_qns27_observables/nu1of3_v4_outer_c3_p0/qns27_diagnostics.npz"
     },
     "qns27/diagnostics/nu1of3_v4_outer_c3_p0.json": {
-      "bytes": 1744,
-      "sha256": "b1615c1fe33fd345c395d9bb9376333c3ab2b28652137793bb8875d5f31eb282",
+      "bytes": 2169,
+      "sha256": "9f9ff0b17fc67ae25debd7f813120d3fa1e02f88001ad1bd87c5b3214f4628ec",
       "source": "result/data/v4_qns27_observables/nu1of3_v4_outer_c3_p0/qns27_diagnostics.json"
     },
     "qns27/diagnostics/nu1of3_v4_outer_c3_p1.npz": {
-      "bytes": 37486,
-      "sha256": "158057369a3d194d863dcd8c346cbe87f5d14194d5ce8887cd3e808ae789c9bb",
+      "bytes": 39453,
+      "sha256": "d56ad435a365ade6b73eced9e7d3b6568a6963e5b5a7257dde34f501a1fef3f3",
       "source": "result/data/v4_qns27_observables/nu1of3_v4_outer_c3_p1/qns27_diagnostics.npz"
     },
     "qns27/diagnostics/nu1of3_v4_outer_c3_p1.json": {
-      "bytes": 1744,
-      "sha256": "0a5fab685946aadc029935f2718d68b5dc3234e9c8e773a81cbb2a44f1ee590e",
+      "bytes": 2165,
+      "sha256": "db4ed5e01e6de844e54ac28760c2a1bae2e52cc60d8ef6abae87be40a7551f95",
       "source": "result/data/v4_qns27_observables/nu1of3_v4_outer_c3_p1/qns27_diagnostics.json"
     },
     "qns27/diagnostics/nu1of3_v4_outer_c3_p2.npz": {
-      "bytes": 37494,
-      "sha256": "fa20b89b90468fd5fb3d53751b0f5fc75748b9d3dd962c491a3954ea01030e9d",
+      "bytes": 39481,
+      "sha256": "f14384110630f2c3ecc65e78b3d2dfd6a38d8b533d8456faecbc4e9cfdb3321b",
       "source": "result/data/v4_qns27_observables/nu1of3_v4_outer_c3_p2/qns27_diagnostics.npz"
     },
     "qns27/diagnostics/nu1of3_v4_outer_c3_p2.json": {
-      "bytes": 1744,
-      "sha256": "583a7095bee203a757e17c77645740c217fbf1bad3cdfbfa63d217dddc1aeaa6",
+      "bytes": 2148,
+      "sha256": "b9821fb7369437c18dadab1883797a3685f877c4f51d8375b94d1c29707e367d",
       "source": "result/data/v4_qns27_observables/nu1of3_v4_outer_c3_p2/qns27_diagnostics.json"
     },
     "qns27/traces/nu1of3_full_m.json": {
@@ -183,53 +183,53 @@
       "source": "result/data/v4_qns27_seed3184/nu1of3_v4_outer_c3/p2/jax_neural_bloch_trace.json"
     },
     "qns27/diagnostics/nu2of3_full_m.npz": {
-      "bytes": 37492,
-      "sha256": "2bc7af2b19e9aab4be9e85d368785866b997cf89718f8a280d2530764923b39d",
+      "bytes": 39475,
+      "sha256": "c9325dff7e94f44aa9c8ca5611545777f0adff251c0001bc62253ae844481669",
       "source": "result/data/v4_qns27_observables/nu2of3_full_m/qns27_diagnostics.npz"
     },
     "qns27/diagnostics/nu2of3_full_m.json": {
-      "bytes": 1744,
-      "sha256": "1d8f94ee0a3f6b7adaa8a7648448e4d3b62fa0933c5529c7a81f48a38d7f716c",
+      "bytes": 2183,
+      "sha256": "bc61f2674cfec3861b9edbac13cb8ea82f8bad587a8f3553b6ea0bdd5a6fab5b",
       "source": "result/data/v4_qns27_observables/nu2of3_full_m/qns27_diagnostics.json"
     },
     "qns27/diagnostics/nu2of3_v4_gamma.npz": {
-      "bytes": 37507,
-      "sha256": "a9715e28117bbb10647dd9eb3bf50b32bbb05e09168f518f661c55422351db39",
+      "bytes": 39471,
+      "sha256": "ff901e73b5a4c30ccffc758912e52caa72d60b23cf3de250ec653f6ea6ddfec8",
       "source": "result/data/v4_qns27_observables/nu2of3_v4_gamma/qns27_diagnostics.npz"
     },
     "qns27/diagnostics/nu2of3_v4_gamma.json": {
-      "bytes": 1736,
-      "sha256": "03f6434d83c86429c99ffc0c295de8afd6961891c171a168cccd54bbd0ae9684",
+      "bytes": 2178,
+      "sha256": "519056f44870a96e40c12632ddc168735fe168012e6fa9477dc73d2ba0f7d21c",
       "source": "result/data/v4_qns27_observables/nu2of3_v4_gamma/qns27_diagnostics.json"
     },
     "qns27/diagnostics/nu2of3_v4_outer_c3_p0.npz": {
-      "bytes": 37525,
-      "sha256": "8f0c809437ddb44bcfe8e5b2239f6862226354d1a178f2873657e6a435202803",
+      "bytes": 39497,
+      "sha256": "3a4c854e6effa0a7ee18a27344bda2986b89ceb08fa5a984b24893e6dc824706",
       "source": "result/data/v4_qns27_observables/nu2of3_v4_outer_c3_p0/qns27_diagnostics.npz"
     },
     "qns27/diagnostics/nu2of3_v4_outer_c3_p0.json": {
-      "bytes": 1744,
-      "sha256": "468167d29ae1fd3181ecbf269130061672c828e9b3639fa745d1b3bb09efed4e",
+      "bytes": 2175,
+      "sha256": "db4cf3ce52c751d66ebc31db1841d97d30f0d577e2775164a689b1b1ae8e7fa4",
       "source": "result/data/v4_qns27_observables/nu2of3_v4_outer_c3_p0/qns27_diagnostics.json"
     },
     "qns27/diagnostics/nu2of3_v4_outer_c3_p1.npz": {
-      "bytes": 37483,
-      "sha256": "028fbfca31e4dba89cca1078a31db9248478123eb1d43db50c7319fd775b37b7",
+      "bytes": 39458,
+      "sha256": "edd1bd4cc37beca2df1aa8aebc9697f12bb9c8fe6d349deef8a8ba7bf03de909",
       "source": "result/data/v4_qns27_observables/nu2of3_v4_outer_c3_p1/qns27_diagnostics.npz"
     },
     "qns27/diagnostics/nu2of3_v4_outer_c3_p1.json": {
-      "bytes": 1745,
-      "sha256": "fe5533dca96e1a1280b342ce26b4152c106d4bb7395c0908394f0c94137d2407",
+      "bytes": 2166,
+      "sha256": "d762423715d22afd944d91c14593f90afc89358a5a1c89e4d3b6fbe1eb99eab2",
       "source": "result/data/v4_qns27_observables/nu2of3_v4_outer_c3_p1/qns27_diagnostics.json"
     },
     "qns27/diagnostics/nu2of3_v4_outer_c3_p2.npz": {
-      "bytes": 37515,
-      "sha256": "47a5845ce1be3b127cda05d635b039ba0d608e9abfd040d722201353e38ccc34",
+      "bytes": 39501,
+      "sha256": "1787b6cb5ec05350f7ba12e521ef2d605e410707668c9a1f09225f0a0941e975",
       "source": "result/data/v4_qns27_observables/nu2of3_v4_outer_c3_p2/qns27_diagnostics.npz"
     },
     "qns27/diagnostics/nu2of3_v4_outer_c3_p2.json": {
-      "bytes": 1749,
-      "sha256": "2e8e3c7e1fd7eadf9060664112db845af25b39a4fa3313ceb4df1e35f356ad1d",
+      "bytes": 2175,
+      "sha256": "821bd2bbbe6347a4d3ffff9bfd836a5be3dfb2d47f1f7e9e8c6ab6be001b0188",
       "source": "result/data/v4_qns27_observables/nu2of3_v4_outer_c3_p2/qns27_diagnostics.json"
     },
     "qns27/traces/nu2of3_full_m.json": {

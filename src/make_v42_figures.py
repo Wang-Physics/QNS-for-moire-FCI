@@ -375,24 +375,27 @@ def figure11() -> None:
 
 def observable_scales():
     ed = json.loads((DATA / "fig5_27cell_observables.json").read_text())
-    nk = [np.asarray(ed["fillings"][f]["n_k"]) for f in ("1/3", "2/3")]
+    nk1 = [np.asarray(ed["fillings"][f]["n_k"]) for f in ("1/3", "2/3")]
+    nk5 = []
     sq = [np.asarray(ed["fillings"][f]["S_q"]) for f in ("1/3", "2/3")]
     density = []
     for filling in ("1/3", "2/3"):
         for branch in ("full", "gamma", "outer0", "outer1", "outer2"):
             record = diagnostic27(filling, branch)
-            nk.append(np.asarray(record["momentum_occupation_plane_wave"]))
+            nk1.append(np.asarray(record["momentum_occupation_band1"]))
+            nk5.append(np.asarray(record["momentum_occupation_first_five"]))
             sq.append(np.asarray(record["charge_structure_factor_full"]))
             density.append(record["charge_density_over_mean"].ravel())
-    nk_norm = Normalize(0.0, float(np.ceil(np.max(np.concatenate(nk)) * 10) / 10))
+    nk1_norm = Normalize(0.0, float(np.ceil(np.max(np.concatenate(nk1)) * 10) / 10))
+    nk5_norm = Normalize(0.0, float(np.ceil(np.max(np.concatenate(nk5)) * 10) / 10))
     sq_norm = Normalize(0.0, float(np.ceil(np.max(np.concatenate(sq)) * 10) / 10))
     rmin, rmax = np.percentile(np.concatenate(density), [1, 99])
-    return ed, nk_norm, sq_norm, Normalize(float(rmin), float(rmax))
+    return ed, nk1_norm, nk5_norm, sq_norm, Normalize(float(rmin), float(rmax))
 
 
 def plot_observable_figure(name: str, rows: list[tuple[str, str, str]]) -> None:
     model, _ = qns27_inputs()
-    ed, nk_norm, sq_norm, density_norm = observable_scales()
+    ed, nk1_norm, nk5_norm, sq_norm, density_norm = observable_scales()
     points, berry, metric = geometry_theta26()
     berry_values = berry[:, 0]
     berry_scale = float(np.quantile(np.abs(berry_values), .985))
@@ -400,53 +403,60 @@ def plot_observable_figure(name: str, rows: list[tuple[str, str, str]]) -> None:
     trace_deviation = np.maximum(metric[:, 0] - np.abs(berry_values), 0.0)
     trace_norm = Normalize(float(np.quantile(trace_deviation, .02)),
                            float(np.quantile(trace_deviation, .985)))
-    k_points = np.asarray(ed["k_points_hex"])
-    fig, axes = plt.subplots(len(rows), 3, figsize=(7.25, 2.0 * len(rows) + .8),
-                             gridspec_kw={"width_ratios": [1, 1, 1.18]})
+    fig, axes = plt.subplots(len(rows), 4, figsize=(8.8, 2.0 * len(rows) + .8),
+                             gridspec_kw={"width_ratios": [1, 1, 1, 1.18]})
     if len(rows) == 1:
         axes = axes[None, :]
     # Reserve a shallow header above every column for a shared horizontal
     # colorbar.  This avoids the visually dominant full-height bars used in
     # v4.1 while retaining one fixed normalization per observable.
-    fig.subplots_adjust(left=.13, right=.97, bottom=.08, top=.86, wspace=.36, hspace=.22)
-    artists = [None, None, None]
+    fig.subplots_adjust(left=.11, right=.98, bottom=.08, top=.86, wspace=.34, hspace=.22)
+    artists = [None, None, None, None]
     for row, (filling, branch, label) in enumerate(rows):
         record = diagnostic27(filling, branch)
-        nk = np.asarray(record["momentum_occupation_plane_wave"])
+        nk1 = np.asarray(record["momentum_occupation_band1"])
+        nk5 = np.asarray(record["momentum_occupation_first_five"])
         sq = np.asarray(record["charge_structure_factor_full"])
         record_k = np.asarray(record["momentum_k_points"])
         record_q = np.asarray(record["structure_q_vectors"])
-        if not (
-            np.allclose(record_k, k_points, rtol=0.0, atol=1.0e-12)
-            and np.allclose(record_q, k_points, rtol=0.0, atol=1.0e-12)
+        if record_k.shape != (27, 2) or not np.allclose(
+            record_k, record_q, rtol=0.0, atol=1.0e-12
         ):
             raise ValueError(
-                f"{filling} {branch}: computed Fourier points do not match plotted BZ points"
+                f"{filling} {branch}: n(k) and S(q) must use the same 27 ED vectors"
             )
         axis = axes[row, 0]
         hex_contour(axis, model, points, berry_values, "RdBu_r", berry_norm, alpha=.34)
-        artists[0] = axis.scatter(k_points[:, 0], k_points[:, 1], c=nk, cmap="turbo",
-                                  norm=nk_norm, s=22 + 72*np.clip(nk, 0, nk_norm.vmax)/nk_norm.vmax,
+        artists[0] = axis.scatter(record_k[:, 0], record_k[:, 1], c=nk5, cmap="turbo",
+                                  norm=nk5_norm, s=22 + 72*np.clip(nk5, 0, nk5_norm.vmax)/nk5_norm.vmax,
                                   edgecolor="white", linewidth=.45, zorder=5)
         set_hex_limits(axis, model)
         annotate_hex(axis, model)
-        axis.set_title(r"$n_{G=0}(\mathbf{k})$", pad=4)
+        axis.set_title(r"$n_{\rm tot}(\mathbf{k})$ (bands 1--5)", pad=4)
         axis = axes[row, 1]
+        hex_contour(axis, model, points, berry_values, "RdBu_r", berry_norm, alpha=.34)
+        artists[1] = axis.scatter(record_k[:, 0], record_k[:, 1], c=nk1, cmap="turbo",
+                                  norm=nk1_norm, s=22 + 72*np.clip(nk1, 0, nk1_norm.vmax)/nk1_norm.vmax,
+                                  edgecolor="white", linewidth=.45, zorder=5)
+        set_hex_limits(axis, model)
+        annotate_hex(axis, model)
+        axis.set_title(r"$n_1(\mathbf{k})$", pad=4)
+        axis = axes[row, 2]
         hex_contour(axis, model, points, trace_deviation, "magma", trace_norm, alpha=.32)
-        artists[1] = axis.scatter(k_points[:, 0], k_points[:, 1], c=sq, cmap="cool",
+        artists[2] = axis.scatter(record_q[:, 0], record_q[:, 1], c=sq, cmap="cool",
                                   norm=sq_norm, s=22 + 105*np.clip(sq, 0, sq_norm.vmax)/sq_norm.vmax,
                                   edgecolor="white", linewidth=.45, zorder=5)
         set_hex_limits(axis, model)
         annotate_hex(axis, model)
         axis.set_title(r"$S_{\rm full}(\mathbf{q})$", pad=4)
-        axis = axes[row, 2]
+        axis = axes[row, 3]
         x = np.asarray(record["density_x_fraction"])
         y = np.asarray(record["density_y_fraction"])
         density = np.tile(np.asarray(record["charge_density_over_mean"]), (2, 2))
         tx, ty = np.concatenate([x, x + 1]), np.concatenate([y, y + 1])
         fx, fy = np.meshgrid(tx, ty, indexing="ij")
         cx, cy = fx + .5 * fy, np.sqrt(3) * fy / 2
-        artists[2] = axis.pcolormesh(cx, cy, density, cmap="magma", norm=density_norm,
+        artists[3] = axis.pcolormesh(cx, cy, density, cmap="magma", norm=density_norm,
                                      shading="nearest", rasterized=True)
         axis.plot([0, 2, 3, 1, 0], [0, 0, np.sqrt(3), np.sqrt(3), 0],
                   color="#34383B", lw=.75)
@@ -461,20 +471,21 @@ def plot_observable_figure(name: str, rows: list[tuple[str, str, str]]) -> None:
         axes[row, 0].text(-.38, .5, rf"$\nu={filling}$" + "\n" + label,
                           transform=axes[row, 0].transAxes, rotation=90,
                           ha="center", va="center", fontsize=7.6, fontweight="bold")
-    for axis in axes[:, :2].flat:
+    for axis in axes[:, :3].flat:
         axis.set_aspect("equal")
         axis.set_xticks([])
         axis.set_yticks([])
         for spine in axis.spines.values():
             spine.set_visible(False)
-    for axis in axes[:, 2].flat:
+    for axis in axes[:, 3].flat:
         axis.spines["top"].set_visible(False)
         axis.spines["right"].set_visible(False)
     for label, axis in zip("abcdefghijklmnop", axes.flat):
         axis.text(-.11, 1.03, label, transform=axis.transAxes,
                   fontsize=8.5, fontweight="bold")
     for column, (artist, label) in enumerate(zip(
-        artists, (r"$n(\mathbf{k})$", r"$S(\mathbf{q})$", r"$\rho/\bar\rho$"))
+        artists, (r"$n_{\rm tot}(\mathbf{k})$", r"$n_1(\mathbf{k})$",
+                  r"$S(\mathbf{q})$", r"$\rho/\bar\rho$"))
     ):
         pos = axes[0, column].get_position()
         cax = fig.add_axes([pos.x0, .925, pos.width, .012])

@@ -55,7 +55,9 @@ def run_one(job: dict, gpu: int) -> dict:
         record = json.loads(completed.read_text())
         if (
             record.get("status") == "complete"
-            and "momentum_occupation_plane_wave_sum" in record
+            and "momentum_occupation_band1_normalized_sum" in record
+            and "momentum_occupation_first_five_sum" in record
+            and "structure_factor_raw_c3_residual" in record
         ):
             return record
     source = job["source"]

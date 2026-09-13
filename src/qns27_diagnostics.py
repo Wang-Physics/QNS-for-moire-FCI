@@ -2,12 +2,13 @@
 
 The older :mod:`neural_bloch_diagnostics` path is tied to the 3x3 cluster.
 This module keeps the 27-cell C6 supercell and evaluates complete JAX
-wavefunction ratios.  The displayed n(k) is the direct one-body Fourier
-estimator in the two layer-resolved G=0 plane waves at the 27 first-BZ
-momenta; reciprocal images are not folded into it.  A separate five-band
-diagonal is retained only for bare-band populations, avoiding a 135 by 135
-matrix for every Monte Carlo configuration.  The full S(q) is evaluated
-directly from coordinate-space density modes without band projection.
+wavefunction ratios.  The one-body density matrix is projected onto the fixed
+continuum Bloch orbitals.  We retain both the first-band occupation, normalized
+to N_e for a shape comparison with one-band ED, and the raw sum over the first
+five bands.  The full S(q) is the Fourier transform of the sampled real-space
+density-pair correlation.  Its primary grid is exactly the 27 physical Bloch
+momenta used by ED; a directly evaluated C6-closed 37-vector grid is saved only
+as a boundary/rotation audit.  No observable is C3 averaged.
 """
 
 from __future__ import annotations
@@ -26,8 +27,17 @@ import numpy as np
 from scipy.ndimage import gaussian_filter
 
 from .c6_ed import cluster_bloch_states
-from .jax_neural_bloch import JaxNeuralBlochSpec, initialize, logpsi
-from .qns27 import cluster, first_bz_momenta, inputs
+from .jax_neural_bloch import (
+    JaxNeuralBlochSpec,
+    initialize,
+    logpsi,
+)
+from .qns27 import (
+    cluster,
+    first_bz_c6_grid,
+    first_bz_momenta,
+    inputs,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -109,27 +119,113 @@ def _block_sem(values: np.ndarray, blocks: int) -> np.ndarray:
     return means.std(axis=0, ddof=1) / np.sqrt(len(means))
 
 
+def _filling_normalized(
+    per_sample: np.ndarray, particles: int, blocks: int
+) -> tuple[np.ndarray, np.ndarray]:
+    """Normalize a projected momentum distribution to the physical filling.
+
+    This is a conditional distribution within the selected band subspace. Its
+    scale is fixed only by N_e, never by the ED momentum profile. Blockwise
+    normalization propagates numerator/trace covariance into the SEM.
+    """
+    mean = per_sample.mean(axis=0)
+    normalized = particles * mean / mean.sum()
+    pieces = [
+        piece for piece in np.array_split(per_sample, min(blocks, len(per_sample)))
+        if len(piece)
+    ]
+    block_values = np.stack([
+        particles * piece.mean(axis=0) / piece.mean(axis=0).sum()
+        for piece in pieces
+    ])
+    sem = (
+        block_values.std(axis=0, ddof=1) / np.sqrt(len(block_values))
+        if len(block_values) > 1 else np.zeros_like(normalized)
+    )
+    return normalized, sem
+
+
 def _first_bz_momenta() -> np.ndarray:
-    """Compatibility wrapper for the authoritative plotted BZ mesh."""
+    """The 27 crystal-momentum classes, one representative per class."""
     return first_bz_momenta()
 
 
+def _rotation_permutation(points: np.ndarray, turns: int = 1) -> np.ndarray:
+    """Permutation induced by a 120-degree rotation of a closed point grid."""
+    angle = 2.0 * np.pi * turns / 3.0
+    rotation = np.array([
+        [np.cos(angle), -np.sin(angle)],
+        [np.sin(angle), np.cos(angle)],
+    ])
+    rotated = points @ rotation.T
+    distances = np.linalg.norm(rotated[:, None, :] - points[None, :, :], axis=2)
+    permutation = np.argmin(distances, axis=1)
+    if np.max(distances[np.arange(len(points)), permutation]) > 2.0e-12:
+        raise ValueError("Fourier grid is not closed under C3")
+    if len(np.unique(permutation)) != len(points):
+        raise ValueError("C3 point map is not a permutation")
+    return permutation
+
+
+def _density_pair_structure_factor(
+    cartesian: np.ndarray,
+    q_vectors: np.ndarray,
+    batch: int = 128,
+) -> np.ndarray:
+    """Fourier transform the empirical real-space density-pair measure.
+
+    This is the unbinned estimator N_e^{-1} sum_ij cos[q.(r_i-r_j)].
+    Avoiding a real-space histogram makes the Fourier transform exact at the
+    requested q points while the sample batching keeps peak memory small.
+    """
+    particles = cartesian.shape[1]
+    result = np.empty((len(cartesian), len(q_vectors)), dtype=float)
+    for start in range(0, len(cartesian), batch):
+        stop = min(start + batch, len(cartesian))
+        current = cartesian[start:stop]
+        displacement = current[:, :, None, :] - current[:, None, :, :]
+        phase = np.einsum("bija,qa->bijq", displacement, q_vectors)
+        result[start:stop] = np.cos(phase).sum(axis=(1, 2)) / particles
+    return result
+
+
 def _coordinate_observables(positions: np.ndarray, blocks: int) -> dict[str, np.ndarray]:
-    model, qns_inputs = inputs()
+    _, qns_inputs = inputs()
     supercell = np.asarray(qns_inputs["supercell_lattice"])
     cartesian = np.einsum("ac,bnc->bna", supercell, positions)
-    # A physical continuum density mode is not periodic under q -> q + G.
-    # Use the same first-BZ transfer representatives as the projected ED
-    # density operator and as the coordinates used by the report figure.
+    # Boundary reciprocal images are distinct continuum density modes.  The
+    # C6-closed audit grid explicitly evaluates each physical vector; it never
+    # obtains a boundary value by adding a reciprocal lattice vector.
+    audit_q_vectors = first_bz_c6_grid()
+    audit_full_per_sample = _density_pair_structure_factor(
+        cartesian, audit_q_vectors
+    )
+    # The publication comparison uses exactly the same 27 physical vectors as
+    # the ED Bloch mesh.  The larger grid is retained only to audit rotations
+    # of boundary modes without ever substituting q+G.
     q_vectors = _first_bz_momenta()
+    primary_indices = np.asarray([
+        int(np.argmin(np.linalg.norm(audit_q_vectors - point, axis=1)))
+        for point in q_vectors
+    ])
+    if np.max(np.linalg.norm(
+        audit_q_vectors[primary_indices] - q_vectors, axis=1
+    )) > 2.0e-12:
+        raise RuntimeError("ED Bloch q grid is absent from the C6 audit grid")
+    full_per_sample = audit_full_per_sample[:, primary_indices]
+
+    # The disconnected term is evaluated from the same density samples.  It
+    # vanishes away from Bragg vectors in a translation-invariant state.
     phase = np.einsum("bna,qa->bnq", cartesian, q_vectors)
     rho_q = np.exp(1j * phase).sum(axis=1)
     particles = positions.shape[1]
-    full_per_sample = np.abs(rho_q) ** 2 / particles
     full = full_per_sample.mean(axis=0)
-    connected = full - np.abs(rho_q.mean(axis=0)) ** 2 / particles
+    disconnected = np.abs(rho_q.mean(axis=0)) ** 2 / particles
+    connected = full - disconnected
     amplitude = np.abs(rho_q.mean(axis=0)) / particles
     full[0] = connected[0] = amplitude[0] = 0.0
+    audit_full = audit_full_per_sample.mean(axis=0)
+    audit_full[0] = 0.0
 
     primitive_fraction = np.remainder(
         np.einsum("ac,bnc->bna", np.asarray(cluster().matrix), positions), 1.0
@@ -146,49 +242,13 @@ def _coordinate_observables(positions: np.ndarray, blocks: int) -> dict[str, np.
         "charge_structure_factor_full": full.real,
         "charge_structure_factor_connected": connected.real,
         "charge_structure_factor_full_sem": _block_sem(full_per_sample, blocks),
+        "structure_q_vectors_c6_audit": audit_q_vectors,
+        "charge_structure_factor_full_c6_audit": audit_full,
         "density_fourier_amplitude_per_particle": amplitude,
         "density_x_fraction": 0.5 * (xedge[:-1] + xedge[1:]),
         "density_y_fraction": 0.5 * (yedge[:-1] + yedge[1:]),
         "charge_density_over_mean": density,
     }
-
-
-def _plane_wave_momentum_occupation(
-    selected_position: np.ndarray,
-    selected_layer: np.ndarray,
-    proposal_position: np.ndarray,
-    proposal_layer: np.ndarray,
-    conjugate_ratio: np.ndarray,
-    particles: int,
-    blocks: int,
-) -> tuple[np.ndarray, np.ndarray, float]:
-    """Estimate G=0 plane-wave n(k), summed over the two physical layers.
-
-    The proposal coordinate and layer are sampled uniformly. The factor two
-    removes the auxiliary-layer sampling probability. Unlike a crystal-
-    momentum projector, this estimator does not sum k+G reciprocal images, so
-    its 27-point trace is a finite first-BZ window and need not equal N_e.
-    """
-    _, qns_inputs = inputs()
-    displacement = proposal_position - selected_position
-    cartesian_displacement = np.einsum(
-        "ac,dbc->dba", np.asarray(qns_inputs["supercell_lattice"]), displacement
-    )
-    phase = np.exp(1j * np.einsum(
-        "dba,ka->dbk", cartesian_displacement, _first_bz_momenta()
-    ))
-    same_layer = selected_layer == proposal_layer
-    per_draw = (
-        2.0 * particles * same_layer[..., None] * phase
-        * conjugate_ratio[..., None]
-    )
-    per_sample = per_draw.mean(axis=0)
-    mean = per_sample.mean(axis=0)
-    return (
-        mean.real,
-        _block_sem(per_sample.real, blocks),
-        float(np.max(np.abs(mean.imag))),
-    )
 
 
 def run(args: argparse.Namespace) -> dict:
@@ -259,6 +319,7 @@ def run(args: argparse.Namespace) -> dict:
             })
     replaced = np.concatenate(replaced_parts).reshape(draws, count)
     conjugate_ratio = np.exp(np.conj(replaced - base_logpsi[None]))
+    del expanded_positions, expanded_layers, flat_positions, flat_layers, replaced_parts
 
     coefficients, orbital_momenta = _five_band_orbitals()
     selected_position = positions[sample_index, particle]
@@ -288,24 +349,31 @@ def run(args: argparse.Namespace) -> dict:
     band_weight = band_weight_per_sample.mean(axis=0)
     band_weight_sem = _block_sem(band_weight_per_sample, args.error_blocks)
     momentum_band1_per_sample = diagonal_per_sample.real[:, :, 0]
-    momentum_band1 = momentum_band1_per_sample.mean(axis=0)
-    momentum_band1_sem = _block_sem(momentum_band1_per_sample, args.error_blocks)
-    momentum_plane_wave, momentum_plane_wave_sem, momentum_plane_wave_imaginary_max = (
-        _plane_wave_momentum_occupation(
-            selected_position, selected_layer, proposal_position, proposal_layer,
-            conjugate_ratio, spec.n_particles, args.error_blocks,
-        )
+    momentum_band1_raw = momentum_band1_per_sample.mean(axis=0)
+    momentum_band1_raw_sem = _block_sem(
+        momentum_band1_per_sample, args.error_blocks
+    )
+    momentum_band1, momentum_band1_sem = _filling_normalized(
+        momentum_band1_per_sample, spec.n_particles, args.error_blocks
+    )
+    momentum_first_five_per_sample = diagonal_per_sample.real.sum(axis=2)
+    momentum_first_five = momentum_first_five_per_sample.mean(axis=0)
+    momentum_first_five_sem = _block_sem(
+        momentum_first_five_per_sample, args.error_blocks
     )
     coordinate = _coordinate_observables(positions, args.error_blocks)
 
     payload = {
+        "n_particles": np.asarray(spec.n_particles, dtype=np.int32),
         "one_body_density_diagonal": diagonal,
         "band_weight": band_weight,
         "band_weight_sem": band_weight_sem,
+        "momentum_occupation_band1_raw": momentum_band1_raw,
+        "momentum_occupation_band1_raw_sem": momentum_band1_raw_sem,
         "momentum_occupation_band1": momentum_band1,
         "momentum_occupation_band1_sem": momentum_band1_sem,
-        "momentum_occupation_plane_wave": momentum_plane_wave,
-        "momentum_occupation_plane_wave_sem": momentum_plane_wave_sem,
+        "momentum_occupation_first_five": momentum_first_five,
+        "momentum_occupation_first_five_sem": momentum_first_five_sem,
         "momentum_k_points": _first_bz_momenta(),
         **coordinate,
     }
@@ -320,16 +388,33 @@ def run(args: argparse.Namespace) -> dict:
         "auxiliary_draws_per_sample": draws,
         "sampling": "saved final training walkers; no independent validation chain",
         "one_body_estimator": (
-            "direct G=0 first-BZ plane-wave Fourier estimator summed over both "
-            "layers; no reciprocal-image sum; five-band Bloch projection is "
-            "retained only for band-weight diagnostics"
+            "Bloch-projected one-body density-matrix diagonal from complete "
+            "one-particle wavefunction ratios: n_1(k) is conditionally "
+            "normalized to N_e for one-band ED comparison, while the raw "
+            "n_1(k) and sum over bands 1:5 are also saved; no C3 or ED-profile fit"
+        ),
+        "structure_factor_estimator": (
+            "unbinned Fourier transform of the real-space density-pair "
+            "measure at the 27 ED Bloch momentum vectors; a separately "
+            "evaluated C6-closed 37-vector grid is retained only as an audit"
         ),
         "band_weight": band_weight.tolist(),
         "band_weight_sem": band_weight_sem.tolist(),
         "projected_trace": float(diagonal.sum()),
-        "momentum_occupation_band1_sum": float(momentum_band1.sum()),
-        "momentum_occupation_plane_wave_sum": float(momentum_plane_wave.sum()),
-        "momentum_occupation_plane_wave_imaginary_max": momentum_plane_wave_imaginary_max,
+        "momentum_occupation_band1_raw_sum": float(momentum_band1_raw.sum()),
+        "momentum_occupation_band1_normalized_sum": float(momentum_band1.sum()),
+        "momentum_occupation_first_five_sum": float(momentum_first_five.sum()),
+        "momentum_occupation_band1_raw_c3_residual": float(np.max(np.abs(
+            momentum_band1_raw - momentum_band1_raw[
+                cluster().rotation60[cluster().rotation60]
+            ]
+        ))),
+        "structure_factor_raw_c3_residual": float(np.max(np.abs(
+            coordinate["charge_structure_factor_full_c6_audit"]
+            - coordinate["charge_structure_factor_full_c6_audit"][
+                _rotation_permutation(coordinate["structure_q_vectors_c6_audit"])
+            ]
+        ))),
         "saved_base_wavefunction_relative_error": base_logpsi_max_error,
         "maximum_nonzero_structure_factor": float(coordinate["charge_structure_factor_full"].max()),
         "maximum_nonzero_density_amplitude": float(coordinate["density_fourier_amplitude_per_particle"].max()),

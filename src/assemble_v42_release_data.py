@@ -119,10 +119,14 @@ def main() -> None:
         "source": "selected local queue metadata",
     }
     write_json(DEST / "manifest.json", {
-        "version": "4.2.0",
+        "version": "4.2.1",
         "observable_definition": (
-            "direct G=0 layer-summed plane-wave n(k) and full S(q), both at "
-            "the exact 27 plotted first-BZ vectors with no reciprocal-image sum"
+            "Bloch-projected n_tot(k) summed over bands 1:5 and first-band "
+            "n_1(k) conditionally normalized to N_e; full S(q) is the "
+            "unbinned Fourier transform of the real-space density-pair "
+            "correlation at the same 27 physical momenta as ED, with a "
+            "separate directly evaluated 37-vector C6 audit; no C3 averaging "
+            "or ED-profile fit"
         ),
         "files": manifest,
     })

@@ -1,4 +1,4 @@
-% Version 4.2 end matter: one full-page figure per page after the report text.
+% Version 4.2.1 end matter: one full-page figure per page after the report text.
 \clearpage
 \onecolumn
 
@@ -73,14 +73,16 @@ critical path divided by the three resulting candidate states.}
 \centering
 \includegraphics[width=\textwidth,height=.84\textheight,keepaspectratio]{fig8_27cell_qns_observables.pdf}
 \caption{\textbf{Twenty-seven-cell full-$M$ and $P_\Gamma[M]$ observables.}
-Rows compare both ansatzes at $\nu=1/3$ and $2/3$. Columns show direct
-$G=0$ plane-wave momentum occupation, the unprojected full static structure
-factor and folded charge density. Both Fourier observables are evaluated at
-exactly the 27 physical vectors drawn in the hexagonal first BZ, with no
-reciprocal-image sum. All values use
-the saved final 4,128-walker training ensembles without a separate validation
-chain. Bloch-state projection is used only for the band weights in
-Figs.~\ref{fig:qns9summary} and \ref{fig:qns27summary}.}
+Rows compare both ansatzes at $\nu=1/3$ and $2/3$. Columns show the
+Bloch-projected occupation summed over bands 1--5, the band-1 occupation
+conditionally normalized to $N_e$, the full static structure factor
+transformed from the real-space density-pair correlation, and folded charge
+density. Both momentum panels and the main $S(\bm q)$ panel use exactly the 27
+physical ED momentum vectors. A directly evaluated 37-vector, $C_6$-closed
+grid is retained only for boundary rotation audits. No observable is $C_3$
+averaged, and no ED momentum profile enters the first-band normalization. All
+values use the saved final 4,128-walker training ensembles without a separate
+validation chain.}
 \label{fig:nbobservables-baseline}
 \end{figure}
 

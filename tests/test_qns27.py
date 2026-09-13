@@ -4,7 +4,14 @@ from pathlib import Path
 import numpy as np
 import jax
 import jax.numpy as jnp
-from src.qns27 import cluster, inputs, gamma_indices
+from src.qns27 import (
+    cluster,
+    first_bz_c6_grid,
+    first_bz_momenta,
+    gamma_indices,
+    inputs,
+    momentum_class_indices,
+)
 from src.jax_neural_bloch import (
     JaxNeuralBlochSpec,
     complete_minor_sum,
@@ -15,8 +22,9 @@ from src.jax_neural_bloch import (
 )
 from src.qns27_diagnostics import (
     _coordinate_observables,
+    _filling_normalized,
     _first_bz_momenta,
-    _plane_wave_momentum_occupation,
+    _rotation_permutation,
 )
 
 
@@ -61,46 +69,63 @@ class QNS27Checks(unittest.TestCase):
             atol=2.0e-10,
         )
 
-    def test_direct_plane_wave_fourier_estimator(self):
-        _, data = inputs()
-        c = cluster()
-        translations = finite_translation_representatives(cluster().matrix)
-        fractional = (np.linalg.inv(c.matrix) @ translations.T).T
-        cartesian = np.einsum('ac,tc->ta', data['supercell_lattice'], fractional)
-        momenta = _first_bz_momenta()
-        characters = np.exp(1j * cartesian @ momenta.T)
-        target = 17
-        # Exact quadrature over the 27 primitive translations for a single
-        # G=0 plane wave. The second draw has the wrong layer, so the factor
-        # two in the estimator restores a unit occupation at the target only.
-        selected_position = np.zeros((2, 27, 2))
-        proposal_position = np.broadcast_to(fractional, (2, 27, 2)).copy()
-        selected_layer = np.zeros((2, 27), dtype=int)
-        proposal_layer = np.stack([np.zeros(27, dtype=int), np.ones(27, dtype=int)])
-        ratios = np.broadcast_to(characters[:, target].conj(), (2, 27)).copy()
-        occupation, _, imaginary = _plane_wave_momentum_occupation(
-            selected_position, selected_layer, proposal_position, proposal_layer,
-            ratios, 1, 1,
-        )
-        expected = np.zeros(27)
-        expected[target] = 1.0
-        np.testing.assert_allclose(occupation, expected, rtol=0.0, atol=2.0e-12)
-        self.assertLess(imaginary, 2.0e-12)
+    def test_band1_filling_normalization(self):
+        rng = np.random.default_rng(71)
+        per_sample = rng.random((32, 27))
+        normalized, sem = _filling_normalized(per_sample, 9, 8)
+        self.assertEqual(normalized.shape, (27,))
+        self.assertEqual(sem.shape, (27,))
+        self.assertAlmostEqual(float(normalized.sum()), 9.0, places=12)
+        self.assertTrue(np.all(np.isfinite(sem)))
 
-    def test_full_structure_factor_uses_plotted_first_bz_q(self):
+    def test_first_bz_fourier_grid_is_c6_closed(self):
+        points = first_bz_c6_grid()
+        self.assertEqual(points.shape, (37, 2))
+        self.assertEqual(momentum_class_indices(points).shape, (37,))
+        for turns in (1, 2):
+            permutation = _rotation_permutation(points, turns)
+            self.assertEqual(len(np.unique(permutation)), len(points))
+
+    def test_full_structure_factor_uses_real_space_pair_fourier(self):
         _, data = inputs()
         rng = np.random.default_rng(8)
         positions = rng.random((16, 9, 2))
         result = _coordinate_observables(positions, 4)
-        expected = _first_bz_momenta()
+        expected = first_bz_momenta()
         np.testing.assert_allclose(result['structure_q_vectors'], expected, atol=1.0e-14)
-        published = np.asarray(json.loads(
-            (Path(__file__).resolve().parents[1] / 'result/data/fig5_27cell_observables.json')
-            .read_text()
-        )['k_points_hex'])
-        np.testing.assert_allclose(expected, published, rtol=0.0, atol=1.0e-14)
-        old = cluster().centered_fractions @ data['primitive_reciprocal']
-        self.assertEqual(np.count_nonzero(np.linalg.norm(old - expected, axis=1) > 1e-10), 5)
+        cartesian = np.einsum('ac,bnc->bna', data['supercell_lattice'], positions)
+        rho = np.exp(1j * np.einsum('bna,qa->bnq', cartesian, expected)).sum(axis=1)
+        direct = (np.abs(rho) ** 2 / positions.shape[1]).mean(axis=0)
+        direct[0] = 0.0  # connected convention used only at q=0
+        np.testing.assert_allclose(
+            result['charge_structure_factor_full'], direct,
+            rtol=2e-14, atol=2e-14,
+        )
+        audit = first_bz_c6_grid()
+        np.testing.assert_allclose(
+            result['structure_q_vectors_c6_audit'], audit, atol=1.0e-14
+        )
+        audit_rho = np.exp(
+            1j * np.einsum('bna,qa->bnq', cartesian, audit)
+        ).sum(axis=1)
+        audit_direct = (np.abs(audit_rho) ** 2 / positions.shape[1]).mean(axis=0)
+        audit_direct[0] = 0.0
+        np.testing.assert_allclose(
+            result['charge_structure_factor_full_c6_audit'], audit_direct,
+            rtol=2e-14, atol=2e-14,
+        )
+
+    def test_old_27_representatives_are_not_a_c3_closed_plot(self):
+        points = first_bz_momenta()
+        angle = 2 * np.pi / 3
+        rotation = np.array([
+            [np.cos(angle), -np.sin(angle)],
+            [np.sin(angle), np.cos(angle)],
+        ])
+        distances = np.linalg.norm(
+            (points @ rotation.T)[:, None] - points[None, :], axis=2
+        )
+        self.assertEqual(np.count_nonzero(distances.min(axis=1) > 1e-10), 6)
 
     def test_v4_gamma_projection_is_translation_invariant(self):
         spec = JaxNeuralBlochSpec(

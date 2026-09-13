@@ -836,7 +836,7 @@ $2/3$ & one-band ED, $\Gamma$ & $\sim29$ s & ---\\
 $2/3$ & full $M$ & 10.89 h & 10.89 GPU h\\
 $2/3$ & v4 $P_\Gamma[M]$ & 11.11 h & 11.11 GPU h\\
 $2/3$ & outer, complete / amortized & 66.66 / 22.22 h & 106.58 / 35.53 GPU h\\
-both & observables, ten states & 9.81 min & 0.293 GPU h\\
+both & observables, ten states & 6.16 min & 0.194 GPU h\\
 \bottomrule
 \end{tabular}%
 }
@@ -859,35 +859,17 @@ local traces and marked in each figure. The panels are regenerated from the
 saved final training ensembles, with no fresh validation chains. Each contains
 4,128 configurations; energy selection and observable estimation use the same
 production-chain convention as the optimization protocol of Ref.~\cite{luo}.
-The 27 momentum locations, weak Berry/metric backgrounds, marker-size rules,
-and shared $n(\bm k)$/$S(\bm q)$ color normalizations follow
-Fig.~\ref{fig:fig5}. Every diagnostic file also stores the actual Fourier
-vectors, and figure generation checks them point by point against the plotted
-dots before rendering.
+Both occupations and the primary structure factor are shown at exactly the
+27 physical momentum vectors used in the ED figure. A separately evaluated
+37-vector grid completes the boundary under $C_6$ and is retained only to
+audit rotations of physical continuum Fourier modes. Figure generation checks
+the 27 main vectors point by point. No observable is $C_3$ averaged and no ED
+momentum profile is used in postprocessing.
 
-\subsection{Direct plane-wave momentum occupation and bare-band weights}
+\subsection{Bloch-projected momentum occupations and bare-band weights}
 
-The momentum occupation displayed in Figs.~\ref{fig:nbobservables-baseline}--
-\ref{fig:nbobservables23} is not projected into a moir\'e band. Following the
-momentum-resolved one-body density used by Li \emph{et al.}~\cite{limomentum},
-it is evaluated directly in normalized layer plane waves at the 27 marked
-first-BZ momenta. With $A$ the supercell area and
-$\rho^{(1)}_l(\bm r,\bm r')=
-\langle\psi_l^\dagger(\bm r)\psi_l(\bm r')\rangle$, define
-\begin{align}
- n_{G=0}(\bm k)&=\sum_{l=1}^{2}\langle c^\dagger_{l\bm k}c_{l\bm k}\rangle\\
- &=\frac1A\sum_{l=1}^{2}\int_A d\bm r\,d\bm r'\,
- e^{i\bm k\cdot(\bm r-\bm r')}\rho^{(1)}_l(\bm r,\bm r').
-\label{eq:total-nk}
-\end{align}
-The Monte Carlo estimator selects one electron and a uniform auxiliary
-coordinate/layer and evaluates the complete one-particle replacement ratio.
-The factor of two corrects the auxiliary-layer probability. Only the two
-physical layers are summed: no $\bm k+\bm G$ image is folded into the displayed
-value. Consequently the 27-point first-BZ sum is a finite plane-wave window
-and is not constrained to equal $N_e$.
-
-Bloch projection is used only for the separate band-weight diagnostic.  For
+To compare like with like, momentum occupation is defined in the same fixed
+bare-band basis as the one-band ED calculation. For
 $a=(n,\bm k)$ and $b=(m,\bm q)$, its estimator is
 \begin{equation}
 \begin{split}
@@ -911,12 +893,47 @@ projector is instead the fixed bare function
 no backflow phase is multiplied into it.  Thus neural dressing appears once,
 only through the complete wavefunction ratio.
 
+The raw first-band occupation and the five-band total displayed in
+Figs.~\ref{fig:nbobservables-baseline}--\ref{fig:nbobservables23} are
+\begin{align}
+ \widetilde n_1(\bm k)&=\rho_{1\bm k,1\bm k},
+ &\sum_{\bm k}\widetilde n_1(\bm k)&=N_eW_1,\\
+ n_{\rm tot}(\bm k)&=\sum_{n=1}^{5}\rho_{n\bm k,n\bm k}.
+\end{align}
+For direct shape comparison with one-band ED, the plotted first-band panel is
+the explicitly conditional normalization
+\begin{equation}
+ n_1(\bm k)=N_e\,
+ \frac{\widetilde n_1(\bm k)}{\sum_{\bm q}\widetilde n_1(\bm q)},
+ \qquad \sum_{\bm k}n_1(\bm k)=N_e .
+\label{eq:band1-normalized}
+\end{equation}
+This uses only the QNS first-band trace and the physical filling; it does not
+fit the ED values. The raw $\widetilde n_1$ is saved alongside it. The total
+panel is not rescaled and therefore also exposes the five-band projected-trace
+error. Five bands are retained because bands four and five are already at the
+Monte Carlo estimator's percent-level noise floor; adding still more remote
+bands would primarily accumulate projection noise in the present sample.
+
+For the selected $\nu=1/3$, $m=0$ branch, the filling-normalized band-1 QNS
+profile has RMS difference 0.073 and Pearson correlation 0.828 with the
+one-band ED result. The corresponding selected $\nu=2/3$, $m=1$ values are
+0.079 and 0.742. These are blind comparisons between independently computed
+profiles, with no affine or pointwise fit. The raw band-1 sums are 8.375 and
+16.224, respectively, before the conditional normalization to 9 and 18.
+No rotation average is applied. On these two selected outer-$C_3$ states, the
+largest differences between normalized $C_3$ partners are 0.055 and 0.163;
+when the block errors of both partners are combined, the largest deviations
+are 1.39 and 1.95 standard errors. Thus their visible residual asymmetry is
+consistent with the finite auxiliary-ratio estimate at the present precision,
+rather than being removed by symmetry postprocessing.
+
 For the nine-cell band-weight validation, all 4,128 final configurations and 16
 auxiliary points per configuration were used to estimate the complete
 $45\times45$ five-band-projected matrix. For the 27-cell figures, the same
 complete-ratio construction evaluates the 135 diagonal elements directly;
-these values are retained for the five band populations only, without
-materializing a noisy $135\times135$ matrix. The band populations are
+their momentum-resolved sum gives $n_{\rm tot}(\bm k)$ without materializing
+a noisy $135\times135$ matrix. The band populations are
 \begin{equation}
  W_n=\frac1{N_e}\sum_{\bm k}\rho_{n\bm k,n\bm k}.
 \end{equation}
@@ -990,11 +1007,12 @@ distribution.  The traces fluctuate around $N_e$, but the negative
 high-band estimates and eigenvalues quantify the remaining ratio-estimator
 noise; they must not be read as physical negative occupations.
 
-The estimator now caches $\Psi_m(X)$ once per configuration block and jointly
-batches all 16 replacement coordinates.  Each replacement still rebuilds the
+The estimator caches $\Psi_m(X)$ once per configuration block and batches the
+16 uniform replacements used for both momentum occupations and band weights.
+Each replacement still rebuilds the
 complete graph, all $\delta\bm r_j$, $J$, the finite-translation determinant sum,
 the projected three-branch sum and the wavefunction ratio.  On the A30 GPUs,
-the 4,128-by-16 v4 measurements are timed independently from training on the
+the 4,128-walker measurements are timed independently from training on the
 scheduled dual-GPU critical path. Training and postprocessing are timed
 separately in Table~\ref{tab:ed-qns-efficiency}.
 The focused bare-Slater regression sets $\delta\bm r=0$, $J=1$, fixes a
@@ -1021,24 +1039,32 @@ precision.
 \subsection{Full structure factor, connected part, and density order}
 
 Following the full-structure-factor definition of Luo, Zaklama and
-Fu~\cite{luo}, the structure factor is evaluated directly as the Fourier
-transform of the static density--density correlation function, not from a
-Bloch-projected operator and not reconstructed from the 1-RDM:
+Fu~\cite{luo}, the code first forms the empirical real-space density-pair
+measure and then Fourier transforms it, without a Bloch-projected operator and
+without reconstructing it from the 1-RDM:
 \begin{align}
- S_{\rm full}(\bm q)&=\frac{\langle|\rho_{\bm q}|^2\rangle}{N_e},\\
+ \chi(\bm r,\bm r')&=\langle\rho(\bm r)\rho(\bm r')\rangle,\\
+ S_{\rm full}(\bm q)&=\frac1{N_e}\int d\bm r\,d\bm r'\,
+ e^{i\bm q\cdot(\bm r-\bm r')}\chi(\bm r,\bm r')
+ =\frac{\langle|\rho_{\bm q}|^2\rangle}{N_e},\\
  S_c(\bm q)&=\frac{\langle|\rho_{\bm q}|^2\rangle-
  |\langle\rho_{\bm q}\rangle|^2}{N_e},\\
  m_{\bm q}&=\frac{|\langle\rho_{\bm q}\rangle|}{N_e}.
 \end{align}
 Here $\rho_{\bm q}=\sum_i e^{i\bm q\cdot\bm r_i}$ includes every particle and
-both layers. Each plotted $\bm q$ is the physical vector of the corresponding
-dot in the hexagonal first Brillouin zone. There is no sum over $\bm q+\bm G$,
-and the code does not replace a boundary point by a reciprocal-equivalent
-representative, because the continuum density is not periodic under
-$\bm q\mapsto\bm q+\bm G$. Five of the former 27 indices differed from their
-plotted vectors by one primitive reciprocal vector; those indices are now
-covered by a pointwise regression test. The ED comparison uses
-$S_{\rm full}$ with the same normalization. The new
+both layers. Numerically, the unbinned pair displacements are transformed in
+small configuration batches, so no real-space histogram or FFT interpolation
+error is introduced. The 27 plotted $\bm q$ vectors are pointwise identical
+to the physical Bloch momenta in the ED figure. This representative set is not
+a closed geometric point set on the hexagonal boundary: one $120^\circ$
+rotation leaves six points without a physical partner. Its rotational
+completion has 37 distinct vectors, which the code also evaluates directly as
+an audit. It neither sums over $\bm q+\bm G$ nor substitutes a
+reciprocal-equivalent boundary value, because the continuum density is not
+periodic under $\bm q\mapsto\bm q+\bm G$.
+The ED comparison uses the same $1/N_e$ normalization but a one-band-projected
+density operator, so agreement is expected first in symmetry and momentum
+dependence rather than exact high-$q$ amplitude. The new
 v4 values are evaluated independently in every sector, so differences among
 the rows reflect different saved wavefunctions rather than duplicated plotting
 data. The largest nonzero-$q$ density amplitudes are also reported to
@@ -1064,12 +1090,13 @@ order.
 For 27 cells at $\nu=1/3$, the corrected first-BZ nonzero maxima for full $M$,
 $P_\Gamma[M]$ and outer $m=0,1,2$ are respectively
 $(1.1575,1.1722,1.5222,1.1937,1.2116)$, compared with 1.0571 in one-band
-ED. In every case the maximum occurs at the conjugate $K,K'$ pair, for which
-$S(K)=S(K')$ configuration by configuration. At $\nu=2/3$, the corresponding
-QNS maxima are $(0.6976,0.7236,0.7492,0.7446,0.7254)$, again at $K,K'$, and
+ED. At $\nu=2/3$, the corresponding
+QNS maxima are $(0.6976,0.7236,0.7492,0.7446,0.7254)$ and
 remain much larger than the one-band ED maximum 0.1968. Hence the present
 120-update 27-cell states do not reproduce the weak one-band ED $\nu=2/3$
-structure factor. Some difference is physically allowed because the QNS
+structure-factor amplitude, although the selected-state momentum dependence
+is close: its Pearson correlation with ED is 0.984 (0.806 at $\nu=1/3$).
+Some difference is physically allowed because the QNS
 uses the untruncated continuum Hilbert space, but the high rejected-update
 counts and lack of an independent inference chain prevent attributing the
 whole discrepancy to band mixing. Figures~\ref{fig:nbobservables-baseline}--
@@ -1085,11 +1112,12 @@ a large static translation-breaking order parameter. Together with the high
 27-cell CG rejection counts, the $\nu=2/3$ structure-factor discrepancy is a
 clear target for longer, better-conditioned and multi-seed optimization.
 
-The corrected files obey $S(\bm q)=S(-\bm q)$ to roundoff because conjugate
-density modes are evaluated on every configuration. We do not apply a
-reciprocal-lattice wrap when auditing boundary points: such a wrap would test
-$S(\bm q+\bm G)$ rather than the value of the dot actually drawn in the
-continuum first BZ.
+The pair estimator obeys $S(\bm q)=S(-\bm q)$ configuration by configuration.
+No $C_3$ average is imposed: rotational differences on the directly evaluated
+37-vector audit grid remain visible as a wavefunction and Monte Carlo
+diagnostic. We do not apply a reciprocal-lattice wrap when auditing boundary
+points, because that would test $S(\bm q+\bm G)$ rather than the physical
+vector obtained by rotating the dot.
 
 \section{Conclusion}
 
@@ -1134,11 +1162,12 @@ space is not available here.
 
 The 27-cell observables show that the projected $\nu=1/3,m=0$ state retains
 zone-corner structure-factor enhancement. At $\nu=2/3$, however, all QNS
-structure-factor maxima remain near 0.70--0.75, above the one-band ED
+structure-factor maxima remain near 0.74--0.75, above the one-band ED
 maximum 0.197, even though static nonzero-$q$ density amplitudes of all
 translation-projected states stay below 0.011. Thus the current finite run
 does not yet reproduce the ED liquid correlations. The complete-ratio
-diagonal 1-RDM and direct two-body structure factors remain useful diagnostics,
+one-body spatial correlation and direct two-body structure factors remain
+useful diagnostics,
 but projected-trace noise, single-seed optimization and SR instability preclude
 a natural-orbital or topological claim. The next controlled tests are longer
 better-conditioned multi-seed optimization and sector-selection replication.
