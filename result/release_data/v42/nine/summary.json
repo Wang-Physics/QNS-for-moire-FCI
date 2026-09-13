@@ -1,0 +1,395 @@
+{
+  "version": "4.0",
+  "definition": "Psi_Gamma=(1/9) sum_T det(M D_T Q), exactly one dense complex M and no explicit momentum-combination enumeration; outer states are P_m Psi_Gamma",
+  "sampling": "observables use all 4128 saved final training walkers with 16 auxiliary replacements; no independent validation chain",
+  "sources": {
+    "full_m": "result/release_data",
+    "v4_gamma": "result/data/translation_projected_m_rank1_9cell_seed260904",
+    "v4_outer_c3": "result/data/v4_outer_c3_9cell",
+    "v4_observables": "result/data/v4_report_observables"
+  },
+  "selected_lowest_tail_sector": {
+    "nu1of3": 0,
+    "nu2of3": 2
+  },
+  "traces": {
+    "nu1of3_full_m": {
+      "updates": 120,
+      "final_10_energy_mean_per_particle_meV": -36.259469422079576,
+      "final_10_energy_minimum_per_particle_meV": -36.30780989066417,
+      "final_10_energy_rms_meV": 0.028567664442910368,
+      "final_10_variance_mean_meV2": 113.15834117052468,
+      "final_10_relative_residual_mean": 0.01865805206037306,
+      "final_10_cg_iterations_mean": 53.2,
+      "rejected_updates": 0,
+      "final_10_position_acceptance_mean": 0.6657218962907792,
+      "final_10_layer_acceptance_mean": 0.5675508677959442
+    },
+    "nu1of3_v4_gamma": {
+      "updates": 120,
+      "final_10_energy_mean_per_particle_meV": -37.257621042106784,
+      "final_10_energy_minimum_per_particle_meV": -37.30725835059388,
+      "final_10_energy_rms_meV": 0.036541578319569334,
+      "final_10_variance_mean_meV2": 56.64059702915414,
+      "final_10_relative_residual_mean": 0.017524347702399672,
+      "final_10_cg_iterations_mean": 37.3,
+      "rejected_updates": 0,
+      "final_10_position_acceptance_mean": 0.6728076577186585,
+      "final_10_layer_acceptance_mean": 0.6218507707118988
+    },
+    "nu1of3_v4_outer_c3_p0": {
+      "updates": 120,
+      "final_10_energy_mean_per_particle_meV": -37.321465291254334,
+      "final_10_energy_minimum_per_particle_meV": -37.370867746290386,
+      "final_10_energy_rms_meV": 0.02437776713696906,
+      "final_10_variance_mean_meV2": 54.41349966647914,
+      "final_10_relative_residual_mean": 0.01688364241385351,
+      "final_10_cg_iterations_mean": 22.2,
+      "rejected_updates": 0,
+      "final_10_position_acceptance_mean": 0.6713178277015686,
+      "final_10_layer_acceptance_mean": 0.6268653005361557
+    },
+    "nu1of3_v4_outer_c3_p1": {
+      "updates": 120,
+      "final_10_energy_mean_per_particle_meV": -32.081523274232595,
+      "final_10_energy_minimum_per_particle_meV": -32.12801529769754,
+      "final_10_energy_rms_meV": 0.03499074381364408,
+      "final_10_variance_mean_meV2": 113.77982941407569,
+      "final_10_relative_residual_mean": 0.01842704622483003,
+      "final_10_cg_iterations_mean": 54.3,
+      "rejected_updates": 0,
+      "final_10_position_acceptance_mean": 0.6747940957546235,
+      "final_10_layer_acceptance_mean": 0.5593992322683334
+    },
+    "nu1of3_v4_outer_c3_p2": {
+      "updates": 120,
+      "final_10_energy_mean_per_particle_meV": -36.11757486255403,
+      "final_10_energy_minimum_per_particle_meV": -36.17842244665486,
+      "final_10_energy_rms_meV": 0.03486391100977306,
+      "final_10_variance_mean_meV2": 69.94772614092969,
+      "final_10_relative_residual_mean": 0.016599672814170702,
+      "final_10_cg_iterations_mean": 31.3,
+      "rejected_updates": 0,
+      "final_10_position_acceptance_mean": 0.6777858525514603,
+      "final_10_layer_acceptance_mean": 0.5297480612993241
+    },
+    "nu2of3_full_m": {
+      "updates": 120,
+      "final_10_energy_mean_per_particle_meV": -52.121616283219886,
+      "final_10_energy_minimum_per_particle_meV": -52.162173847646635,
+      "final_10_energy_rms_meV": 0.03762134873487894,
+      "final_10_variance_mean_meV2": 718.0405689762495,
+      "final_10_relative_residual_mean": 0.04018248564935593,
+      "final_10_cg_iterations_mean": 51.7,
+      "rejected_updates": 18,
+      "final_10_position_acceptance_mean": 0.6464631825685501,
+      "final_10_layer_acceptance_mean": 0.602846410870552
+    },
+    "nu2of3_v4_gamma": {
+      "updates": 120,
+      "final_10_energy_mean_per_particle_meV": -52.74864593093277,
+      "final_10_energy_minimum_per_particle_meV": -52.903306929514024,
+      "final_10_energy_rms_meV": 0.06302357900447217,
+      "final_10_variance_mean_meV2": 717.7041132843751,
+      "final_10_relative_residual_mean": 0.04157573079920415,
+      "final_10_cg_iterations_mean": 53.7,
+      "rejected_updates": 11,
+      "final_10_position_acceptance_mean": 0.649297472834587,
+      "final_10_layer_acceptance_mean": 0.6172117173671723
+    },
+    "nu2of3_v4_outer_c3_p0": {
+      "updates": 120,
+      "final_10_energy_mean_per_particle_meV": -52.59704477637623,
+      "final_10_energy_minimum_per_particle_meV": -52.71178153548715,
+      "final_10_energy_rms_meV": 0.05809335381634159,
+      "final_10_variance_mean_meV2": 648.290564018057,
+      "final_10_relative_residual_mean": 0.017426794415120444,
+      "final_10_cg_iterations_mean": 43.1,
+      "rejected_updates": 0,
+      "final_10_position_acceptance_mean": 0.6528827518224716,
+      "final_10_layer_acceptance_mean": 0.6068192780017853
+    },
+    "nu2of3_v4_outer_c3_p1": {
+      "updates": 120,
+      "final_10_energy_mean_per_particle_meV": -51.63111256317846,
+      "final_10_energy_minimum_per_particle_meV": -51.685606136191375,
+      "final_10_energy_rms_meV": 0.04126973779220767,
+      "final_10_variance_mean_meV2": 682.1642679198025,
+      "final_10_relative_residual_mean": 0.017597309277349187,
+      "final_10_cg_iterations_mean": 46.5,
+      "rejected_updates": 0,
+      "final_10_position_acceptance_mean": 0.6585755676031113,
+      "final_10_layer_acceptance_mean": 0.6157703518867492
+    },
+    "nu2of3_v4_outer_c3_p2": {
+      "updates": 120,
+      "final_10_energy_mean_per_particle_meV": -52.91241452786369,
+      "final_10_energy_minimum_per_particle_meV": -53.01535173538792,
+      "final_10_energy_rms_meV": 0.06164523236058894,
+      "final_10_variance_mean_meV2": 643.6557913274045,
+      "final_10_relative_residual_mean": 0.01729358518480739,
+      "final_10_cg_iterations_mean": 38.7,
+      "rejected_updates": 0,
+      "final_10_position_acceptance_mean": 0.6522044539451599,
+      "final_10_layer_acceptance_mean": 0.6160610496997834
+    }
+  },
+  "timings_seconds": {
+    "nu1of3": {
+      "ed_5band_gamma": 0.3493752650101669,
+      "full_m": 480.0,
+      "v4_gamma": 302.8333890840295,
+      "v4_outer_c3_three_sector_wall": 1368.752375865006,
+      "v4_outer_c3_allocated_gpu_seconds": 2010.9376035089372
+    },
+    "nu2of3": {
+      "ed_5band_gamma": 660.4531921540001,
+      "full_m": 1467.0,
+      "v4_gamma": 1091.1440669299918,
+      "v4_outer_c3_three_sector_wall": 5270.219018737029,
+      "v4_outer_c3_allocated_gpu_seconds": 8017.21881847101
+    }
+  },
+  "observable_metadata": {
+    "nu1of3_full_m": {
+      "coordinate_samples": 4128,
+      "auxiliary_draws_per_sample": 16,
+      "one_body_density_matrix_trace": 3.0129157201305317,
+      "one_body_density_matrix_trace_sem": 0.0959365879791001,
+      "projected_rho_minimum_eigenvalue": -0.11138705577971605,
+      "band_weight": [
+        0.9340411637584968,
+        0.05757996474748659,
+        -0.009396928659813905,
+        0.015880991812042663,
+        0.006200048385298404
+      ],
+      "band_weight_sem": [
+        0.00919086000513228,
+        0.012207933497228488,
+        0.008065489179155972,
+        0.011646397836476526,
+        0.013553210854864833
+      ],
+      "maximum_nonzero_structure_factor": 1.4119716477375748,
+      "maximum_nonzero_structure_factor_sem": 0.013314612709975452,
+      "maximum_nonzero_density_amplitude": 0.1323088900567977
+    },
+    "nu1of3_v4_gamma": {
+      "coordinate_samples": 4128,
+      "auxiliary_draws_per_sample": 16,
+      "one_body_density_matrix_trace": 3.0886733824685,
+      "one_body_density_matrix_trace_sem": 0.08987793652387752,
+      "projected_rho_minimum_eigenvalue": -0.09075079375718914,
+      "band_weight": [
+        0.9690691314170082,
+        0.025247800807226217,
+        -0.0027796173923875706,
+        0.026242237555345663,
+        0.011778241768974062
+      ],
+      "band_weight_sem": [
+        0.010624259094195258,
+        0.008857428199246094,
+        0.011125265845270968,
+        0.010184847470623698,
+        0.0065317393610182855
+      ],
+      "maximum_nonzero_structure_factor": 1.4818072380962117,
+      "maximum_nonzero_structure_factor_sem": 0.009232505193994687,
+      "maximum_nonzero_density_amplitude": 0.01120425787738119
+    },
+    "nu1of3_v4_outer_c3_p0": {
+      "coordinate_samples": 4128,
+      "auxiliary_draws_per_sample": 16,
+      "one_body_density_matrix_trace": 2.995040519740821,
+      "one_body_density_matrix_trace_sem": 0.11638859440976623,
+      "projected_rho_minimum_eigenvalue": -0.12299642034196204,
+      "band_weight": [
+        0.9545638563906976,
+        0.03975363044400378,
+        -0.0002552689411444633,
+        -0.004675373344075764,
+        0.008959995364126056
+      ],
+      "band_weight_sem": [
+        0.015432595906672088,
+        0.011912712893328415,
+        0.007170764789577704,
+        0.0062570974670966666,
+        0.010218797768429983
+      ],
+      "maximum_nonzero_structure_factor": 1.4852210281152922,
+      "maximum_nonzero_structure_factor_sem": 0.010259180676444591,
+      "maximum_nonzero_density_amplitude": 0.00902091297147602
+    },
+    "nu1of3_v4_outer_c3_p1": {
+      "coordinate_samples": 4128,
+      "auxiliary_draws_per_sample": 16,
+      "one_body_density_matrix_trace": 3.124856353287179,
+      "one_body_density_matrix_trace_sem": 0.06253423515027098,
+      "projected_rho_minimum_eigenvalue": -0.11384759385212144,
+      "band_weight": [
+        0.8079554190102866,
+        0.166903440758593,
+        0.03488501342372006,
+        0.01045439151012019,
+        0.021420519726339834
+      ],
+      "band_weight_sem": [
+        0.007652233852853404,
+        0.011810284220748429,
+        0.01117717793394436,
+        0.002834906464027377,
+        0.00637723916475153
+      ],
+      "maximum_nonzero_structure_factor": 1.1325266906752463,
+      "maximum_nonzero_structure_factor_sem": 0.011865302372862688,
+      "maximum_nonzero_density_amplitude": 0.010690902228053453
+    },
+    "nu1of3_v4_outer_c3_p2": {
+      "coordinate_samples": 4128,
+      "auxiliary_draws_per_sample": 16,
+      "one_body_density_matrix_trace": 2.8798080544072464,
+      "one_body_density_matrix_trace_sem": 0.06776469877061339,
+      "projected_rho_minimum_eigenvalue": -0.10671820986365303,
+      "band_weight": [
+        0.9508247718945823,
+        0.026492792512296,
+        -0.015090353543343515,
+        0.01343063941964806,
+        -0.015721832147433706
+      ],
+      "band_weight_sem": [
+        0.010642851778607193,
+        0.013023201420716739,
+        0.007563234450413083,
+        0.008978625454456194,
+        0.004305846674897833
+      ],
+      "maximum_nonzero_structure_factor": 1.3017739972287925,
+      "maximum_nonzero_structure_factor_sem": 0.014270830917695659,
+      "maximum_nonzero_density_amplitude": 0.00718595674358137
+    },
+    "nu2of3_full_m": {
+      "coordinate_samples": 4128,
+      "auxiliary_draws_per_sample": 16,
+      "one_body_density_matrix_trace": 6.273294794561452,
+      "one_body_density_matrix_trace_sem": 0.1373056436876065,
+      "projected_rho_minimum_eigenvalue": -0.237318775619966,
+      "band_weight": [
+        0.8754842599819225,
+        0.08847921531271834,
+        0.053949139242085074,
+        0.01568144442452375,
+        0.01195507346565893
+      ],
+      "band_weight_sem": [
+        0.008617241505994546,
+        0.01366243397553729,
+        0.011648651505905867,
+        0.009219611539818257,
+        0.011138995189856669
+      ],
+      "maximum_nonzero_structure_factor": 0.765333519274753,
+      "maximum_nonzero_structure_factor_sem": 0.005079767361794221,
+      "maximum_nonzero_density_amplitude": 0.08050542076024166
+    },
+    "nu2of3_v4_gamma": {
+      "coordinate_samples": 4128,
+      "auxiliary_draws_per_sample": 16,
+      "one_body_density_matrix_trace": 6.083115148682525,
+      "one_body_density_matrix_trace_sem": 0.14818880857781144,
+      "projected_rho_minimum_eigenvalue": -0.15033013782465626,
+      "band_weight": [
+        0.9006898521221953,
+        0.058539765558065004,
+        0.03477785037997575,
+        0.006089530617671667,
+        0.01375552610251296
+      ],
+      "band_weight_sem": [
+        0.010160870234141571,
+        0.003630334340503779,
+        0.013999740336614358,
+        0.007055879935357208,
+        0.012201880665143055
+      ],
+      "maximum_nonzero_structure_factor": 0.7677283239454299,
+      "maximum_nonzero_structure_factor_sem": 0.012246529621589996,
+      "maximum_nonzero_density_amplitude": 0.004750252625118436
+    },
+    "nu2of3_v4_outer_c3_p0": {
+      "coordinate_samples": 4128,
+      "auxiliary_draws_per_sample": 16,
+      "one_body_density_matrix_trace": 6.069455500324306,
+      "one_body_density_matrix_trace_sem": 0.18543858465860738,
+      "projected_rho_minimum_eigenvalue": -0.1733748965709941,
+      "band_weight": [
+        0.8875948201603787,
+        0.07545683235352861,
+        0.016476072763816366,
+        0.016240028038098854,
+        0.01580816340489523
+      ],
+      "band_weight_sem": [
+        0.02141059427744906,
+        0.010790910194785012,
+        0.010242759963770765,
+        0.009747551490455222,
+        0.007412143205633336
+      ],
+      "maximum_nonzero_structure_factor": 0.7377001338832644,
+      "maximum_nonzero_structure_factor_sem": 0.009615339892029843,
+      "maximum_nonzero_density_amplitude": 0.009213071524299428
+    },
+    "nu2of3_v4_outer_c3_p1": {
+      "coordinate_samples": 4128,
+      "auxiliary_draws_per_sample": 16,
+      "one_body_density_matrix_trace": 6.021117412451657,
+      "one_body_density_matrix_trace_sem": 0.19329250251951813,
+      "projected_rho_minimum_eigenvalue": -0.3759662191990123,
+      "band_weight": [
+        0.8714600840892435,
+        0.07828064823921899,
+        0.03584051826553852,
+        0.0009273807036165323,
+        0.01701093744432535
+      ],
+      "band_weight_sem": [
+        0.018391843593117532,
+        0.010065716930897133,
+        0.010792117545223905,
+        0.012741513284782454,
+        0.01035816510149844
+      ],
+      "maximum_nonzero_structure_factor": 0.6832220469373226,
+      "maximum_nonzero_structure_factor_sem": 0.010003937485368236,
+      "maximum_nonzero_density_amplitude": 0.005897015160845626
+    },
+    "nu2of3_v4_outer_c3_p2": {
+      "coordinate_samples": 4128,
+      "auxiliary_draws_per_sample": 16,
+      "one_body_density_matrix_trace": 6.099973842167487,
+      "one_body_density_matrix_trace_sem": 0.19190053327709972,
+      "projected_rho_minimum_eigenvalue": -0.20496757767185136,
+      "band_weight": [
+        0.8982891650472183,
+        0.07153227905933324,
+        0.027976011143289643,
+        0.004191174869067871,
+        0.014673676909005508
+      ],
+      "band_weight_sem": [
+        0.014718511374393789,
+        0.008961747311756777,
+        0.013793057652601748,
+        0.010238705845024532,
+        0.007006903376152447
+      ],
+      "maximum_nonzero_structure_factor": 0.7012582913035111,
+      "maximum_nonzero_structure_factor_sem": 0.010713883166316376,
+      "maximum_nonzero_density_amplitude": 0.003511866409428722
+    }
+  }
+}

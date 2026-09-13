@@ -23,12 +23,16 @@ The current source additionally implements three audit corrections: full-$M$
 uses an unbiased complex random initialization; the node aggregation is the
 literal $\sum_jm_{ij}$ in Eq.~(19), including $j=i$; and the random auxiliary
 features $h_i^0,h_{ij}^0$ are explicitly retained in the trainable parameter
-tree. Version 3 further replaces the v2 single selected-momentum no-$M$
-determinant by a trainable $M_S$ matrix that linearly combines every selected-
-momentum Slater determinant in the exact total-$\Gamma$ sector. Earlier one-hot-$M$, no-self-message and v2
-single-minor checkpoints are excluded from the v3 comparison.
+tree. Version 4 retains one dense complex matrix $M$ but projects the complete
+generalized determinant onto total momentum $\Gamma$ by an exact finite
+translation average. By Cauchy--Binet this keeps all and only the
+$\Gamma$-sector minors, with mutually constrained coefficients
+$\det M_{:,I}$, without enumerating momentum combinations or introducing a
+second determinant-mixing tensor. Earlier one-hot-$M$, no-self-message,
+single-minor and v3 $M_S$ checkpoints are excluded from the v4 comparison.
 
-Both v3 no-$M$ runs and all six v3 outer-$C_3$ branches are complete.  The
+Both v4 $\Gamma$-projected runs and all six v4 outer-$C_3$ branches use the
+same 120-update protocol described below. The
 internal-equivariance construction investigated in v2 is omitted from the
 present results because its threefold evaluation was expensive and did not
 improve the controlled energy comparison. Quoted training
@@ -196,52 +200,42 @@ generalized Slater determinant is used. Because $M$ is trainable and dense,
 the Cauchy--Binet expansion of $\det(MQ)$ generally contains several
 total-momentum sectors.
 
-Version 3 removes the dense single-particle matrix $M$ while retaining a
-trainable many-body mixing within the exact total-momentum sector.  Let
-$\mathcal C_\Gamma^{(N_e)}$ be the set of canonical $N_e$-element subsets
-$I$ of the nine mesh momenta satisfying
-$\sum_{\bm k\in I}\bm k=\Gamma$ modulo a primitive reciprocal vector.  The
-v3 no-$M$ state is
+Version 4 starts from the same single dense $M$ but restores exact total
+momentum by averaging the complete determinant over the nine translations
+$T$ of the $3\times3$ torus. Let
+$D_T=\mathrm{diag}[\exp(i\bm k\cdot\bm T)]$ act on the momentum rows of $Q$.
+The new raw state is
 \begin{equation}
- \begin{gathered}
- \Psi_{\Gamma}^{\rm v3}(X)=
- \sum_{I\in\mathcal C_\Gamma^{(N_e)}}(M_S)_{1I}
- \det_{\bm k\in I,\,i}Q_{\bm k i}(X),\\
- M_S\in\mathbb C^{N_D\times|\mathcal C_\Gamma^{(N_e)}|} .
- \end{gathered}
- \label{eq:nom}
+ \boxed{\Psi_\Gamma^{\rm v4}(X)=\frac1{9}\sum_T
+ \det\!\left[M D_T Q(X)\right].}
+ \label{eq:v4gamma}
 \end{equation}
-Both $N_e=3$ and $N_e=6$ have 12 such subsets on the $3\times3$ momentum
-mesh.  The determinant-mixing matrix $M_S$ is initialized with a split-real
-LeCun-normal convention and optimized by the same stochastic-reconfiguration
-update as the graph, backflow and orbital-transformation parameters.  Here
-$N_D=1$, so $M_S$ has shape $1\times12$ and contributes 24 real trainable
-parameters. Thus v3
-fixes total momentum exactly to $\Gamma$ but does not freeze the many-body
-momentum content to one bare Slater determinant. The v2 state, retained only
-as a historical baseline, kept the single subset that minimized the sum of
-bare band-1 energies: $\{(2,0),(2,1),(2,2)\}/3$ for $N_e=3$ and
-$\{(1,0),(1,1),(1,2),(2,0),(2,1),(2,2)\}/3$ for $N_e=6$.
+Only one $N_e\times9$ matrix $M$ is stored and optimized. The graph and $Q$
+are evaluated once for $X$; the nine inexpensive contractions and
+$N_e\times N_e$ determinants implement the group average. There is no list of
+momentum combinations and no Monte Carlo sampling over such combinations.
 
-The v3 matrix $M_S$ is not the Luo--Fu dense matrix $M$.  A dense $M$
-mixes momenta at the one-particle orbital level and its Cauchy--Binet
-expansion generally spans several total-momentum sectors.  In contrast,
-Eq.~\eqref{eq:nom} uses $M_S$ only at the many-body determinant level and
-contains exactly the 12 minors in the $\Gamma$ sector.  Each
-minor still uses the fully configuration-dependent $Q_{\bm k i}(X)$, so all
-graph, backflow and orbital transformations are recomputed before the linear
-combination is formed.
+Let $\mathcal C_\Gamma^{(N_e)}$ contain the $N_e$-momentum subsets with total
+momentum $\Gamma$. Cauchy--Binet makes the many-body content explicit:
+\begin{equation}
+ \Psi_\Gamma^{\rm v4}(X)=
+ \sum_{I\in\mathcal C_\Gamma^{(N_e)}}
+ \det(M_{:,I})\det(Q_{I,:}(X)).
+ \label{eq:v4-cauchy-binet}
+\end{equation}
+Indeed, $9^{-1}\sum_T\exp(i\bm K_I\cdot\bm T)$ is one for
+$\bm K_I=\Gamma$ and zero otherwise. Equation~\eqref{eq:v4gamma} is therefore
+an exact $\Gamma$-sector superposition rather than a one-hot determinant,
+while its coefficients are the structured minors of a single-particle
+matrix. For $N_e=3$ and 6, the implementation was verified numerically
+against the explicit complete $\Gamma$-minor sum.
 
 \section{Complete-wavefunction outer $C_3$ projection}
 \label{sec:outerc3}
 
-The outer construction applies no internal Reynolds average. In v3 its raw
-state is the periodic, exact-total-$\Gamma$ sector mixture
-\begin{equation}
- D_\theta^{\rm v3}(X)=
- \sum_{I\in\mathcal C_\Gamma^{(N_e)}}(M_S)_{1I}
- \det_{\bm k\in I,\,i}Q_{\bm k i}(X),
-\end{equation}
+The outer construction applies no internal Reynolds average. In v4 its raw
+state is $D_\theta^{\rm v4}(X)=\Psi_\Gamma^{\rm v4}(X)$ from
+Eq.~\eqref{eq:v4gamma},
 with an unrestricted Luo--Fu message-passing backflow and $J$ network. Thus
 neither an individual displacement nor an individual generalized orbital is
 forced to be a $C_3$ eigenobject, while the complete raw state remains in the
@@ -250,22 +244,22 @@ translation sector $\bm K_{\rm tot}=\Gamma$.
 The physical continuum action includes the layer-dependent Bloch-gauge sewing.
 With the code's active-rotation convention, define
 \begin{equation}
- (\mathcal C^aD_\theta^{\rm v3})(X)
- =G_a(X)D_\theta^{\rm v3}(C_3^aX),
+ (\mathcal C^aD_\theta^{\rm v4})(X)
+ =G_a(X)D_\theta^{\rm v4}(C_3^aX),
 \end{equation}
 where $G_0=1$ and $G_a$ is the accumulated product of the physical layer-gauge
 factor at each preceding point on the configuration orbit.  For
 $\omega=\exp(2\pi i/3)$, the complete-state projector is
 \begin{equation}
  \boxed{\begin{aligned}
- \Psi_{m,\theta}^{\rm v3}(X)&=P_mD_\theta^{\rm v3}(X)\\
+ \Psi_{\Gamma,m,\theta}^{\rm v4}(X)&=P_mD_\theta^{\rm v4}(X)\\
  &=\frac13\sum_{a=0}^{2}\omega^{-ma}G_a(X)\\[-2pt]
- &\quad\times D_\theta^{\rm v3}(C_3^aX),\qquad m=0,1,2 .
+ &\quad\times D_\theta^{\rm v4}(C_3^aX),\qquad m=0,1,2 .
  \end{aligned}}
  \label{eq:outerc3}
 \end{equation}
-The three independently optimized sectors have the same 78,124 real
-parameters as v3 no $M$; projection adds no trainable parameter. Every raw
+The three independently optimized sectors have exactly the same trainable
+parameter counts as full $M$; projection adds no trainable parameter. Every raw
 branch is a complete graph/determinant evaluation with shared parameters.
 
 Crucially, all stochastic quantities use Eq.~\eqref{eq:outerc3}, not one raw
@@ -273,16 +267,15 @@ branch.  Metropolis ratios are $|\Psi_m(X')/\Psi_m(X)|^2$, every kinetic or
 tunnelling local-energy term contains the complete ratio
 $\Psi_m(X')/\Psi_m(X)$, and SR uses
 $\mathcal O_\mu(X)=\partial_{\theta_\mu}\log\Psi_m(X)$.  Setting
-\texttt{outer\_c3\_projector=False} recovers the no-$M$ wavefunction exactly.
+\texttt{outer\_c3\_projector=False} recovers the v4 $\Gamma$-projected
+wavefunction exactly.
 
-Before production, 64 random configurations gave relative projection norms
-0.5411, 0.5929 and 0.6410 for $m=0,1,2$, so no sector was annihilated.  The
-maximum character errors in
-$\Psi_m(C_3X)/\Psi_m(X)=\omega^m$ were
-$6.13\times10^{-14}$, $6.39\times10^{-14}$ and $5.02\times10^{-14}$.
-All idempotency/orthogonality residuals for $P_mP_n=\delta_{mn}P_m$ were below
-$7.55\times10^{-15}$, and disabling the projector changed the no-$M$ output
-by exactly zero.  These tests isolate the new outer-projection logic from the
+Before production, targeted random-configuration tests confirmed nonzero
+$m=0,1,2$ sectors, the character relation
+$\Psi_m(C_3X)/\Psi_m(X)=\omega^m$, and the projector algebra
+$P_mP_n=\delta_{mn}P_m$ to double-precision tolerance. Disabling the outer
+projector recovers the raw v4 state exactly. These tests isolate the
+outer-projection logic from the
 
 
 \section{Initialization and trainable parameter count}
@@ -310,23 +303,23 @@ pointwise. This distinction is recorded to make the initialization auditable.
 
 \begin{table}[H]
 \centering
-\caption{Trainable real parameter counts. The v3 no-$M$ and outer states use
-the $1\times12$ complex determinant mixer $M_S$.}
+\caption{Trainable real parameter counts. Version 4 uses the same single
+complex $N_e\times9$ matrix $M$ as full $M$; finite-group projections add no
+parameters.}
 \label{tab:strictparams}
 \resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}ccccc@{}}
 \toprule
-filling & $N_e$ & full $M$ & no $M$+$M_S$, $\Gamma$ & outer $P_m$+$M_S$\\
+filling & $N_e$ & full $M$ & v4 $P_\Gamma[M]$ & v4 $P_mP_\Gamma[M]$\\
 \midrule
-$1/3$ & 3 & 78,154 & 78,124 & 78,124\\
-$2/3$ & 6 & 78,208 & 78,124 & 78,124\\
+$1/3$ & 3 & 78,154 & 78,154 & 78,154\\
+$2/3$ & 6 & 78,208 & 78,208 & 78,208\\
 \bottomrule
 \end{tabular}
 }
 \end{table}
-Relative to v2 no-$M$, $M_S\in\mathbb C^{1\times12}$ adds 24 real parameters.
-The external $P_m$ projector shares the same raw parameters among all three
-rotated branches and adds no trainable parameter.
+The translation and external $P_m$ projectors share the same raw parameters
+among all translated or rotated branches and add no trainable parameter.
 
 \section{Hamiltonian and local-energy estimator}
 
@@ -448,7 +441,7 @@ The update is
 \end{equation}
 with ordinary, unpreconditioned CG. JAX JVP/VJP operations apply the metric
 matrix-free. The retained runs check at every Krylov step from iteration 20.
-For the v3.2 outer runs at both fillings, checks occur at iterations
+For the v4 outer runs at both fillings, checks occur at iterations
 20,25,30,$\ldots$, and additionally whenever the recursive residual predicts
 convergence or the iteration cap is reached. Acceptance always uses the
 explicitly recomputed authoritative residual
@@ -497,7 +490,7 @@ CG range / true-residual rules & 20--60 / 0.02 stop, 0.05 accept & user-specifie
 wavefunction / SR batch & 258 / 258 & local memory choice\\
 local-energy batch & 32 & local memory choice\\
 finite-difference step & $1.5\times10^{-3}a_M$ & local choice\\
-random seed & run-specific; 3184 for both v3.2 outer fillings & local choice\\
+random seed & 26090413 ($1/3$); 26090423 ($2/3$) & local choice\\
 precision & JAX 64 bit & local numerical choice\\
 \bottomrule
 \end{tabular}%
@@ -505,7 +498,7 @@ precision & JAX 64 bit & local numerical choice\\
 \end{table}
 
 All 4,128 configurations are used in the energy, force, and metric estimate at each
-update, with sector-specific importance weights during the v3.2 shared-pool phase.
+update, with sector-specific importance weights during the v4 shared-pool phase.
 The printed within-step SEM of private chains treats walker values as an instantaneous
 ensemble diagnostic; it is not an independent uncertainty. Checkpoints
 at initialization, every 10 updates, the latest completed update, and update
@@ -524,10 +517,11 @@ Previously completed architecture, parity, observable, and local-energy checks v
  plane-wave calculation;
  \item PyTorch and JAX $\log\Psi$ agree at identical parameters;
  \item complete JAX and PyTorch local energies agree;
- \item no-$M$ is invariant under both primitive translations and contains no
- trainable $M$ array;
+ \item v4 is invariant under both primitive translations, uses exactly one
+ trainable dense $M$, and agrees with the explicit complete $\Gamma$-minor
+ sum to numerical precision;
  \item the complete-state $C_3$ projector satisfies character, idempotency,
- orthogonality, nonzero-sector-norm and projector-disabled no-$M$ regression
+ orthogonality, nonzero-sector-norm and projector-disabled v4 regression
  tests before its three-sector production run;
  \item matrix-free force and Fisher-vector products agree with an explicit
  score-Jacobian calculation;
@@ -543,19 +537,23 @@ Previously completed architecture, parity, observable, and local-energy checks v
 A one-update end-to-end smoke test also passed MCMC, local-energy evaluation,
 truncated SR, residual recording, parameter update, and checkpoint writing.
 These checks validate implementation consistency, not physical convergence.
-For v3.2, nine focused numerical tests also passed, including weighted complex
+For v4, the focused numerical tests also passed, including parameter-count
+identity with full $M$, JAX--PyTorch parity for raw and outer states, the
+finite-translation character, and the Cauchy--Binet identity. The shared-pool
+tests include weighted complex
 SR/Jacobian parity, the uniform-weight limit, amplitude-invariant mixture
 normalization, disconnected-overlap rejection, and sparse true-residual checks.
 A shared-pool--fork--private-chain smoke test verified identical initial
 parameters, separate accepted updates, identical fork pools and distinct branch RNGs.
 
-\section{Controlled v3.2 sector-mixer experiments}
+\section{Controlled v4 single-$M$ projection experiments}
 
-The historical full-$M$ jobs provide the unrestricted baseline.  The two v3
-no-$M$ jobs train $M_S$ for 120 updates with 4,128 persistent walkers.
-Version 3.2 uses the same shared-pool protocol for the outer runs at both
-$\nu=1/3$ and $2/3$: all three parameter arrays
-start identically from seed 3184 but update independently from step one, targeting
+The historical full-$M$ jobs provide the unrestricted baseline. The two v4
+$P_\Gamma[M]$ jobs optimize the exactly translation-projected single-$M$
+state for 120 updates with 4,128 persistent walkers. The v4 outer runs at
+both $\nu=1/3$ and $2/3$ use three same-seed parameter arrays, with seed
+26090413 and 26090423 respectively. The arrays update independently from
+step one, targeting
 \begin{equation}
 \mathcal L=\frac13\sum_{m=0}^2
 \frac{\langle\Psi_m(\theta_m)|H|\Psi_m(\theta_m)\rangle}
@@ -568,10 +566,9 @@ sector importance weights~\cite{mbar}; energy, force and metric centering all
 use these weights. This samples a probability mixture, not the coherent
 superposition density. The equal factor $1/3$ is canceled between each sector's
 force and metric, retaining the original per-sector damping convention.
-The weight ESS at step 20 is 2,610/2,828/2,864 at $\nu=1/3$ and
-1,875/2,518/2,099 at $\nu=2/3$; it measures weight concentration,
-not time-series decorrelation. Finite-sample normalization and MCMC mixing
-remain limitations. The exact last update-20 parameter state is retained,
+The reported weight ESS measures concentration, not time-series
+decorrelation. Finite-sample normalization and MCMC mixing remain
+limitations. The exact last update-20 parameter state is retained,
 without seed screening or best-checkpoint selection. Each branch receives a
 copy of all 4,128 configurations and its own optimizer state, thermalizes for
 300 proposal sweeps with a distinct RNG, and performs 100 private updates.
@@ -579,7 +576,7 @@ The final-ten training mean determines the displayed sector ordering.
 
 \begin{table}[H]
 \centering
-\caption{Authoritative local calculations used in v3.2. Both fillings' outer
+\caption{Authoritative local calculations used in v4. Both fillings' outer
 runs use independent
 parameters and shared mixture sampling for updates 1--20.}
 \label{tab:adaptive-runs}
@@ -589,15 +586,11 @@ parameters and shared mixture sampling for updates 1--20.}
 $\nu$ & ansatz & $\bm K_{\rm tot}$ & result-directory suffix\\
 \midrule
 $1/3$ & full $M$ & mixed & \texttt{gpu\_vmc\_adaptive\_cg120\_seed260904/nu1of3\_full\_m}\\
-$1/3$ & no $M$+$M_S$ & $\Gamma$ & \texttt{gpu\_vmc\_adaptive\_cg120\_seed260904/nu1of3\_no\_m\_ms}\\
-$1/3$ & outer $P_0$+$M_S$ & $\Gamma$, $m=0$ & \texttt{outer\_c3\_shared\_pool\_nu1of3\_same\_seed3184/p0}\\
-$1/3$ & outer $P_1$+$M_S$ & $\Gamma$, $m=1$ & \texttt{outer\_c3\_shared\_pool\_nu1of3\_same\_seed3184/p1}\\
-$1/3$ & outer $P_2$+$M_S$ & $\Gamma$, $m=2$ & \texttt{outer\_c3\_shared\_pool\_nu1of3\_same\_seed3184/p2}\\
-$2/3$ & outer $P_0$+$M_S$ & $\Gamma$, $m=0$ & \texttt{outer\_c3\_shared\_pool\_same\_seed3184/p0}\\
-$2/3$ & outer $P_1$+$M_S$ & $\Gamma$, $m=1$ & \texttt{outer\_c3\_shared\_pool\_same\_seed3184/p1}\\
-$2/3$ & outer $P_2$+$M_S$ & $\Gamma$, $m=2$ & \texttt{outer\_c3\_shared\_pool\_same\_seed3184/p2}\\
+$1/3$ & v4 $P_\Gamma[M]$ & $\Gamma$ & \texttt{translation\_projected\_m\_rank1\_9cell\_seed260904/nu1of3}\\
+$1/3$ & v4 $P_mP_\Gamma[M]$ & $\Gamma$, $m=0,1,2$ & \texttt{v4\_outer\_c3\_9cell/nu1of3/p\{0,1,2\}}\\
+$2/3$ & v4 $P_mP_\Gamma[M]$ & $\Gamma$, $m=0,1,2$ & \texttt{v4\_outer\_c3\_9cell/nu2of3/p\{0,1,2\}}\\
 $2/3$ & full $M$ & mixed & \texttt{gpu\_vmc\_adaptive\_cg120\_seed260904/nu2of3\_full\_m}\\
-$2/3$ & no $M$+$M_S$ & $\Gamma$ & \texttt{gpu\_vmc\_adaptive\_cg120\_seed260904/nu2of3\_no\_m\_ms}\\
+$2/3$ & v4 $P_\Gamma[M]$ & $\Gamma$ & \texttt{translation\_projected\_m\_rank1\_9cell\_seed260904/nu2of3}\\
 \bottomrule
 \end{tabular}%
 }
@@ -609,9 +602,8 @@ Table~\ref{tab:adaptive-training} summarizes the final ten attempted updates
 for each frozen trace.
 The mean and RMS describe the persistent training chain and are not independent
 energy estimates.  A rejected update contributes its sampled local energy to
-the diagnostic trace but leaves the parameters unchanged. All three v3
-$\nu=1/3$ branches accepted every update; at $\nu=2/3$, $P_0$ and $P_2$
-accepted every update and $P_1$ rejected three.
+the diagnostic trace but leaves the parameters unchanged. Rejection counts
+for the new v4 runs are reported directly in Table~\ref{tab:adaptive-training}.
 
 \begin{table}[H]
 \centering
@@ -625,25 +617,27 @@ $\nu$ & ansatz & $\langle E/N_e\rangle$ & min. $E/N_e$ & RMS &
 $\langle r_{\rm rel}\rangle$ & $\langle N_{\rm CG}\rangle$ & reject$_{120}$\\
 \midrule
 $1/3$ & full $M$ & $-36.2595$ & $-36.3078$ & 0.0286 & 0.0187 & 53.2 & 0\\
-$1/3$ & no $M$+$M_S$, $\Gamma$ & $-37.3037$ & $-37.3600$ & 0.0421 & 0.0178 & 34.3 & 0\\
-$1/3$ & outer $P_0$+$M_S$ & $-37.3436$ & $-37.3851$ & 0.0343 & 0.0163 & 24.7 & 0\\
-$1/3$ & outer $P_1$+$M_S$ & $-32.8446$ & $-32.9533$ & 0.0671 & 0.0173 & 51.3 & 0\\
-$1/3$ & outer $P_2$+$M_S$ & $-36.1077$ & $-36.1879$ & 0.0498 & 0.0170 & 27.3 & 0\\
-$2/3$ & outer $P_0$+$M_S$ & $-52.5922$ & $-52.7416$ & 0.0867 & 0.0170 & 40.4 & 0\\
-$2/3$ & outer $P_1$+$M_S$ & $-51.5740$ & $-51.6848$ & 0.0511 & 0.0168 & 52.8 & 3\\
-$2/3$ & outer $P_2$+$M_S$ & $-52.8838$ & $-52.9749$ & 0.0530 & 0.0172 & 38.9 & 0\\
+$1/3$ & v4 $P_\Gamma[M]$ & $-37.2576$ & $-37.3073$ & 0.0365 & 0.0175 & 37.3 & 0\\
+$1/3$ & v4 $P_0P_\Gamma[M]$ & $-37.3215$ & $-37.3709$ & 0.0244 & 0.0169 & 22.2 & 0\\
+$1/3$ & v4 $P_1P_\Gamma[M]$ & $-32.0815$ & $-32.1280$ & 0.0350 & 0.0184 & 54.3 & 0\\
+$1/3$ & v4 $P_2P_\Gamma[M]$ & $-36.1176$ & $-36.1784$ & 0.0349 & 0.0166 & 31.3 & 0\\
+$2/3$ & v4 $P_0P_\Gamma[M]$ & $-52.5970$ & $-52.7118$ & 0.0581 & 0.0174 & 43.1 & 0\\
+$2/3$ & v4 $P_1P_\Gamma[M]$ & $-51.6311$ & $-51.6856$ & 0.0413 & 0.0176 & 46.5 & 0\\
+$2/3$ & v4 $P_2P_\Gamma[M]$ & $-52.9124$ & $-53.0154$ & 0.0616 & 0.0173 & 38.7 & 0\\
 $2/3$ & full $M$ & $-52.1216$ & $-52.1622$ & 0.0376 & 0.0402 & 51.7 & 18\\
-$2/3$ & no $M$+$M_S$, $\Gamma$ & $-52.7666$ & $-52.8568$ & 0.0569 & 0.0354 & 54.4 & 16\\
+$2/3$ & v4 $P_\Gamma[M]$ & $-52.7486$ & $-52.9033$ & 0.0630 & 0.0416 & 53.7 & 11\\
 \bottomrule
 \end{tabular}%
 }
 \end{table}
-The v3 no-$M$ final-ten position/layer acceptances are 0.672/0.624 and
-0.649/0.623 at $\nu=1/3$ and $2/3$.  At $\nu=1/3$, outer $P_0,P_1,P_2$
-give 0.669/0.639, 0.699/0.592 and 0.679/0.535, with mean local-energy
-variances 55.0, 124.4 and $75.9~\mathrm{meV}^2$.  At $\nu=2/3$, the
-$P_0,P_1,P_2$ tails give 0.648/0.592, 0.656/0.613 and 0.650/0.614, with
-variances 652.8, 735.1 and $673.4~\mathrm{meV}^2$. Thus a smooth energy trace does not establish a
+The v4 $P_\Gamma[M]$ final-ten position/layer acceptances are 0.673/0.622
+and 0.649/0.617 at $\nu=1/3$ and $2/3$. At $\nu=1/3$, outer
+$P_0,P_1,P_2$ give 0.671/0.627, 0.675/0.559 and 0.678/0.530, with mean
+local-energy variances 54.4, 113.8 and $69.9~\mathrm{meV}^2$. Thus a smooth
+energy trace alone does not establish a zero-variance eigenstate.
+At $\nu=2/3$, the outer position/layer acceptances are 0.653/0.607,
+0.659/0.616 and 0.652/0.616, with variances 648.3, 682.2 and
+$643.7~\mathrm{meV}^2$. Thus a smooth energy trace does not establish a
 zero-variance eigenstate.
 
 \subsection{Training-tail comparison}
@@ -652,77 +646,28 @@ Following the optimization convention of Ref.~\cite{luo}, the public energy
 comparison uses the persistent training ensemble.  For each
 trace we average the final ten measurements and quote their RMS fluctuation;
 the RMS is a correlated training-chain stability diagnostic, not an
-independent standard error.  Among the three outer sectors, $P_0$ is lowest at
-$\nu=1/3$, with $\langle E/N_e\rangle_{\rm tail}=-37.3436$ meV and
-$\Delta E_{\rm 5b}=+0.0497$ meV. Its $P_1$ and $P_2$ final-ten means remain
-0.0586 and 0.0568 meV below the preceding ten-step means.
-At $\nu=2/3$, the v3.2 shared-pool run
-gives $P_2$ as the lowest sector, with
-$\langle E/N_e\rangle_{\rm tail}=-52.8838$ meV and
-$\Delta E_{\rm 5b}=-0.1583$ meV. These are correlated optimization-chain
-statistics, not independent standard errors. The $P_1$ final-ten mean is still
-0.1433 meV below the preceding ten-step mean, so completion of 120 updates
-does not establish convergence or seed robustness.
+independent standard error. At $\nu=1/3$, $P_0$ is lowest among the three v4
+outer branches, with $\langle E/N_e\rangle_{\rm tail}=-37.3215$ meV and
+$\Delta E_{\rm 5b}=+0.0718$ meV. The v4 $P_\Gamma[M]$ state gives
+$-37.2576$ meV. The $P_1$ branch remains much higher, while $P_2$ lies
+1.2039 meV per particle above $P_0$. At $\nu=2/3$, $P_2$ is lowest at
+$-52.9124$ meV per particle; $P_0$ and $P_1$ are higher by 0.3154 and
+1.2813 meV. The v4 $P_\Gamma[M]$ value is $-52.7486$ meV, while five-band ED
+gives $-52.7255$ meV. These remain correlated optimization-chain statistics
+rather than independent standard errors. Completion of 120 updates does not
+establish convergence or seed robustness.
 
-Figure~\ref{fig:sector-summary} retains all three $m$ sectors outside Fig.~\ref{fig:nbresults}.
-Its rows correspond to $\nu=1/3$ and $2/3$; columns show optimization traces,
-final-ten sector offsets, and separate four-method timing comparisons.
-Rejection statistics are retained in Table~\ref{tab:adaptive-training}, not a plot panel.
-At $\nu=1/3$, all displayed v3 runs have zero rejected updates. A rejected update leaves the parameters unchanged but
-its sampled local energy remains part of the diagnostic trace.
-% Preserve the established Fig. 6--7 numbering.
-\setcounter{figure}{5}
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{fig6_neural_bloch_results.pdf}
-\caption{\textbf{Controlled neural-Bloch optimization, multiband energy,
-band mixing and CG stability.} Top row: $\nu=1/3$; bottom row: $\nu=2/3$.
-Blue and red denote full $M$ and v3 no $M$+$M_S$; orange denotes the lowest
-final-ten v3 outer sector, $P_0$ at $\nu=1/3$ and $P_2$ at $\nu=2/3$. (a,e)
-Persistent-walker training energies. (b,f) One- through five-band ED energies
-and final-ten training means; shaded widths are the corresponding RMS, not
-independent error bars. (c,g) Bare-band populations from the
-complete-wavefunction-ratio 1-RDM, including the lowest-training outer sector
-and five-band ED in gray. (d,h)
-Explicit true CG residuals; horizontal lines mark the 0.02 early-stop and
-0.05 cap-acceptance thresholds. The gray line marks update 20. At both
-fillings, all 120 updates already optimize a projected state: updates 1--20
-use shared-mixture importance weighting and updates 21--120 use its private
-4,128-walker chain, retaining the sector's parameters and optimizer state.
-Rejected-update counts are
-summarized separately in the text.}
-\label{fig:nbresults}
-\end{figure*}
+Figure~\ref{fig:qns9summary} combines the complete nine-cell comparison and
+all three outer-sector traces on one full page. Its first two rows show
+optimization, one--five-band ED comparison and bare-band weights; its last two
+rows show the outer-sector descent, final-ten offsets and timing. CG stability
+is deliberately omitted from this page and collected for both system sizes in
+Fig.~\ref{fig:cgstability}. Rejection statistics remain in
+Table~\ref{tab:adaptive-training}. At $\nu=1/3$, all displayed nine-cell v4
+runs have zero rejected updates. A rejected update leaves the parameters
+unchanged, although its sampled local energy remains in the diagnostic trace.
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{fig6_training_summary.pdf}
-\caption{\textbf{Outer-$C_3$ optimization, sector splitting and efficiency.}
-(a,d) All three sector-energy traces at $\nu=1/3$ and $2/3$, respectively,
-with the complete 120-update history and insets resolving updates 21--120.
-The dotted line marks the end of shared mixture sampling at update 20;
-projected parameters update independently throughout both fillings' runs.
-(b,e) Final-ten energy offsets of the externally projected $P_m$ states,
-measured from the lowest sector at each filling. Error bars are RMS
-fluctuations of the correlated training tail, not independent standard errors.
-At $\nu=1/3$, $m=0$ is selected, while $m=1,2$ lie 4.499 and 1.236 meV per
-particle higher. At $\nu=2/3$, $m=2$ is selected, with $m=0,1$ higher by
-0.292 and 1.310 meV per particle. Incomplete convergence, particularly in
-$P_1$, prevents interpreting these splittings as a converged FCI manifold.
-(c,f) Separate nine-cell timing comparisons at $\nu=1/3$ and $2/3$ on a
-common logarithmic seconds axis. Five-band ED in $\Gamma$ takes 0.349 s
-(median of five fresh processes) and 11.0 min, respectively, for four eigenpairs.
-Full $M$ and no $M$+$M_S$ show their individual 120-update job times,
-excluding validation, export and observables. For the
-hatched outer bars, 7.5 and 26.1 min/sector at $\nu=1/3$ and $2/3$ are
-the respective total wall times divided by three candidate states.
-This amortized measure is not a standalone
-state's runtime. Different scopes and total resource costs are specified in
-Table~\ref{tab:ed-qns-efficiency}; no Berry or 27-cell spectrum time enters this comparison.}
-\label{fig:sector-summary}
-\end{figure*}
-
-Figure~\ref{fig:sector-summary}(c,f) compares the nine-cell QNS runs with
+Figure~\ref{fig:qns9summary}(i,l) compares the nine-cell QNS runs with
 five-band ED restricted to total momentum $\Gamma$, not the complete
 Fig.~2--3 production workflow. The measured $\nu=2/3$ ED job took
 660.453 s (11.0 min), with a 905,100-dimensional sector, four eigenpairs,
@@ -746,12 +691,13 @@ $10^{-6}$ meV; existing states are not overwritten. Filesystem caches were
 not flushed. This supplementary median is not a contemporaneous repeated
 benchmark of the historical $\nu=2/3$ job.
 Berry curvature, other momentum sectors and the 27-cell spectrum are excluded.
-The full-$M$ and no-$M$+$M_S$ times are reported individually, not as a
-two-filling aggregate: 480/327 s at $\nu=1/3$ and 1,467/1,439 s at $\nu=2/3$.
+The full-$M$ and v4 $P_\Gamma[M]$ times are reported individually, not as a
+two-filling aggregate: 480/302.833 s at $\nu=1/3$ and
+1,467/1,091.144 s at $\nu=2/3$.
 They include startup, initial thermalization and 120 training updates;
 optional validation, checkpoint export and observables are excluded.
-Full $M$ mixes total momenta and is an unrestricted baseline, whereas no
-$M$+$M_S$ and Outer-$C_3$ stay in total $\Gamma$.
+Full $M$ mixes total momenta and is an unrestricted baseline, whereas both
+v4 projected workflows stay exactly in total $\Gamma$.
 The ED calculation returns four eigenpairs, whereas QNS supplies three
 finite-training candidate sector states in the full continuum ansatz; the
 different accuracy and basis truncation preclude a matched-accuracy speedup claim.
@@ -759,25 +705,23 @@ Wall time measures elapsed production time, while accumulated device time
 sums simultaneous workers and therefore records resource consumption.  The
 ED rows used no GPU; the QNS rows used one A30 and one 16-vCPU affinity per
 concurrent job. Software installation, smoke tests, figure rendering and
-\TeX{} compilation are excluded. The $\nu=1/3$ outer run took 22.4 minutes,
-with 791.39 s user plus 146.84 s system CPU process time (0.261 CPU h).
-Its private branches took 6.6, 11.2 and 6.7 minutes for $P_0,P_1,P_2$.
-The $\nu=2/3$ outer run took 78.2 minutes including
-initialization, thermalization and the shared/private training stages;
-its CPU process time was 1,329.31 s user plus 330.77 s system (0.461 CPU h).
-Private 100-update branches took 25.6, 36.2 and 29.1 minutes for $P_0,P_1,P_2$.
-GPU-hours count lane/worker allocation, not measured kernel execution.
-Since the workflow produces three symmetry-sector candidate states, its
-amortized cost at $\nu=1/3$ is $22.4/3\simeq7.5$ wall-minutes/sector and
-$0.559/3\simeq0.186$ allocated GPU-hours/sector; at $\nu=2/3$ it is
-$78.2/3\simeq26.1$ wall-minutes/sector and
-$2.059/3=0.686$ allocated GPU-hours/sector. Shared-stage costs are included
-before division. The former measures workflow throughput under this schedule,
-not the latency of an isolated eigenstate calculation; actual wall time remains
-22.4 and 78.2 minutes, respectively. The candidates have not been certified as converged eigenstates.
-Separately, on a fixed P2 checkpoint, the sparse-residual SR microbenchmark
-reduced the warm solve from 23.94 to 17.58 s (26.6\%) at unchanged acceptance
-tolerances; this is not a full-training speedup measurement.
+\TeX{} compilation are excluded. The v4 $\nu=1/3$ outer workflow took
+22.81 minutes and consumed 0.559 allocated GPU hours; its private branches
+took 5.97, 13.33 and 7.31 minutes for $P_0,P_1,P_2$. GPU-hours count
+lane/worker allocation, not measured kernel execution. Since the workflow
+produces three symmetry-sector candidates, the displayed amortized cost is
+the complete wall/device cost divided by three. Shared-stage costs are
+included before division. This measures workflow throughput under the
+two-GPU schedule, not the latency of an isolated eigenstate calculation. The
+candidates have not been certified as converged eigenstates. At $\nu=2/3$,
+the v4 workflow took 87.84 minutes and 2.227 allocated GPU hours; private
+$P_0,P_1,P_2$ branches took 34.14, 38.33 and 30.57 minutes. The corresponding
+amortized cost is 29.28 wall-minutes and 0.742 allocated GPU hours per
+candidate. The complete v4 observable/export queue took 47.54 wall-seconds
+and 0.026 allocated GPU hours for eight new states.
+The measured host-process CPU time (user plus system) is 320.61 and 497.42 s
+for the two single-state v4 $P_\Gamma[M]$ runs, and 1,049.04 and 1,960.08 s
+for the complete outer workflows at $\nu=1/3$ and $2/3$, respectively.
 
 \begin{table}[H]
 \centering
@@ -795,35 +739,156 @@ workflow & scope & production resources & wall time & device time\\
 ED, 5 bands, $\Gamma$ & $\nu=1/3$, four eigenpairs & 12 OpenMP threads & 0.349 s & 1.585 CPU s\\
 ED, 5 bands, $\Gamma$ & $\nu=2/3$, four eigenpairs & 12 OpenMP threads & 11.0 min & CPU time not recorded\\
 QNS full $M$ training & $\nu=1/3$, one state & A30 & 480 s & 0.133 GPU h\\
-QNS no $M$+$M_S$ training & $\nu=1/3$, one state & A30 & 327 s & 0.091 GPU h\\
+QNS v4 $P_\Gamma[M]$ training & $\nu=1/3$, one state & A30 & 302.833 s & 0.084 GPU h\\
 QNS full $M$ training & $\nu=2/3$, one state & A30 & 1,467 s & 0.408 GPU h\\
-QNS no $M$+$M_S$ training & $\nu=2/3$, one state & A30 & 1,439 s & 0.400 GPU h\\
-QNS Outer-$C_3$ training & $\nu=1/3$, three sectors & $2\times$A30 & 22.4 min & 0.559 GPU h\\
-Outer amortized cost & $\nu=1/3$, per candidate & same schedule & 7.5 min/sector & 0.186 GPU h/sector\\
-QNS Outer-$C_3$ training & $\nu=2/3$, three sectors & $2\times$A30 & 78.2 min & 2.059 GPU h\\
-Outer amortized cost & $\nu=2/3$, per candidate & same schedule & 26.1 min/sector & 0.686 GPU h/sector\\
-Outer observables/export & $\nu=1/3$, three sectors & $2\times$A30 & 21.7 s & 0.009 GPU h\\
-Outer observables/export & $\nu=2/3$, three sectors & $2\times$A30 & 25.6 s & 0.011 GPU h\\
+QNS v4 $P_\Gamma[M]$ training & $\nu=2/3$, one state & A30 & 1,091.144 s & 0.303 GPU h\\
+QNS v4 Outer-$C_3$ training & $\nu=1/3$, three sectors & $2\times$A30 & 22.81 min & 0.559 GPU h\\
+Outer amortized cost & $\nu=1/3$, per candidate & same schedule & 7.60 min/sector & 0.186 GPU h/sector\\
+QNS v4 Outer-$C_3$ training & $\nu=2/3$, three sectors & $2\times$A30 & 87.84 min & 2.227 GPU h\\
+Outer amortized cost & $\nu=2/3$, per candidate & same schedule & 29.28 min/sector & 0.742 GPU h/sector\\
+v4 observables/export & eight new states & $2\times$A30 & 47.54 s & 0.026 GPU h\\
 \bottomrule
 \end{tabular}%
 }
 \end{table}
 
+\section{Twenty-seven-cell QNS extension}
+
+The same three ansatz families were subsequently trained on the 27-cell
+$3\sqrt3\times3\sqrt3$ torus used by the one-band ED calculation in
+Fig.~\ref{fig:fig5}.  This extension changes the continuum angle to
+$\theta=2.6^\circ$, uses all 27 mesh momenta and replaces the nine-term
+translation average in Eq.~\eqref{eq:v4gamma} by the exact 27-element finite
+translation group.  The network width and orbital-MLP width are both 64.
+Consequently the $N_e=9$ and 18 states contain 571,374 and 571,860 real
+trainable parameters, respectively.  The sampler still contains 4,128
+persistent walkers and uses 300 burn sweeps, two sweeps per update and 120
+natural-gradient updates.  Full $M$, $P_\Gamma[M]$, and every outer sector
+use seed 3184.  For the outer calculation, the first 20 updates use the
+shared-mixture pool and the remaining 100 updates use independently evolved
+parameters and walkers, exactly as in the nine-cell protocol.
+
+\begin{table}[H]
+\centering
+\caption{Twenty-seven-cell final-ten training diagnostics. Energies and RMS
+are meV per particle.  ``Reject'' counts attempted parameter updates rejected
+by the explicit true-residual criterion.}
+\label{tab:qns27-training}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+$\nu$ & ansatz & $\langle E/N_e\rangle$ & RMS & reject$_{120}$\\
+\midrule
+$1/3$ & full $M$ & $-46.3697$ & 0.0343 & 59\\
+$1/3$ & v4 $P_\Gamma[M]$ & $-46.6770$ & 0.0346 & 49\\
+$1/3$ & v4 $P_0P_\Gamma[M]$ & $-47.5342$ & 0.0347 & 24\\
+$1/3$ & v4 $P_1P_\Gamma[M]$ & $-46.7285$ & 0.0329 & 32\\
+$1/3$ & v4 $P_2P_\Gamma[M]$ & $-46.6239$ & 0.0309 & 40\\
+\midrule
+$2/3$ & full $M$ & $-59.5784$ & 0.0514 & 94\\
+$2/3$ & v4 $P_\Gamma[M]$ & $-59.8350$ & 0.0217 & 92\\
+$2/3$ & v4 $P_0P_\Gamma[M]$ & $-60.2690$ & 0.0161 & 91\\
+$2/3$ & v4 $P_1P_\Gamma[M]$ & $-60.4155$ & 0.0391 & 75\\
+$2/3$ & v4 $P_2P_\Gamma[M]$ & $-60.3833$ & 0.0249 & 85\\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+Figure~\ref{fig:qns27summary} repeats the complete Fig.~\ref{fig:qns9summary}
+layout for 27 cells.  Because a five-band 27-cell ED calculation is not
+available, its energy-comparison panels use the five QNS method labels on the
+horizontal axis.  The one-band ED energies $-47.595463$ and $-57.455730$ meV
+per particle are horizontal dashed references at $\nu=1/3$ and $2/3$.
+At $\nu=1/3$, outer $m=0$ is lowest and lies 0.0612 meV per particle above
+the one-band ED reference.  At $\nu=2/3$, outer $m=1$ is lowest; it and
+$m=2$ differ by only 0.0322 meV per particle, below their combined tail
+scatter.  All continuum QNS values at this filling lie below one-band ED
+because the neural state contains continuum/remote-band freedom absent from
+the one-band projected Hamiltonian.  This is not a variational violation and
+the dashed line is a reference, not a matched-Hamiltonian bound.
+
+The measured 27-cell wall times are listed in
+Table~\ref{tab:qns27-efficiency}.  The one-band ED entries are cached
+$\Gamma$-sector solves and exclude the full all-momentum spectrum and Berry
+calculation.  As in the nine-cell figure, the displayed outer cost is the
+complete two-GPU workflow wall time divided by three because the workflow
+returns three candidate symmetry sectors.  This amortized throughput should
+not be confused with the latency or GPU allocation of a single isolated run.
+
+\begin{table}[H]
+\centering
+\caption{Twenty-seven-cell ED/QNS timing. QNS rows are 120-update training
+jobs. Outer wall time is the observed two-GPU critical path; allocated GPU
+time sums both lanes.}
+\label{tab:qns27-efficiency}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}llrr@{}}
+\toprule
+$\nu$ & workflow & wall time & allocated GPU time\\
+\midrule
+$1/3$ & one-band ED, $\Gamma$ & $\sim30$ s & ---\\
+$1/3$ & full $M$ & 2.37 h & 2.37 GPU h\\
+$1/3$ & v4 $P_\Gamma[M]$ & 2.38 h & 2.38 GPU h\\
+$1/3$ & outer, complete / amortized & 14.33 / 4.78 h & 22.84 / 7.61 GPU h\\
+\midrule
+$2/3$ & one-band ED, $\Gamma$ & $\sim29$ s & ---\\
+$2/3$ & full $M$ & 10.89 h & 10.89 GPU h\\
+$2/3$ & v4 $P_\Gamma[M]$ & 11.11 h & 11.11 GPU h\\
+$2/3$ & outer, complete / amortized & 66.66 / 22.22 h & 106.58 / 35.53 GPU h\\
+both & observables, ten states & 9.81 min & 0.293 GPU h\\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+Figure~\ref{fig:cgstability} isolates the true CG residuals from both system
+sizes.  The nine-cell $\nu=1/3$ runs remain near the 0.02 early-stop line,
+whereas many 27-cell late updates reach the 60-iteration cap and exceed the
+0.05 acceptance threshold.  This explains the large rejection counts in
+Table~\ref{tab:qns27-training} and shows that the present 27-cell energies are
+finite-optimization diagnostics rather than converged sector eigenvalues.
+
 \section{Post-training one- and two-body observables}
 
-Figure~\ref{fig:nbobservables-baseline} compares full-$M$ and v3 no-$M$+$M_S$
-at both fillings. Figures~\ref{fig:nbobservables13} and
-\ref{fig:nbobservables23} display all three externally projected sectors. At $\nu=1/3$, the first row is the
-training-energy minimum $P_0$ and is the selected out-$C_3$ result; $P_1$ and
-$P_2$ are retained only for a controlled sector comparison. At $\nu=2/3$,
-$P_2$ is the corresponding minimum. The panels are regenerated from the
-saved final training ensembles, with no fresh validation chains. Each contains 4,128 configurations;
-energy selection and observable estimation use the same production-chain
-convention as the optimization protocol of Ref.~\cite{luo}.
+Figure~\ref{fig:nbobservables-baseline} compares full-$M$ and v4
+$P_\Gamma[M]$ at both fillings on 27 cells. Figures~\ref{fig:nbobservables13}
+and \ref{fig:nbobservables23} display all three 27-cell externally projected
+v4 sectors; the final-ten training minimum is selected from the completed
+local traces and marked in each figure. The panels are regenerated from the
+saved final training ensembles, with no fresh validation chains. Each contains
+4,128 configurations; energy selection and observable estimation use the same
+production-chain convention as the optimization protocol of Ref.~\cite{luo}.
+The 27 momentum locations, weak Berry/metric backgrounds, marker-size rules,
+and shared $n(\bm k)$/$S(\bm q)$ color normalizations follow
+Fig.~\ref{fig:fig5}. Every diagnostic file also stores the actual Fourier
+vectors, and figure generation checks them point by point against the plotted
+dots before rendering.
 
-\subsection{Full-ratio 1-RDM and fixed bare-band projector}
+\subsection{Direct plane-wave momentum occupation and bare-band weights}
 
-For $a=(n,\bm k)$ and $b=(m,\bm q)$, the estimator is
+The momentum occupation displayed in Figs.~\ref{fig:nbobservables-baseline}--
+\ref{fig:nbobservables23} is not projected into a moir\'e band. Following the
+momentum-resolved one-body density used by Li \emph{et al.}~\cite{limomentum},
+it is evaluated directly in normalized layer plane waves at the 27 marked
+first-BZ momenta. With $A$ the supercell area and
+$\rho^{(1)}_l(\bm r,\bm r')=
+\langle\psi_l^\dagger(\bm r)\psi_l(\bm r')\rangle$, define
+\begin{align}
+ n_{G=0}(\bm k)&=\sum_{l=1}^{2}\langle c^\dagger_{l\bm k}c_{l\bm k}\rangle\\
+ &=\frac1A\sum_{l=1}^{2}\int_A d\bm r\,d\bm r'\,
+ e^{i\bm k\cdot(\bm r-\bm r')}\rho^{(1)}_l(\bm r,\bm r').
+\label{eq:total-nk}
+\end{align}
+The Monte Carlo estimator selects one electron and a uniform auxiliary
+coordinate/layer and evaluates the complete one-particle replacement ratio.
+The factor of two corrects the auxiliary-layer probability. Only the two
+physical layers are summed: no $\bm k+\bm G$ image is folded into the displayed
+value. Consequently the 27-point first-BZ sum is a finite plane-wave window
+and is not constrained to equal $N_e$.
+
+Bloch projection is used only for the separate band-weight diagnostic.  For
+$a=(n,\bm k)$ and $b=(m,\bm q)$, its estimator is
 \begin{equation}
 \begin{split}
  \rho_{ab}&=\langle c_b^\dagger c_a\rangle\\
@@ -836,8 +901,8 @@ For $a=(n,\bm k)$ and $b=(m,\bm q)$, the estimator is
 The factor two accounts for uniform auxiliary sampling of the two layers.  In
 every ratio, replacing one particle triggers a complete new ansatz call: the
 code rebuilds the graph and recomputes all particles' $\delta\bm r_j$,
-$J_{\bm k j}$, and either the $M Q$ determinant or all $M_S$-weighted sector
-minors. The
+$J_{\bm k j}$, and either the $M Q$ determinant or all nine translated
+$M D_TQ$ determinants. The
 projector is instead the fixed bare function
 \begin{equation}
  \phi^0_{n\bm k}(\bm r,l)=\sum_{\bm G}u^l_{n\bm k\bm G}
@@ -846,15 +911,18 @@ projector is instead the fixed bare function
 no backflow phase is multiplied into it.  Thus neural dressing appears once,
 only through the complete wavefunction ratio.
 
-All 4,128 final training configurations and 16 auxiliary points per configuration
-are used to estimate the $45\times45$ five-band-projected matrix.  The band
-populations are
+For the nine-cell band-weight validation, all 4,128 final configurations and 16
+auxiliary points per configuration were used to estimate the complete
+$45\times45$ five-band-projected matrix. For the 27-cell figures, the same
+complete-ratio construction evaluates the 135 diagonal elements directly;
+these values are retained for the five band populations only, without
+materializing a noisy $135\times135$ matrix. The band populations are
 \begin{equation}
  W_n=\frac1{N_e}\sum_{\bm k}\rho_{n\bm k,n\bm k}.
 \end{equation}
 \begin{table}[H]
 \centering
-\caption{Five-band-projected 1-RDM results from final training samples.
+\caption{Nine-cell five-band-projected 1-RDM validation from final training samples.
 Band weights are percentages; parentheses are eight-block estimates.  ED
 weights use the exact five-band one-body density matrix.}
 \label{tab:adaptive-rdm}
@@ -864,41 +932,70 @@ weights use the exact five-band one-body density matrix.}
 $\nu$ & state & trace & $W_1$ & $W_2$ & $W_3$ & $W_4$ & $W_5$ & min eig.\\
 \midrule
 $1/3$ & five-band ED & $3$ & 96.47 & 2.95 & 0.52 & 0.05 & 0.01 & ---\\
-$1/3$ & no $M$+$M_S$ & $3.167(78)$ & $95.41(1.21)$ & $5.94(64)$ & $2.67(1.25)$ & $1.01(1.57)$ & $0.54(48)$ & $-0.185$\\
-$1/3$ & outer $P_0$+$M_S$ & $3.013(70)$ & $96.47(93)$ & $0.47(1.16)$ & $1.42(1.11)$ & $0.83(75)$ & $1.23(1.02)$ & $-0.111$\\
-$1/3$ & outer $P_1$+$M_S$ & $3.030(90)$ & $81.40(1.05)$ & $17.73(1.38)$ & $2.15(93)$ & $1.04(1.40)$ & $-1.34(79)$ & $-0.103$\\
-$1/3$ & outer $P_2$+$M_S$ & $2.961(72)$ & $94.65(1.17)$ & $2.35(74)$ & $0.53(94)$ & $0.77(59)$ & $0.39(36)$ & $-0.121$\\
+$1/3$ & v4 $P_\Gamma[M]$ & $3.089(90)$ & $96.91(1.06)$ & $2.52(89)$ & $-0.28(1.11)$ & $2.62(1.02)$ & $1.18(65)$ & $-0.091$\\
+$1/3$ & v4 $P_0P_\Gamma[M]$ & $2.995(116)$ & $95.46(1.54)$ & $3.98(1.19)$ & $-0.03(72)$ & $-0.47(63)$ & $0.90(1.02)$ & $-0.123$\\
+$1/3$ & v4 $P_1P_\Gamma[M]$ & $3.125(63)$ & $80.80(77)$ & $16.69(1.18)$ & $3.49(1.12)$ & $1.05(28)$ & $2.14(64)$ & $-0.114$\\
+$1/3$ & v4 $P_2P_\Gamma[M]$ & $2.880(68)$ & $95.08(1.06)$ & $2.65(1.30)$ & $-1.51(76)$ & $1.34(90)$ & $-1.57(43)$ & $-0.107$\\
 \midrule
 $2/3$ & five-band ED & $6$ & 88.95 & 7.59 & 2.53 & 0.76 & 0.16 & ---\\
-$2/3$ & no $M$+$M_S$ & $6.087(158)$ & $91.29(1.25)$ & $7.30(93)$ & $2.47(73)$ & $0.27(63)$ & $0.13(77)$ & $-0.151$\\
-$2/3$ & outer $P_0$+$M_S$ & $5.744(148)$ & $87.27(73)$ & $6.31(1.24)$ & $1.35(68)$ & $1.43(1.09)$ & $-0.62(92)$ & $-0.288$\\
-$2/3$ & outer $P_1$+$M_S$ & $5.959(174)$ & $87.10(69)$ & $8.57(1.16)$ & $3.03(1.13)$ & $1.58(71)$ & $-0.96(1.35)$ & $-0.240$\\
-$2/3$ & outer $P_2$+$M_S$ & $6.038(170)$ & $87.87(1.86)$ & $6.48(96)$ & $3.02(59)$ & $2.49(1.01)$ & $0.78(85)$ & $-0.205$\\
+$2/3$ & v4 $P_\Gamma[M]$ & $6.083(148)$ & $90.07(1.02)$ & $5.85(36)$ & $3.48(1.40)$ & $0.61(71)$ & $1.38(1.22)$ & $-0.150$\\
+$2/3$ & v4 $P_0P_\Gamma[M]$ & $6.069(185)$ & $88.76(2.14)$ & $7.55(1.08)$ & $1.65(1.02)$ & $1.62(97)$ & $1.58(74)$ & $-0.173$\\
+$2/3$ & v4 $P_1P_\Gamma[M]$ & $6.021(193)$ & $87.15(1.84)$ & $7.83(1.01)$ & $3.58(1.08)$ & $0.09(1.27)$ & $1.70(1.04)$ & $-0.376$\\
+$2/3$ & v4 $P_2P_\Gamma[M]$ & $6.100(192)$ & $89.83(1.47)$ & $7.15(90)$ & $2.80(1.38)$ & $0.42(1.02)$ & $1.47(70)$ & $-0.205$\\
 \bottomrule
 \end{tabular}%
 }
 \end{table}
-Most projected traces are compatible with $N_e$ at the stated precision, but
-the matrices are only Hermitized, not projected onto the positive-semidefinite
-cone. Their negative minimum eigenvalues therefore forbid a
-stable natural-orbital eigenspace interpretation.  The diagonal band
-populations are more robust and reveal a real sector dependence.  At
-$\nu=1/3$, $P_0$ and $P_2$ retain 96.47(93)\% and 94.65(1.17)\% band-1
-weight, whereas $P_1$ has $81.40(1.05)\%$ and $17.73(1.38)\%$ in band 2; five-band ED has
-$W_1=96.47\%$ and $W_2=2.95\%$.  At $\nu=2/3$, all three sectors are closer
-to the ED distribution $(88.95,7.59,2.53,0.76,0.16)\%$; the lowest-training
-$P_2$ gives $(87.87,6.48,3.02,2.49,0.78)\%$. Small negative entries remain
-consistent with auxiliary-coordinate noise.
+
+\begin{table}[H]
+\centering
+\caption{Twenty-seven-cell diagonal five-band projection from the saved final
+training ensembles. $T_5$ is the trace within the five-band subspace and
+$W_n$ are percentages of the physical particle number; parentheses are
+eight-block SEM estimates. Negative high-band entries quantify ratio-estimator
+noise and are not physical occupations.}
+\label{tab:qns27-rdm}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}llrrrrrr@{}}
+\toprule
+$\nu$ & state & $T_5$ & $W_1$ & $W_2$ & $W_3$ & $W_4$ & $W_5$\\
+\midrule
+$1/3$ & full $M$ & 9.195 & 88.68(1.77) & 10.25(1.87) & 4.72(2.44) & $-0.79$(2.04) & $-0.69$(1.54)\\
+$1/3$ & $P_\Gamma[M]$ & 8.703 & 90.89(2.04) & 7.50(1.27) & 0.63(1.96) & $-1.60$(2.15) & $-0.71$(1.94)\\
+$1/3$ & $P_0P_\Gamma[M]$ & 9.098 & 93.06(1.61) & 9.14(1.36) & 0.98(1.52) & $-0.31$(1.10) & $-1.78$(1.21)\\
+$1/3$ & $P_1P_\Gamma[M]$ & 8.833 & 88.71(2.00) & 10.66(2.26) & 1.59(1.17) & $-2.54$(1.32) & $-0.28$(2.39)\\
+$1/3$ & $P_2P_\Gamma[M]$ & 7.637 & 88.16(1.59) & 5.48(2.68) & $-2.49$(2.33) & $-4.19$(2.09) & $-2.10$(1.68)\\
+\midrule
+$2/3$ & full $M$ & 18.469 & 88.35(2.93) & 5.82(1.98) & 5.42(3.40) & 0.81(1.47) & 2.20(1.39)\\
+$2/3$ & $P_\Gamma[M]$ & 17.399 & 90.54(2.69) & 6.46(2.02) & 0.80(2.07) & $-1.62$(2.60) & 0.47(1.06)\\
+$2/3$ & $P_0P_\Gamma[M]$ & 17.154 & 85.73(1.48) & 4.43(1.72) & 5.53(2.22) & $-0.14$(1.37) & $-0.25$(1.60)\\
+$2/3$ & $P_1P_\Gamma[M]$ & 18.316 & 90.13(1.89) & 10.19(2.66) & 3.86(2.14) & $-1.56$(1.20) & $-0.87$(1.12)\\
+$2/3$ & $P_2P_\Gamma[M]$ & 17.618 & 87.84(1.67) & 7.13(2.00) & 4.49(1.71) & 0.35(1.30) & $-1.93$(1.39)\\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+The nine-cell matrices are Hermitized but are not projected onto the
+positive-semidefinite cone. Their finite-sampling negative eigenvalues must
+therefore be inspected before any natural-orbital interpretation. The
+diagonal band populations are the more robust comparison with the exact
+five-band ED distributions $(96.47,2.95,0.52,0.05,0.01)\%$ at $\nu=1/3$
+and $(88.95,7.59,2.53,0.76,0.16)\%$ at $\nu=2/3$.  At $\nu=1/3$, the
+selected $P_0P_\Gamma[M]$ branch has $(95.46,3.98)\%$ in the first two
+bare bands, while $P_1P_\Gamma[M]$ is qualitatively different at
+$(80.80,16.69)\%$.  At $\nu=2/3$, the selected $P_2P_\Gamma[M]$ branch gives
+$(89.83,7.15,2.80,0.42,1.47)\%$, close in its first three bands to the ED
+distribution.  The traces fluctuate around $N_e$, but the negative
+high-band estimates and eigenvalues quantify the remaining ratio-estimator
+noise; they must not be read as physical negative occupations.
 
 The estimator now caches $\Psi_m(X)$ once per configuration block and jointly
 batches all 16 replacement coordinates.  Each replacement still rebuilds the
-complete graph, all $\delta\bm r_j$, $J$, the $M_S$ determinant mixture,
+complete graph, all $\delta\bm r_j$, $J$, the finite-translation determinant sum,
 the projected three-branch sum and the wavefunction ratio.  On the A30 GPUs,
-the 4,128-by-16 outer-sector measurement processes take 4.1--4.2 seconds at
-$\nu=1/3$ and 5.9--6.2 seconds at $\nu=2/3$.
-Checkpoint conversion plus all three measurements takes 21.7 and 25.6 seconds,
-respectively,
-on the scheduled dual-GPU critical path. Training and postprocessing are timed
+the 4,128-by-16 v4 measurements are timed independently from training on the
+scheduled dual-GPU critical path. Training and postprocessing are timed
 separately in Table~\ref{tab:ed-qns-efficiency}.
 The focused bare-Slater regression sets $\delta\bm r=0$, $J=1$, fixes a
 complex $2\times9$ matrix $M$ with orthonormal rows, and samples the resulting
@@ -909,109 +1006,139 @@ Frobenius error is 0.05272, the Hermiticity residual is zero, and the minimum
 sampled eigenvalue is $-0.02072$.  This unit test verifies occupation,
 Hermiticity, PSD within sampling noise and full-basis trace normalization.
 
+For the 27-cell states, the selected $\nu=1/3$ outer branch $m=0$ has
+estimated first-two-band weights
+$(93.06(1.61),9.14(1.36))\%$. The selected $\nu=2/3$ branch $m=1$ has
+$(W_1,W_2,W_3)=(90.13(1.89),10.19(2.66),3.86(2.14))\%$.
+The five-band projected traces range from 7.637 to 9.195 at $N_e=9$ and
+from 17.154 to 18.469 at $N_e=18$. In particular, the $m=2$, $\nu=1/3$
+trace deficit and several negative remote-band diagonal estimates are larger
+than in the nine-cell audit. Therefore Fig.~\ref{fig:qns27summary} displays
+the raw estimates and their block errors without renormalizing them to 100\%;
+the high-band bars should be interpreted only at the quoted Monte Carlo
+precision.
+
 \subsection{Full structure factor, connected part, and density order}
 
-The structure factor is evaluated directly as a two-body observable, not
-reconstructed from the 1-RDM:
+Following the full-structure-factor definition of Luo, Zaklama and
+Fu~\cite{luo}, the structure factor is evaluated directly as the Fourier
+transform of the static density--density correlation function, not from a
+Bloch-projected operator and not reconstructed from the 1-RDM:
 \begin{align}
  S_{\rm full}(\bm q)&=\frac{\langle|\rho_{\bm q}|^2\rangle}{N_e},\\
  S_c(\bm q)&=\frac{\langle|\rho_{\bm q}|^2\rangle-
  |\langle\rho_{\bm q}\rangle|^2}{N_e},\\
  m_{\bm q}&=\frac{|\langle\rho_{\bm q}\rangle|}{N_e}.
 \end{align}
-The ED comparison uses $S_{\rm full}$ with the same normalization.  At
-$\nu=1/3$, outer $P_0,P_1,P_2$ give maximum nonzero-momentum
-$S_{\rm full}=1.5058(143),1.1281(145),1.2294(102)$, respectively, compared
-with the five-band ED value 1.4381.  At $\nu=2/3$ the corresponding values are
-$0.7367(78),0.6799(101),0.7123(99)$, compared with ED 0.6197.  The sector
-dependence is therefore visible in both the 1-RDM and the genuine two-body
-observable; it is not a plotting artifact.
-
-For $m=0,1,2$, the largest nonzero-$q$ density amplitudes are
-$0.00728(293),0.00702(229),0.00856(352)$ at $\nu=1/3$ and
-$0.00365(259),0.00261(166),0.00620(266)$ at $\nu=2/3$. These small values
-show negligible static translation-breaking expectation at the sampled
-reciprocal vectors; the large $S_{\rm full}$ peaks are density fluctuations.
+Here $\rho_{\bm q}=\sum_i e^{i\bm q\cdot\bm r_i}$ includes every particle and
+both layers. Each plotted $\bm q$ is the physical vector of the corresponding
+dot in the hexagonal first Brillouin zone. There is no sum over $\bm q+\bm G$,
+and the code does not replace a boundary point by a reciprocal-equivalent
+representative, because the continuum density is not periodic under
+$\bm q\mapsto\bm q+\bm G$. Five of the former 27 indices differed from their
+plotted vectors by one primitive reciprocal vector; those indices are now
+covered by a pointwise regression test. The ED comparison uses
+$S_{\rm full}$ with the same normalization. The new
+v4 values are evaluated independently in every sector, so differences among
+the rows reflect different saved wavefunctions rather than duplicated plotting
+data. The largest nonzero-$q$ density amplitudes are also reported to
+distinguish a fluctuation peak in $S_{\rm full}$ from a nonzero static density
+expectation.
 The real-space panels in Figs.~\ref{fig:nbobservables13} and
 \ref{fig:nbobservables23} include the intra-moir\'e-cell Bloch density and
 should not be identified with a nonzero CDW order parameter by visual
 contrast alone.
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=.98\textwidth]{fig7_neural_bloch_observables.pdf}
-\caption{\textbf{Full-$M$ and v3 no-$M$+$M_S$ observables.} The first two
-rows are $\nu=1/3$ and the last two are $\nu=2/3$; at each filling full $M$
-is followed by no $M$+$M_S$. Columns show bare-band-1 momentum occupation,
-the full static structure factor, and folded charge density. The v3 no-$M$
-panels use the newly evaluated 4,128-configuration final ensembles.}
-\label{fig:nbobservables-baseline}
-\end{figure*}
+For the nine-cell validation, the largest nonzero-momentum values of $S_{\rm full}$ are
+1.4818 for $P_\Gamma[M]$ and 1.4852, 1.1325 and 1.3018 for outer
+$m=0,1,2$, compared with 1.4381 in five-band ED.  At $\nu=2/3$ the
+corresponding values are 0.7677 and 0.7377, 0.6832 and 0.7013, compared with
+0.6197 in ED.  The largest nonzero-$q$ density amplitudes are small:
+$(0.01120,0.00902,0.01069,0.00719)$ for the $\nu=1/3$
+$P_\Gamma,m=0,1,2$ states and
+$(0.00475,0.00921,0.00590,0.00351)$ at $\nu=2/3$.  Thus the displayed
+structure-factor maxima are predominantly fluctuation signals on these
+finite training samples, rather than direct evidence for static density
+order.
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=.98\textwidth]{fig7_neural_bloch_observables_nu1of3.pdf}
-\caption{\textbf{$\nu=1/3$ outer-sector observables from final
-training samples.} Rows are complete-wavefunction projectors $P_0,P_1,P_2$;
-the first row, $P_0$, is explicitly marked as the selected outer-$C_3$ state because it has the
-lowest final-ten training energy.
-Columns show bare-band-1 momentum occupation from the complete-ratio 1-RDM,
-the full static structure factor with ED normalization on the complete
-hexagonal BZ, and folded charge density over a two-by-two moir\'e-cell
-parallelogram. Shared color limits expose the strong $P_1$ band-mixing and
-structure-factor difference without rescaling individual sectors.}
-\label{fig:nbobservables13}
-\end{figure*}
+For 27 cells at $\nu=1/3$, the corrected first-BZ nonzero maxima for full $M$,
+$P_\Gamma[M]$ and outer $m=0,1,2$ are respectively
+$(1.1575,1.1722,1.5222,1.1937,1.2116)$, compared with 1.0571 in one-band
+ED. In every case the maximum occurs at the conjugate $K,K'$ pair, for which
+$S(K)=S(K')$ configuration by configuration. At $\nu=2/3$, the corresponding
+QNS maxima are $(0.6976,0.7236,0.7492,0.7446,0.7254)$, again at $K,K'$, and
+remain much larger than the one-band ED maximum 0.1968. Hence the present
+120-update 27-cell states do not reproduce the weak one-band ED $\nu=2/3$
+structure factor. Some difference is physically allowed because the QNS
+uses the untruncated continuum Hilbert space, but the high rejected-update
+counts and lack of an independent inference chain prevent attributing the
+whole discrepancy to band mixing. Figures~\ref{fig:nbobservables-baseline}--
+\ref{fig:nbobservables23} use one shared range covering all ED and QNS values,
+so neither the $K$ peak nor the corrected boundary response is clipped.
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=.98\textwidth]{fig7_neural_bloch_observables_nu2of3.pdf}
-\caption{\textbf{$\nu=2/3$ outer-sector observables from final
-training samples.} Rows are $P_0,P_1,P_2$ and columns use the same definitions
-and global color limits as Fig.~\ref{fig:nbobservables13}.  All panels use
-4,128 configurations and 16 jointly batched auxiliary replacements per
-configuration.  The three sectors are shown separately because both their
-band populations and two-body structure factors differ beyond a simple
-identical-map interpretation. The $P_2$ row is marked as the lowest
-final-ten-energy sector.}
-\label{fig:nbobservables23}
-\end{figure*}
+The maximum nonzero density amplitudes $m_{\bm q}$ are 0.0920 and 0.0277 for
+the momentum-unrestricted full-$M$ states at $\nu=1/3$ and $2/3$.
+After exact translation projection they fall below 0.011 for every
+$P_\Gamma[M]$ and outer state. The repeated intra-cell texture in the density
+column is therefore mainly the moir\'e-scale one-body density, not evidence of
+a large static translation-breaking order parameter. Together with the high
+27-cell CG rejection counts, the $\nu=2/3$ structure-factor discrepancy is a
+clear target for longer, better-conditioned and multi-seed optimization.
+
+The corrected files obey $S(\bm q)=S(-\bm q)$ to roundoff because conjugate
+density modes are evaluated on every configuration. We do not apply a
+reciprocal-lattice wrap when auditing boundary points: such a wrap would test
+$S(\bm q+\bm G)$ rather than the value of the dot actually drawn in the
+continuum first BZ.
 
 \section{Conclusion}
 
 The implemented baseline follows the printed Luo--Fu Appendix-B structure:
 fixed mean-field band-1 plane-wave coefficients, periodic node and edge
-features, trainable random auxiliary features, two unshared width-32 message
+features, trainable random auxiliary features, two unshared message
 iterations with the literal self-inclusive $\sum_jm_{ij}$, coordinate
 backflow, direct complex $J_{\bm k i}$ applied exactly once, and one final
 generalized Slater construction. Full $M$ mixes momenta at the single-particle
-level and therefore generally mixes total-momentum sectors. Version 3 no-$M$
-instead uses $M_S\in\mathbb C^{1\times12}$ to combine all and only the
-selected-momentum determinants in the exact total-$\Gamma$ sector.
+level and therefore generally mixes total-momentum sectors. Version 4 keeps
+that single dense $M$ and applies the exact finite-translation projector to the
+complete determinant. Cauchy--Binet proves that the result combines all and
+only the total-$\Gamma$ minors with coefficients $\det M_{:,I}$, without
+enumerating momentum combinations in the implementation.
 
 The outer construction leaves that raw network unrestricted and projects the
-complete $M_S$ determinant mixture with $P_m$. Character and
-projector-algebra residuals are below $6.4\times10^{-14}$ and
-$7.6\times10^{-15}$, all three projected norms are nonzero, and local energy,
+complete $P_\Gamma[M]$ state with $P_m$. Character and projector-algebra
+tests pass at double-precision tolerance, all three projected norms are
+nonzero, and local energy,
 Metropolis ratios and SR derivatives all use the projected state.  It adds no
-trainable parameter to the 78,124-parameter v3 no-$M$ model.
+trainable parameter. At nine cells the projected and unprojected models contain
+the same 78,154 and 78,208 real parameters at $\nu=1/3$ and $2/3$; the
+width-64 27-cell counterparts contain 571,374 and 571,860.
 
-On the final-ten training tail, v3 no-$M$ reaches $-37.3037$ meV per particle
-at $\nu=1/3$, while outer $P_0$ is the lowest of the three projected sectors
-at $-37.3436$ meV under the same v3.2 shared-pool protocol.
-Its $P_1$ and $P_2$ tails still descend. At $\nu=2/3$, v3 no-$M$ reaches $-52.7666$ meV and the
-v3.2 same-seed, shared-pool run gives $P_2$ as the lowest projected sector
-at $-52.8838$ meV. P0 and P1 reach $-52.5922$ and $-51.5740$ meV per
-particle. P1 still descends near the end; this single-initialization experiment
-does not establish convergence or resolve the seed-sensitivity question.
+On the final-ten training tail at $\nu=1/3$, v4 $P_\Gamma[M]$ reaches
+$-37.2576$ meV per particle and outer $P_0$ is the lowest projected branch at
+$-37.3215$ meV. At $\nu=2/3$, the unrotated v4 state reaches $-52.7486$ meV;
+$P_2$ is the lowest outer branch at $-52.9124$ meV per particle.
+These are single-initialization training-chain diagnostics, so they do not
+establish convergence or resolve seed sensitivity.
 
-The all-sector observables show that $m=0,1,2$ cannot be represented by one
-duplicated map: at $\nu=1/3$, $P_1$ has markedly enhanced band-2 weight and a
-smaller structure-factor peak, while at $\nu=2/3$ the differences are weaker
-but remain resolved.  Thus the complete-state projector changes both energy
-and correlations, rather than merely relabeling the same generalized
-determinant.
-The complete-ratio 1-RDM and direct two-body structure factors remain useful
-diagnostics, but their non-PSD noise and the single-seed finite optimization
-preclude a natural-orbital or topological claim. The next controlled tests are
-longer multi-seed optimization and sector-selection replication.
+On 27 cells, full $M$ and $P_\Gamma[M]$ reach $-46.3697$ and $-46.6770$ meV
+per particle at $\nu=1/3$, while outer $m=0$ is lowest at $-47.5342$ meV,
+0.0612 meV above the one-band ED reference. At $\nu=2/3$, the respective
+values are $-59.5784$ and $-59.8350$ meV, and outer $m=1$ is lowest at
+$-60.4155$ meV. The $m=1,2$ tail means differ by only 0.0322 meV per particle,
+but extensive residual-cap rejections prevent interpreting that proximity as
+a converged topological multiplet. The observed per-state QNS training cost
+is hours rather than the roughly 30-second cached one-band $\Gamma$ ED solve;
+this comparison changes qualitatively for multiband ED, whose 27-cell Hilbert
+space is not available here.
+
+The 27-cell observables show that the projected $\nu=1/3,m=0$ state retains
+zone-corner structure-factor enhancement. At $\nu=2/3$, however, all QNS
+structure-factor maxima remain near 0.70--0.75, above the one-band ED
+maximum 0.197, even though static nonzero-$q$ density amplitudes of all
+translation-projected states stay below 0.011. Thus the current finite run
+does not yet reproduce the ED liquid correlations. The complete-ratio
+diagonal 1-RDM and direct two-body structure factors remain useful diagnostics,
+but projected-trace noise, single-seed optimization and SR instability preclude
+a natural-orbital or topological claim. The next controlled tests are longer
+better-conditioned multi-seed optimization and sector-selection replication.

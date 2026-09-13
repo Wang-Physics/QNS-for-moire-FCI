@@ -302,15 +302,24 @@ def coordinate_density_statistics(
 def run(args: argparse.Namespace) -> dict:
     torch.set_default_dtype(torch.float64)
     torch.set_num_threads(args.threads)
+    device = torch.device(args.device)
+    if device.type == "cuda" and not torch.cuda.is_available():
+        raise RuntimeError("CUDA diagnostics requested but torch.cuda is unavailable")
     output = args.output_dir
     if not output.is_absolute():
         output = Path(__file__).resolve().parents[1] / output
     output.mkdir(parents=True, exist_ok=True)
     continuum, wavefunction, metadata = load_checkpoint(args.checkpoint)
+    wavefunction.to(device)
+    wavefunction.eval()
     samples = np.load(args.samples)
     count = min(args.samples_count, len(samples["positions"]))
-    positions = torch.as_tensor(samples["positions"][:count], dtype=torch.float64)
-    layers = torch.as_tensor(samples["layers"][:count], dtype=torch.long)
+    positions = torch.as_tensor(
+        samples["positions"][:count], dtype=torch.float64, device=device
+    )
+    layers = torch.as_tensor(
+        samples["layers"][:count], dtype=torch.long, device=device
+    )
     (
         rho, band_weight_sem, natural_occupations, natural_bloch_overlap,
         band_weight_covariance, trace_sem,
@@ -398,6 +407,7 @@ def run(args: argparse.Namespace) -> dict:
         ),
         "checkpoint": str(args.checkpoint),
         "coordinate_samples": count,
+        "compute_device": str(device),
         "auxiliary_draws_per_sample": args.auxiliary_draws,
         "one_body_density_matrix_shape": list(rho.shape),
         "projected_bare_band_count": n_bands,
@@ -478,6 +488,10 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--wavefunction-batch", type=int, default=16)
     result.add_argument("--seed", type=int, default=1701)
     result.add_argument("--threads", type=int, default=32)
+    result.add_argument(
+        "--device", default="cpu",
+        help="PyTorch compute device for complete-wavefunction ratio batches",
+    )
     return result
 
 

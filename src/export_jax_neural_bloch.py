@@ -45,6 +45,7 @@ def run(checkpoint: Path, output: Path, seed: int = 83) -> Path:
         fixed_gamma_no_m=spec.fixed_gamma_no_m,
         c3_qns=spec.c3_qns,
         outer_c3_projector=spec.outer_c3_projector,
+        v4_gamma_projected_m=bool(spec.translation_projected_rank),
     )
     _, wavefunction = build_wavefunction(spec.n_particles, config, seed)
     copy_to_torch(parameters, wavefunction)

@@ -1,0 +1,50 @@
+{
+  "status": "complete",
+  "checkpoint": "result/data/v4_qns27_seed3184/nu2of3_v4_outer_c3/p0/jax_neural_bloch_final.npz",
+  "samples": "result/data/v4_qns27_seed3184/nu2of3_v4_outer_c3/p0/jax_neural_bloch_samples.npz",
+  "cells": 27,
+  "n_particles": 18,
+  "coordinate_samples": 4128,
+  "auxiliary_draws_per_sample": 16,
+  "sampling": "saved final training walkers; no independent validation chain",
+  "one_body_estimator": "direct G=0 first-BZ plane-wave Fourier estimator summed over both layers; no reciprocal-image sum; five-band Bloch projection is retained only for band-weight diagnostics",
+  "band_weight": [
+    0.8572932702549652,
+    0.04431472864041621,
+    0.05531683789082997,
+    -0.0013877427290480654,
+    -0.002533092651718305
+  ],
+  "band_weight_sem": [
+    0.01481927744363364,
+    0.01724178197683946,
+    0.02220377640310425,
+    0.013701607981000993,
+    0.01598687800484726
+  ],
+  "projected_trace": 17.15407202529802,
+  "momentum_occupation_band1_sum": 15.431278864589391,
+  "momentum_occupation_plane_wave_sum": 4.977409047641631,
+  "momentum_occupation_plane_wave_imaginary_max": 0.11989751457848111,
+  "saved_base_wavefunction_relative_error": 0.0,
+  "maximum_nonzero_structure_factor": 0.7491711922514175,
+  "maximum_nonzero_density_amplitude": 0.004363625554278818,
+  "wall_seconds": 73.18175963699468,
+  "spec": {
+    "n_particles": 18,
+    "width": 64,
+    "message_passing_steps": 2,
+    "determinants": 1,
+    "orbital_hidden": 64,
+    "c3_irrep": 0,
+    "fixed_gamma_no_m": false,
+    "c3_qns": false,
+    "outer_c3_projector": true,
+    "cells": 27,
+    "minor_chunk": 256,
+    "backflow_init_scale": 0.01,
+    "active_gamma_minors": null,
+    "translation_projected_rank": 1
+  },
+  "training_step": 120
+}

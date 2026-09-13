@@ -22,6 +22,7 @@ import numpy as np
 
 from .jax_neural_bloch import (
     JaxNeuralBlochSpec,
+    active_minor_basis_values,
     initialize,
     local_energy,
     logpsi,
@@ -68,6 +69,7 @@ class JaxMetropolis:
         self.walkers = walkers
         self.proposal_scale = proposal_scale
         self.batch_size = batch_size
+        self.support_indices = constants["gamma_sector_indices"]
         self.key = jax.random.PRNGKey(seed)
         self.key, position_key, layer_key = jax.random.split(self.key, 3)
         self.positions = jax.random.uniform(
@@ -77,14 +79,25 @@ class JaxMetropolis:
             layer_key, (walkers, spec.n_particles), 0, 2, dtype=jnp.int32
         )
         self._logpsi = jax.jit(
-            lambda p, x, l: logpsi(p, x, l, constants, spec)
+            lambda p, x, l, support: logpsi(
+                p, x, l, constants, spec, support
+            )
         )
         self.values = self.evaluate(parameters, self.positions, self.layers)
 
     def evaluate(self, parameters, positions, layers):
-        return _batched(
-            self._logpsi, parameters, positions, layers, self.batch_size
+        function = lambda p, x, l: self._logpsi(
+            p, x, l, self.support_indices
         )
+        return _batched(function, parameters, positions, layers, self.batch_size)
+
+    def set_support(self, support_indices, parameters, refresh=True):
+        support = jnp.asarray(support_indices, dtype=jnp.int32)
+        if support.shape != self.support_indices.shape:
+            raise ValueError("active support shape cannot change during training")
+        self.support_indices = support
+        if refresh:
+            self.refresh(parameters)
 
     def refresh(self, parameters):
         self.values = self.evaluate(parameters, self.positions, self.layers)
@@ -152,32 +165,48 @@ class MatrixFreeNaturalGradient:
         self.damping = damping
         self.unravel = None
 
-        def scores(flat_parameters, positions, layers):
-            values = logpsi(
-                self.unravel(flat_parameters), positions, layers, constants, spec
+        self.support_indices = (
+            jnp.empty((0, 0), dtype=jnp.int32) if constants is None
+            else constants["gamma_sector_indices"]
+        )
+
+        def evaluate_logpsi(flat, positions, layers, support):
+            parameters = self.unravel(flat)
+            if constants is None:
+                return logpsi(parameters, positions, layers, constants, spec)
+            return logpsi(
+                parameters, positions, layers, constants, spec, support
+            )
+
+        def scores(flat_parameters, positions, layers, support):
+            values = evaluate_logpsi(
+                flat_parameters, positions, layers, support
             )
             return jnp.concatenate([values.real, values.imag])
 
-        def force_chunk(flat_parameters, positions, layers, centered, total):
+        def force_chunk(
+            flat_parameters, positions, layers, centered, total, support
+        ):
             def loss(flat):
-                values = logpsi(
-                    self.unravel(flat), positions, layers, constants, spec
-                )
+                values = evaluate_logpsi(flat, positions, layers, support)
                 return 2.0 * jnp.real(
                     jnp.sum(centered * jnp.conj(values)) / total
                 )
             return jax.grad(loss)(flat_parameters)
 
-        def tangent_chunk(flat_parameters, vector, positions, layers):
+        def tangent_chunk(flat_parameters, vector, positions, layers, support):
             return jax.jvp(
-                lambda flat: scores(flat, positions, layers),
+                lambda flat: scores(flat, positions, layers, support),
                 (flat_parameters,),
                 (vector,),
             )[1]
 
-        def pullback_chunk(flat_parameters, positions, layers, cotangent):
+        def pullback_chunk(
+            flat_parameters, positions, layers, cotangent, support
+        ):
             _, pullback = jax.vjp(
-                lambda flat: scores(flat, positions, layers), flat_parameters
+                lambda flat: scores(flat, positions, layers, support),
+                flat_parameters,
             )
             return pullback(cotangent)[0]
 
@@ -188,6 +217,12 @@ class MatrixFreeNaturalGradient:
     def bind(self, parameters):
         flat, self.unravel = ravel_pytree(parameters)
         return flat
+
+    def set_support(self, support_indices):
+        support = jnp.asarray(support_indices, dtype=jnp.int32)
+        if support.shape != self.support_indices.shape:
+            raise ValueError("active support shape cannot change during training")
+        self.support_indices = support
 
     def _chunks(self, positions, layers):
         if len(positions) % self.chunk_size:
@@ -209,6 +244,7 @@ class MatrixFreeNaturalGradient:
                 chunk_layers,
                 centered[begin:begin + self.chunk_size],
                 len(positions),
+                self.support_indices,
             )
         return result
 
@@ -218,7 +254,8 @@ class MatrixFreeNaturalGradient:
         imag_sum = jnp.asarray(0.0)
         for chunk_positions, chunk_layers in self._chunks(positions, layers):
             tangent = self._tangent_chunk(
-                flat_parameters, vector, chunk_positions, chunk_layers
+                flat_parameters, vector, chunk_positions, chunk_layers,
+                self.support_indices,
             )
             count = len(chunk_positions)
             tangents.append(tangent)
@@ -236,7 +273,8 @@ class MatrixFreeNaturalGradient:
                 (tangent[count:] - imag_mean) / len(positions),
             ])
             result = result + self._pullback_chunk(
-                flat_parameters, chunk_positions, chunk_layers, cotangent
+                flat_parameters, chunk_positions, chunk_layers, cotangent,
+                self.support_indices,
             )
         return result + self.damping * vector
 
@@ -250,13 +288,16 @@ class MatrixFreeNaturalGradient:
         tolerance,
         min_iterations=0,
         true_tolerance=None,
+        true_residual_interval=1,
     ):
         """Ordinary CG with optional explicit true-residual stopping checks.
 
-        When ``true_tolerance`` is provided, the authoritative residual is
-        recomputed after every iteration beginning at ``min_iterations``.
-        No preconditioner is used.
+        The legacy interval=1 checks every eligible iteration. Larger intervals
+        check periodically, whenever the recursive residual predicts convergence,
+        and at the iteration cap. Acceptance ALWAYS uses a true residual.
         """
+        if true_residual_interval < 1:
+            raise ValueError("true_residual_interval must be positive")
         force = self.force(flat_parameters, positions, layers, energies)
         solution = jnp.zeros_like(force)
         residual = force
@@ -283,16 +324,22 @@ class MatrixFreeNaturalGradient:
             next_squared = jnp.vdot(residual, residual).real
             completed = iteration + 1
             if true_tolerance is not None and completed >= min_iterations:
-                true_residual = force - self.product(
-                    flat_parameters, solution, positions, layers
+                check_now = (
+                    (completed - min_iterations) % true_residual_interval == 0
+                    or completed == iterations
+                    or float(jnp.sqrt(next_squared) / initial_norm) < true_tolerance
                 )
-                true_residual_iteration = completed
-                true_checks += 1
-                true_relative = float(jnp.linalg.norm(true_residual) / initial_norm)
-                if true_relative < true_tolerance:
-                    residual_squared = next_squared
-                    termination_reason = "true_residual_tolerance"
-                    break
+                if check_now:
+                    true_residual = force - self.product(
+                        flat_parameters, solution, positions, layers
+                    )
+                    true_residual_iteration = completed
+                    true_checks += 1
+                    true_relative = float(jnp.linalg.norm(true_residual) / initial_norm)
+                    if true_relative < true_tolerance:
+                        residual_squared = next_squared
+                        termination_reason = "true_residual_tolerance"
+                        break
             elif true_tolerance is None and (
                 float(jnp.sqrt(next_squared)) <= tolerance * float(initial_norm)
             ):
@@ -320,6 +367,54 @@ class MatrixFreeNaturalGradient:
         }
 
 
+class CompiledNaturalGradient(MatrixFreeNaturalGradient):
+    """Same SR operator, with chunk reductions staged on the accelerator.
+
+    Damping remains a dynamic argument so recovery never uses a stale compiled
+    value. CG and its true-residual/acceptance policy are unchanged.
+    """
+
+    def __init__(self, constants, spec, chunk_size, damping):
+        super().__init__(constants, spec, chunk_size, damping)
+
+        def product(flat, vector, positions, layers, damping, support):
+            xs = positions.reshape((-1, chunk_size, *positions.shape[1:]))
+            ls = layers.reshape((-1, chunk_size, *layers.shape[1:]))
+
+            def tangent_body(unused, batch):
+                x, l = batch
+                return unused, self._tangent_chunk(flat, vector, x, l, support)
+
+            _, tangents = jax.lax.scan(tangent_body, None, (xs, ls))
+            real_mean = jnp.mean(tangents[:, :chunk_size])
+            imag_mean = jnp.mean(tangents[:, chunk_size:])
+
+            def pullback_body(total, batch):
+                x, l, tangent = batch
+                cotangent = jnp.concatenate([
+                    tangent[:chunk_size] - real_mean,
+                    tangent[chunk_size:] - imag_mean,
+                ]) / len(positions)
+                return total + self._pullback_chunk(
+                    flat, x, l, cotangent, support
+                ), None
+
+            result, _ = jax.lax.scan(
+                pullback_body, jnp.zeros_like(vector), (xs, ls, tangents)
+            )
+            return result + damping * vector
+
+        self._compiled_product = jax.jit(product)
+
+    def product(self, flat_parameters, vector, positions, layers):
+        if len(positions) % self.chunk_size:
+            raise ValueError("natural-gradient samples must divide the SR chunk size")
+        return self._compiled_product(
+            flat_parameters, vector, positions, layers, self.damping,
+            self.support_indices,
+        )
+
+
 def _save_checkpoint(path, flat_parameters, metadata, sampler=None):
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = {"flat_parameters": np.asarray(flat_parameters)}
@@ -327,6 +422,7 @@ def _save_checkpoint(path, flat_parameters, metadata, sampler=None):
         payload["positions"] = np.asarray(sampler.positions)
         payload["layers"] = np.asarray(sampler.layers)
         payload["sampler_key"] = np.asarray(sampler.key)
+        payload["gamma_sector_indices"] = np.asarray(sampler.support_indices)
     np.savez_compressed(path, **payload)
     path.with_suffix(".json").write_text(
         json.dumps(metadata, indent=2) + "\n", encoding="utf-8"
@@ -403,6 +499,35 @@ def _ten_step_progress(trace, particles, rejected_total, next_learning_rate, nex
 
 
 def run(args):
+    if args.v4_gamma_projected_m:
+        if args.translation_projected_rank not in (0, 1):
+            raise ValueError("--v4-gamma-projected-m cannot be combined with rank > 1")
+        args.translation_projected_rank = 1
+    if args.cells==27 and args.particles not in (9,18):
+        raise ValueError('27-cell experiment requires 9 or 18 particles')
+    if args.minor_chunk<1 or args.backflow_init_scale<=0:
+        raise ValueError('minor chunk and backflow initialization scale must be positive')
+    dynamic_support = args.active_support_refresh_interval > 0
+    if dynamic_support and not (
+        args.cells == 27 and args.fixed_gamma_no_m
+        and args.active_gamma_minors is not None
+    ):
+        raise ValueError(
+            "dynamic active support requires 27 cells, fixed Gamma, and a K"
+        )
+    if dynamic_support and not (
+        0.0 < args.active_support_replace_fraction < 1.0
+        and args.active_support_candidate_pool >= max(
+            1, int(round(
+                args.active_gamma_minors * args.active_support_replace_fraction
+            ))
+        )
+        and args.active_support_score_walkers > 0
+        and 0 < args.active_support_freeze_after <= args.steps
+    ):
+        raise ValueError("invalid active-support update schedule")
+    if args.translation_projected_rank not in (0, 1):
+        raise ValueError("v4 supports exactly one dense M")
     if args.samples != 4128 and not args.smoke_test:
         raise ValueError("paper-protocol training requires exactly 4128 samples/update")
     allowed_exploratory_steps = args.exploratory_100_step and args.steps == 100
@@ -419,12 +544,14 @@ def run(args):
     allowed_adaptive_120 = args.adaptive_cg_120_step and args.steps == 120
     allowed_outer_shared_20 = (
         args.outer_shared_pretrain_20 and args.steps == 20
-        and args.fixed_gamma_no_m and not args.outer_c3_projector
+        and (args.fixed_gamma_no_m or args.translation_projected_rank)
+        and not args.outer_c3_projector
         and args.parameter_init is None and args.resume is None
     )
     allowed_outer_branch_100 = (
         args.outer_branch_100 and args.steps == 100
-        and args.fixed_gamma_no_m and args.outer_c3_projector
+        and (args.fixed_gamma_no_m or args.translation_projected_rank)
+        and args.outer_c3_projector
         and args.parameter_init is not None and args.resume is None
     )
     if (
@@ -448,15 +575,21 @@ def run(args):
     architecture = (
         args.width, args.message_passing_steps, args.determinants
     )
-    if architecture != (32, 2, 1) and not args.smoke_test:
+    if architecture != (64 if args.cells==27 else 32, 2, 1) and not args.smoke_test:
         raise ValueError(
             "production architecture is width=32, message-passing-steps=2, "
             "determinants=1"
         )
-    if args.outer_c3_projector and not args.fixed_gamma_no_m:
-        raise ValueError("production outer C3 sector scan requires --fixed-gamma-no-m")
+    if args.outer_c3_projector and not (
+        args.fixed_gamma_no_m or args.translation_projected_rank
+    ):
+        raise ValueError(
+            "outer C3 requires the v4 Gamma-projected M or legacy v3 no-M state"
+        )
     if args.samples % args.sr_chunk:
         raise ValueError("samples must be divisible by sr_chunk")
+    if args.cg_true_residual_interval < 1:
+        raise ValueError("CG true-residual interval must be positive")
     if args.adaptive_cg_120_step or allowed_outer_shared_20 or allowed_outer_branch_100:
         if args.cg_min_iterations != 20 or args.cg_max_iterations != 60:
             raise ValueError("adaptive protocol requires CG min/max = 20/60")
@@ -469,6 +602,9 @@ def run(args):
     output = args.output_dir if args.output_dir.is_absolute() else ROOT / args.output_dir
     output.mkdir(parents=True, exist_ok=True)
     spec = JaxNeuralBlochSpec(
+        cells=args.cells, minor_chunk=args.minor_chunk, backflow_init_scale=args.backflow_init_scale,
+        active_gamma_minors=args.active_gamma_minors,
+        translation_projected_rank=args.translation_projected_rank,
         n_particles=args.particles,
         width=args.width,
         message_passing_steps=args.message_passing_steps,
@@ -480,7 +616,9 @@ def run(args):
         outer_c3_projector=args.outer_c3_projector,
     )
     parameters, constants = initialize(spec, args.seed)
-    natural_gradient = MatrixFreeNaturalGradient(
+    gradient_class = (CompiledNaturalGradient if args.sr_backend == "compiled"
+                      else MatrixFreeNaturalGradient)
+    natural_gradient = gradient_class(
         constants, spec, args.sr_chunk, args.sr_damping
     )
     flat_parameters = natural_gradient.bind(parameters)
@@ -489,6 +627,7 @@ def run(args):
     resume_positions = None
     resume_layers = None
     resume_sampler_key = None
+    resume_support = None
     resume_optimizer_state = None
     if args.resume is not None and args.parameter_init is not None:
         raise ValueError("--resume and --parameter-init are mutually exclusive")
@@ -510,6 +649,10 @@ def run(args):
                 resume_layers = jnp.asarray(checkpoint["layers"])
             if "sampler_key" in checkpoint:
                 resume_sampler_key = jnp.asarray(checkpoint["sampler_key"])
+            if "gamma_sector_indices" in checkpoint:
+                resume_support = jnp.asarray(
+                    checkpoint["gamma_sector_indices"], dtype=jnp.int32
+                )
         metadata_path = args.resume.with_suffix(".json")
         if metadata_path.exists():
             resume_metadata = json.loads(
@@ -539,6 +682,9 @@ def run(args):
         args.seed + 1009,
         args.wavefunction_batch,
     )
+    if resume_support is not None:
+        sampler.set_support(resume_support, parameters, refresh=False)
+        natural_gradient.set_support(resume_support)
     if resume_positions is not None:
         if resume_positions.shape != sampler.positions.shape:
             raise ValueError("resume checkpoint walker shape does not match")
@@ -548,15 +694,35 @@ def run(args):
             sampler.key = resume_sampler_key
         sampler.refresh(parameters)
     local_energy_function = jax.jit(
-        lambda p, x, l: local_energy(p, x, l, constants, spec)
+        lambda p, x, l, support: local_energy(
+            p, x, l, constants, spec, support
+        )
     )
+    active_controller = None
+    active_support_trace_path = output / "active_support_trace.json"
+    active_support_trace = []
+    if dynamic_support:
+        from .active_support import ActiveSupportController
+        active_controller = ActiveSupportController(
+            spec, constants,
+            args.seed + 271828 + (args.c3_irrep or 0) * 100003
+            + start_step * 1000003,
+            candidate_pool=args.active_support_candidate_pool,
+            replace_fraction=args.active_support_replace_fraction,
+            score_walkers=args.active_support_score_walkers,
+        )
+        if start_step and active_support_trace_path.exists():
+            active_support_trace = json.loads(
+                active_support_trace_path.read_text(encoding="utf-8")
+            )
     protocol = {
+        "ansatz_version": "v4" if args.translation_projected_rank else "v3-or-earlier",
         "paper": "arXiv:2503.13585v3",
         "optimizer": "natural gradient / stochastic reconfiguration",
         "learning_rate": args.learning_rate,
         "mcmc_samples_per_update": args.samples,
         "training_steps": args.steps,
-        "initialization": "jax.nn.initializers.lecun_normal",
+        "initialization": f"jax.nn.initializers.lecun_normal; backflow-head multiplier {args.backflow_init_scale}",
         "implementation": f"JAX {jax.__version__}",
         "ed_warm_start": False,
         "initial_trial": (
@@ -564,17 +730,49 @@ def run(args):
             "complex LeCunNormal M for full-M"
         ),
         "architecture": "Luo-Fu Appendix B Eqs. (16)-(23)",
-        "node_features": "sin/cos(g_a dot r_i), l_i in {-1,+1}; 7 physical + 25 learned = 32",
-        "edge_features": "sin/cos(k dot (r_i-r_j)), source l_i; 19 physical + 13 learned = 32",
-        "auxiliary_h0": "random trainable shared vectors; N(0,1/32) local convention",
+        "node_features": f"7 physical + {args.width-7} learned = {args.width}",
+        "edge_features": f"{2*args.cells+1} physical + {args.width-2*args.cells-1} learned = {args.width}",
+        "auxiliary_h0": f"random trainable shared vectors; N(0,1/{args.width}) local convention",
         "message_passing": "2 unshared iterations; literal sum_j m_ij including self; F,G,H,U one-layer GELU; physical features reinserted",
-        "momentum_matrix_initialization": "complex LeCunNormal with E|M_gamma_k|^2=1/N_k; absent for no-M",
+        "momentum_matrix_initialization": (
+            "one complex LeCunNormal dense M with E|M_gamma_k|^2=1/N_k, "
+            "followed by exact finite-translation Gamma projection"
+            if args.translation_projected_rank else
+            "complex LeCunNormal with E|M_gamma_k|^2=1/N_k; absent for no-M"
+        ),
         "backflow": "complex linear W V_i with no tanh or external scale",
-        "orbital_transform": "complex two-layer MLP J_ki({k},V_i), hidden 32, applied exactly once",
+        "orbital_transform": f"complex two-layer MLP J_ki, hidden {args.width}, applied exactly once",
+        "cells": args.cells,
+        "theta_deg": 2.6 if args.cells==27 else 3.0,
+        "hamiltonian_scope": "full continuum; band-1 fixed orbital input is not a one-band projection",
         "bloch_coefficients": "fixed mean-field u^l_{1kG}; only r_i -> r_i + delta r_i changes",
         "spec": asdict(spec),
         "parameter_count": parameter_count,
+        "translation_projection": ({
+            "version": "v4",
+            "target_momentum": "Gamma",
+            "dense_m_count": 1,
+            "definition": "(1/|T|) sum_R det(M D_R Q)",
+            "translation_group_order": int(constants["translation_characters"].shape[0]),
+            "cauchy_binet": "equivalent to the complete Gamma-minor sum with c_S=det(M[:,S])",
+            "enumerated_momentum_combinations": False,
+        } if args.translation_projected_rank else None),
+        "active_support": ({
+            "kind": "stochastic selected-minor variational support",
+            "K": args.active_gamma_minors,
+            "refresh_interval_steps": args.active_support_refresh_interval,
+            "replace_fraction": args.active_support_replace_fraction,
+            "candidate_pool": args.active_support_candidate_pool,
+            "score_walkers": args.active_support_score_walkers,
+            "freeze_after_step": args.active_support_freeze_after,
+            "rethermalize_sweeps": args.active_support_rethermalize_sweeps,
+            "proposal": "half uniform Gamma minors, half one-body Boltzmann T=3 meV",
+            "selection": "VMC energy-gradient screen; retain by wavefunction contribution",
+            "estimator_note": "support fixed inside every Metropolis/local-energy/SR step",
+        } if dynamic_support else None),
         "sr_damping_unreported_by_paper": args.sr_damping,
+        "sr_backend": args.sr_backend,
+        "sr_chunk": args.sr_chunk,
         "cg_iterations_unreported_by_paper": args.cg_iterations,
         "cg_tolerance_unreported_by_paper": args.cg_tolerance,
         "adaptive_cg_120_step": args.adaptive_cg_120_step,
@@ -588,6 +786,8 @@ def run(args):
             "minimum_iterations": args.cg_min_iterations,
             "maximum_iterations": args.cg_max_iterations,
             "true_residual_check_starts": args.cg_min_iterations,
+            "true_residual_check_interval": args.cg_true_residual_interval,
+            "true_residual_also_checked_at": "recursive convergence candidate and iteration cap",
             "early_stop_true_residual": args.cg_true_tolerance,
             "maximum_iteration_acceptance_residual": args.cg_acceptance_tolerance,
             "recovery_damping": args.recovery_damping,
@@ -603,7 +803,11 @@ def run(args):
         "c3_qns": args.c3_qns,
         "outer_c3_projector": args.outer_c3_projector,
         "outer_c3_projector_definition": ({
-            "raw_state": "unchanged periodic fixed-Gamma no-M Luo-Fu QNS",
+            "raw_state": (
+                "v4 single-dense-M exact-Gamma state"
+                if args.translation_projected_rank else
+                "legacy periodic fixed-Gamma no-M+M_S state"
+            ),
             "projector": "P_m=(1/3) sum_a omega^(-ma) C3^a on the complete wavefunction",
             "physical_action": "C3 includes the continuum layer-gauge sewing factor",
             "downstream_use": "projected logpsi is used by local energy, Metropolis, and SR scores",
@@ -626,7 +830,9 @@ def run(args):
                 "translation symmetry but do not by themselves constrain C3"
             ),
         } if args.c3_qns else None),
-        "momentum_sector": [0, 0] if args.fixed_gamma_no_m else None,
+        "momentum_sector": ([0, 0] if (
+            args.fixed_gamma_no_m or args.translation_projected_rank
+        ) else None),
         "paper_optimization_settings_retained_except_total_steps": (
             args.exploratory_100_step or args.exploratory_additional_100_step
         ),
@@ -676,12 +882,16 @@ def run(args):
         step_start = time.perf_counter()
         acceptance = sampler.sweep(parameters, args.sweeps_per_step)
         energies = _batched(
-            local_energy_function,
+            lambda p, x, l: local_energy_function(
+                p, x, l, natural_gradient.support_indices
+            ),
             parameters,
             sampler.positions,
             sampler.layers,
             args.local_energy_batch,
         )
+        if args.cells==27 and not np.isfinite(np.asarray(energies)).all():
+            raise FloatingPointError(f'nonfinite local energy at step {step+1}; stopped, prior checkpoints retained')
         natural_gradient.damping = current_damping
         adaptive_protocol = (
             args.adaptive_cg_120_step or allowed_outer_shared_20
@@ -697,6 +907,7 @@ def run(args):
                 0.0,
                 min_iterations=args.cg_min_iterations,
                 true_tolerance=args.cg_true_tolerance,
+                true_residual_interval=args.cg_true_residual_interval,
             )
             update_accepted = _adaptive_update_is_accepted(diagnostics, args)
         else:
@@ -715,6 +926,8 @@ def run(args):
         recovery_before = recovery_mode
         if update_accepted:
             flat_parameters = flat_parameters - used_learning_rate * direction
+            if args.cells==27 and not np.isfinite(np.asarray(flat_parameters)).all():
+                raise FloatingPointError('nonfinite candidate parameters; prior checkpoints retained')
             parameters = natural_gradient.unravel(flat_parameters)
             sampler.refresh(parameters)
         else:
@@ -730,6 +943,30 @@ def run(args):
                 update_accepted, recovery_mode, recovery_stable_count, args
             )
 
+        support_record = None
+        completed_step = step + 1
+        if (
+            active_controller is not None
+            and completed_step <= args.active_support_freeze_after
+            and completed_step % args.active_support_refresh_interval == 0
+        ):
+            parameters, new_support, support_record = active_controller.update(
+                parameters, natural_gradient.support_indices,
+                sampler.positions, sampler.layers, energies, completed_step,
+            )
+            flat_parameters = natural_gradient.bind(parameters)
+            natural_gradient.set_support(new_support)
+            sampler.set_support(new_support, parameters)
+            if args.active_support_rethermalize_sweeps:
+                support_record["rethermalization_acceptance"] = sampler.sweep(
+                    parameters, args.active_support_rethermalize_sweeps
+                )
+            active_support_trace.append(support_record)
+            active_support_trace_path.write_text(
+                json.dumps(active_support_trace, indent=2) + "\n",
+                encoding="utf-8",
+            )
+
         real_energy = np.asarray(energies.real)
         record = {
             "step": step + 1,
@@ -738,6 +975,10 @@ def run(args):
             "sem_meV": float(np.std(real_energy, ddof=1) / np.sqrt(args.samples)),
             "variance_meV2": float(np.var(real_energy, ddof=1)),
             "step_seconds": time.perf_counter() - step_start,
+            "active_support_updated": support_record is not None,
+            "active_support_update_seconds": (
+                None if support_record is None else support_record["seconds"]
+            ),
             "update_accepted": update_accepted,
             "rejected_updates_cumulative": rejected_updates,
             "learning_rate": used_learning_rate,
@@ -819,6 +1060,7 @@ def run(args):
         "rejected_updates": rejected_updates,
         "validation_during_training": False,
         "trace": trace,
+        "active_support_trace": active_support_trace,
     }
     (output / "jax_neural_bloch_summary.json").write_text(
         json.dumps(summary, indent=2) + "\n", encoding="utf-8"
@@ -830,6 +1072,25 @@ def parser():
     result = argparse.ArgumentParser()
     result.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
     result.add_argument("--particles", type=int, default=6)
+    result.add_argument('--cells',type=int,choices=(9,27),default=9)
+    result.add_argument('--minor-chunk',type=int,default=128)
+    result.add_argument('--backflow-init-scale',type=float,default=1.0)
+    result.add_argument('--active-gamma-minors',type=int)
+    result.add_argument(
+        '--v4-gamma-projected-m', action='store_true',
+        help=("version-4 ansatz: one dense M followed by the exact finite-"
+              "translation projector onto total Gamma momentum"),
+    )
+    result.add_argument(
+        '--translation-projected-rank', type=int, default=0,
+        help=argparse.SUPPRESS,
+    )
+    result.add_argument('--active-support-refresh-interval', type=int, default=0)
+    result.add_argument('--active-support-replace-fraction', type=float, default=0.25)
+    result.add_argument('--active-support-candidate-pool', type=int, default=4096)
+    result.add_argument('--active-support-score-walkers', type=int, default=32)
+    result.add_argument('--active-support-freeze-after', type=int, default=60)
+    result.add_argument('--active-support-rethermalize-sweeps', type=int, default=2)
     result.add_argument("--resume", type=Path)
     result.add_argument(
         "--parameter-init", type=Path,
@@ -856,9 +1117,9 @@ def parser():
     )
     result.add_argument(
         "--outer-c3-projector", action="store_true",
-        help=("keep the raw periodic no-M QNS unrestricted internally and apply "
-              "P_m to the complete wavefunction; requires --fixed-gamma-no-m "
-              "and --c3-irrep"),
+        help=("apply P_m to the complete v4 Gamma-projected-M wavefunction "
+              "(legacy v3 no-M remains accepted for checkpoint compatibility); "
+              "requires --c3-irrep"),
     )
     result.add_argument("--samples", type=int, default=4128)
     result.add_argument("--steps", type=int, default=1000)
@@ -869,12 +1130,17 @@ def parser():
     result.add_argument("--wavefunction-batch", type=int, default=258)
     result.add_argument("--local-energy-batch", type=int, default=32)
     result.add_argument("--sr-chunk", type=int, default=258)
+    result.add_argument("--sr-backend", choices=("legacy", "compiled"), default="legacy")
     result.add_argument("--sr-damping", type=float, default=1.0e-2)
     result.add_argument("--cg-iterations", type=int, default=10)
     result.add_argument("--cg-tolerance", type=float, default=1.0e-3)
     result.add_argument("--cg-min-iterations", type=int, default=20)
     result.add_argument("--cg-max-iterations", type=int, default=60)
     result.add_argument("--cg-true-tolerance", type=float, default=0.02)
+    result.add_argument(
+        "--cg-true-residual-interval", type=int, default=1,
+        help="periodic true checks; always also check convergence candidates and iteration cap",
+    )
     result.add_argument("--cg-acceptance-tolerance", type=float, default=0.05)
     result.add_argument("--recovery-damping", type=float, default=0.03)
     result.add_argument("--recovery-learning-rate", type=float, default=1.0e-3)

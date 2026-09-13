@@ -102,7 +102,9 @@ def load_checkpoint(path: Path) -> tuple[ContinuumModel, ManyBodyNeuralBloch, di
         n_particles, config, int(payload["metadata"]["seed"])
     )
     incompatible = wavefunction.load_state_dict(payload["state_dict"], strict=False)
-    allowed_missing = {"c3_fractional_rotation", "c3_layer_shifts"}
+    allowed_missing = {
+        "c3_fractional_rotation", "c3_layer_shifts", "translation_characters"
+    }
     if set(incompatible.missing_keys) - allowed_missing or incompatible.unexpected_keys:
         raise RuntimeError(
             "checkpoint is incompatible: "

@@ -27,6 +27,7 @@ class NeuralBlochConfig:
     fixed_gamma_no_m: bool = False
     c3_qns: bool = False
     outer_c3_projector: bool = False
+    v4_gamma_projected_m: bool = False
     correction_init_scale: float | None = None
 
 
@@ -167,6 +168,12 @@ class ManyBodyNeuralBloch(nn.Module):
             raise ValueError("C3-QNS uses one shared network and one three-minor orbit")
         if config.outer_c3_projector and config.c3_qns:
             raise ValueError("outer C3 projection and internal C3-QNS are mutually exclusive")
+        if config.v4_gamma_projected_m and (
+            config.fixed_gamma_no_m or config.c3_qns or config.determinants != 1
+        ):
+            raise ValueError(
+                "v4 uses one dense M and is mutually exclusive with v3 no-M/internal-C3"
+            )
         if config.outer_c3_projector and config.c3_irrep is None:
             raise ValueError("outer C3 projection requires an explicit c3_irrep")
         if config.c3_irrep is not None and not (
@@ -267,6 +274,15 @@ class ManyBodyNeuralBloch(nn.Module):
         self.register_buffer(
             "gamma_sector_indices",
             torch.as_tensor(gamma_sector_indices, dtype=torch.long),
+        )
+        translations = np.stack(np.meshgrid(
+            np.arange(3), np.arange(3), indexing="ij"
+        ), axis=-1).reshape(-1, 2)
+        translation_characters = np.exp(
+            2j * np.pi * translations @ np.asarray(momentum_fractions).T
+        )
+        self.register_buffer(
+            "translation_characters", torch.as_tensor(translation_characters)
         )
         orbit_indices = np.tile(np.asarray(selected, dtype=np.int64), (3, 1))
         orbit_weights = np.ones(3, dtype=np.complex128)
@@ -572,6 +588,15 @@ class ManyBodyNeuralBloch(nn.Module):
                 mixing = torch.complex(
                     self.momentum_real[index], self.momentum_imag[index]
                 )
+                if self.config.v4_gamma_projected_m:
+                    generalized = torch.einsum(
+                        "nk,tk,bki->btni",
+                        mixing, self.translation_characters, q_matrix,
+                    )
+                    determinant_values.append(
+                        torch.linalg.det(generalized).mean(dim=1)
+                    )
+                    continue
                 generalized = torch.einsum("rk,bki->bri", mixing, q_matrix)
             determinant_values.append(torch.linalg.det(generalized))
         determinants = torch.stack(determinant_values, -1)

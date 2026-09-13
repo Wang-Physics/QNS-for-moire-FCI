@@ -22,6 +22,7 @@ from src.jax_neural_bloch import (
 from src.neural_bloch import NeuralBlochConfig
 from src.run_neural_bloch import build_wavefunction
 from src.run_jax_neural_bloch import (
+    CompiledNaturalGradient,
     MatrixFreeNaturalGradient,
     _adaptive_next_state,
     _adaptive_update_is_accepted,
@@ -66,6 +67,7 @@ class JaxNeuralBlochParityTests(unittest.TestCase):
         self.assertEqual(arguments.determinants, 1)
         self.assertIsNone(arguments.c3_irrep)
         self.assertFalse(arguments.fixed_gamma_no_m)
+        self.assertFalse(arguments.v4_gamma_projected_m)
 
     def test_adaptive_cg_acceptance_and_recovery_state_machine(self):
         args = parser().parse_args([
@@ -116,6 +118,28 @@ class JaxNeuralBlochParityTests(unittest.TestCase):
         self.assertGreaterEqual(diagnostics["true_residual_checks"], 1)
         self.assertAlmostEqual(diagnostics["relative_residual_norm"], expected, 12)
         self.assertEqual(diagnostics["preconditioner"], "none")
+
+        accelerated, sparse = optimizer.direction(
+            jnp.zeros(size), None, None, None, 60, 0.0,
+            min_iterations=20, true_tolerance=0.02, true_residual_interval=5,
+        )
+        actual_residual = np.linalg.norm(np.asarray(force - matrix @ accelerated))
+        actual_residual /= np.linalg.norm(np.asarray(force))
+        self.assertAlmostEqual(sparse["relative_residual_norm"], actual_residual, 12)
+        self.assertLess(actual_residual, 0.02)
+        self.assertLess(sparse["true_residual_checks"], diagnostics["true_residual_checks"])
+        np.testing.assert_allclose(accelerated, solution, rtol=1e-12, atol=1e-12)
+
+        # Cap and early curvature failures still report an explicit final residual.
+        for limit in (1, 21):
+            capped, stats = optimizer.direction(
+                jnp.zeros(size), None, None, None, limit, 0.0,
+                min_iterations=20, true_tolerance=1e-16, true_residual_interval=5,
+            )
+            expected_cap = np.linalg.norm(np.asarray(force - matrix @ capped))
+            expected_cap /= np.linalg.norm(np.asarray(force))
+            self.assertAlmostEqual(stats["relative_residual_norm"], expected_cap, 12)
+            self.assertGreaterEqual(stats["true_residual_checks"], 1)
 
     def test_logpsi_matches_pytorch(self):
         expected = self.torch_wavefunction(
@@ -230,6 +254,136 @@ class JaxNeuralBlochParityTests(unittest.TestCase):
             )
         self.assertNotIn("momentum_real", parameters)
         self.assertNotIn("momentum_imag", parameters)
+
+    def test_v4_single_dense_m_is_cauchy_binet_equivalent_and_exactly_gamma(self):
+        spec = JaxNeuralBlochSpec(
+            n_particles=2, width=24, message_passing_steps=1,
+            determinants=1, orbital_hidden=24, translation_projected_rank=1,
+        )
+        parameters, constants = initialize(spec, seed=53)
+        positions = jnp.asarray(self.positions.numpy())
+        layers = jnp.asarray(self.layers.numpy())
+        base = np.asarray(logpsi(
+            parameters, positions, layers, constants, spec,
+        ))
+        cartesian, node = jnb._encoded_graph(
+            parameters, positions, layers, constants
+        )
+        raw_shift = jnb._linear(parameters["backflow_heads"][0], node)
+        transformed = (
+            cartesian.astype(jnp.complex128)
+            + raw_shift[..., :2] + 1j * raw_shift[..., 2:]
+        )
+        bloch, particle_scale = _bloch_values(
+            transformed, layers, constants, return_scale=True
+        )
+        orbital = jnb._orbital_factor(
+            parameters["orbital_mlps"][0], node, constants["momenta"], spec
+        )
+        q_matrix = bloch * jnp.transpose(orbital, (0, 2, 1))
+        gamma = constants["gamma_sector_indices"]
+        dense_m = (
+            parameters["projected_momentum_real"][0]
+            + 1j * parameters["projected_momentum_imag"][0]
+        )
+        m_minors = jnp.linalg.det(
+            jnp.take(dense_m, gamma, axis=1).transpose(1, 0, 2)
+        )
+        q_minors = jnp.linalg.det(q_matrix[:, gamma, :])
+        explicit = jnp.einsum("m,bm->b", m_minors, q_minors)
+        projected, scale = jnb._v4_gamma_projected_scaled_value(
+            parameters, positions, layers, constants, spec
+        )
+        np.testing.assert_allclose(
+            np.asarray(projected), np.asarray(explicit),
+            rtol=2e-11, atol=2e-11,
+        )
+        np.testing.assert_allclose(
+            np.asarray(scale), np.asarray(jnp.sum(particle_scale, axis=1)),
+            rtol=0.0, atol=0.0,
+        )
+        _, torch_state = build_wavefunction(
+            2,
+            NeuralBlochConfig(
+                width=24, message_passing_steps=1, determinants=1,
+                orbital_hidden=24, v4_gamma_projected_m=True,
+            ),
+            seed=53,
+        )
+        copy_to_torch(parameters, torch_state)
+        torch_value = torch_state(self.positions, self.layers).detach().numpy()
+        np.testing.assert_allclose(base, torch_value, rtol=3e-11, atol=3e-11)
+        for shift in ((1.0 / 3.0, 0.0), (0.0, 1.0 / 3.0)):
+            translated = jnp.remainder(positions + jnp.asarray(shift), 1.0)
+            moved = np.asarray(logpsi(
+                parameters, translated, layers, constants, spec,
+            ))
+            np.testing.assert_allclose(
+                np.exp(moved - base), np.ones(len(base)),
+                rtol=5e-11, atol=5e-11,
+            )
+        full_parameters, _ = initialize(
+            JaxNeuralBlochSpec(
+                n_particles=2, width=24, message_passing_steps=1,
+                determinants=1, orbital_hidden=24,
+            ), seed=53,
+        )
+        projected_size = sum(np.asarray(x).size for x in jax.tree.leaves(parameters))
+        full_size = sum(np.asarray(x).size for x in jax.tree.leaves(full_parameters))
+        self.assertEqual(projected_size, full_size)
+
+    def test_v4_outer_c3_retains_gamma_and_has_requested_character(self):
+        positions = jnp.asarray(self.positions.numpy())
+        layers = jnp.asarray(self.layers.numpy())
+        for irrep in range(3):
+            spec = JaxNeuralBlochSpec(
+                n_particles=2, width=24, message_passing_steps=1,
+                determinants=1, orbital_hidden=24,
+                translation_projected_rank=1, c3_irrep=irrep,
+                outer_c3_projector=True,
+            )
+            parameters, constants = initialize(spec, seed=59)
+            base = np.asarray(logpsi(
+                parameters, positions, layers, constants, spec,
+            ))
+            for shift in ((1.0 / 3.0, 0.0), (0.0, 1.0 / 3.0)):
+                translated = jnp.remainder(positions + jnp.asarray(shift), 1.0)
+                moved = np.asarray(logpsi(
+                    parameters, translated, layers, constants, spec,
+                ))
+                np.testing.assert_allclose(
+                    np.exp(moved - base), np.ones(len(base)),
+                    rtol=2e-10, atol=2e-10,
+                )
+            rotated, gauge = jnb.c3_orbit_positions_and_gauge(
+                positions, layers, constants
+            )
+            moved = np.asarray(logpsi(
+                parameters, rotated[1], layers, constants, spec,
+            ))
+            physical_ratio = np.asarray(gauge[1]) * np.exp(moved - base)
+            target = np.exp(2j * np.pi * irrep / 3.0)
+            np.testing.assert_allclose(
+                physical_ratio, target * np.ones(len(base)),
+                rtol=3e-10, atol=3e-10,
+            )
+            if irrep == 2:
+                _, torch_state = build_wavefunction(
+                    2,
+                    NeuralBlochConfig(
+                        width=24, message_passing_steps=1, determinants=1,
+                        orbital_hidden=24, v4_gamma_projected_m=True,
+                        c3_irrep=irrep, outer_c3_projector=True,
+                    ),
+                    seed=59,
+                )
+                copy_to_torch(parameters, torch_state)
+                torch_value = torch_state(
+                    self.positions, self.layers
+                ).detach().numpy()
+                np.testing.assert_allclose(
+                    base, torch_value, rtol=4e-10, atol=4e-10,
+                )
 
     def test_jax_parameters_export_losslessly_to_torch(self):
         _, exported = build_wavefunction(
@@ -379,6 +533,25 @@ class JaxNeuralBlochParityTests(unittest.TestCase):
             np.asarray(actual_product), np.asarray(expected_product),
             rtol=2e-12, atol=2e-12,
         )
+
+        # Scan-based acceleration must preserve global centering across chunks,
+        # both complex score components, and dynamically changed recovery damping.
+        for chunk in (1, 2):
+            accelerated = CompiledNaturalGradient(
+                self.constants, self.spec, chunk_size=chunk, damping=0.03
+            )
+            accelerated.bind(self.parameters)
+            product = accelerated.product(flat, vector, positions, layers)
+            np.testing.assert_allclose(
+                np.asarray(product), np.asarray(expected_product),
+                rtol=2e-11, atol=2e-11,
+            )
+            accelerated.damping = 0.07
+            recovered = accelerated.product(flat, vector, positions, layers)
+            np.testing.assert_allclose(
+                np.asarray(recovered), np.asarray(expected_product + 0.04 * vector),
+                rtol=2e-11, atol=2e-11,
+            )
 
 
 if __name__ == "__main__":

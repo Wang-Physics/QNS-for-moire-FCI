@@ -8,30 +8,39 @@ from matplotlib.ticker import MaxNLocator
 import numpy as np
 
 ROOT=Path(__file__).resolve().parents[1]; DATA=ROOT/'result'/'data'; FIG=ROOT/'result'/'figures'
-RELEASE=ROOT/'result'/'release_data'
+RELEASE=ROOT/'result'/'data'/'local_v4_final'
 RUNS={
  ('1/3','full'):RELEASE/'traces'/'nu1of3_full_m.json',
- ('1/3','gamma'):RELEASE/'traces'/'nu1of3_no_m_gamma.json',
- ('1/3','outer'):RELEASE/'traces'/'nu1of3_outer_c3_p0.json',
- ('1/3','outer1'):RELEASE/'traces'/'nu1of3_outer_c3_p1.json',
- ('1/3','outer2'):RELEASE/'traces'/'nu1of3_outer_c3_p2.json',
+ ('1/3','gamma'):RELEASE/'traces'/'nu1of3_v4_gamma.json',
+ ('1/3','outer0'):RELEASE/'traces'/'nu1of3_v4_outer_c3_p0.json',
+ ('1/3','outer1'):RELEASE/'traces'/'nu1of3_v4_outer_c3_p1.json',
+ ('1/3','outer2'):RELEASE/'traces'/'nu1of3_v4_outer_c3_p2.json',
  ('2/3','full'):RELEASE/'traces'/'nu2of3_full_m.json',
- ('2/3','gamma'):RELEASE/'traces'/'nu2of3_no_m_gamma.json',
- ('2/3','outer0'):RELEASE/'traces'/'nu2of3_outer_c3_p0.json',
- ('2/3','outer1'):RELEASE/'traces'/'nu2of3_outer_c3_p1.json',
- ('2/3','outer2'):RELEASE/'traces'/'nu2of3_outer_c3_p2.json'}
+ ('2/3','gamma'):RELEASE/'traces'/'nu2of3_v4_gamma.json',
+ ('2/3','outer0'):RELEASE/'traces'/'nu2of3_v4_outer_c3_p0.json',
+ ('2/3','outer1'):RELEASE/'traces'/'nu2of3_v4_outer_c3_p1.json',
+ ('2/3','outer2'):RELEASE/'traces'/'nu2of3_v4_outer_c3_p2.json'}
 DIAG={
  ('1/3','full'):RELEASE/'diagnostics'/'nu1of3_full_m.npz',
- ('1/3','gamma'):RELEASE/'diagnostics'/'nu1of3_no_m_gamma.npz',
- ('1/3','outer'):RELEASE/'diagnostics'/'nu1of3_outer_c3_p0.npz',
+ ('1/3','gamma'):RELEASE/'diagnostics'/'nu1of3_v4_gamma.npz',
+ ('1/3','outer0'):RELEASE/'diagnostics'/'nu1of3_v4_outer_c3_p0.npz',
+ ('1/3','outer1'):RELEASE/'diagnostics'/'nu1of3_v4_outer_c3_p1.npz',
+ ('1/3','outer2'):RELEASE/'diagnostics'/'nu1of3_v4_outer_c3_p2.npz',
  ('2/3','full'):RELEASE/'diagnostics'/'nu2of3_full_m.npz',
- ('2/3','gamma'):RELEASE/'diagnostics'/'nu2of3_no_m_gamma.npz',
- ('2/3','outer0'):RELEASE/'diagnostics'/'nu2of3_outer_c3_p0.npz',
- ('2/3','outer2'):RELEASE/'diagnostics'/'nu2of3_outer_c3_p2.npz'}
+ ('2/3','gamma'):RELEASE/'diagnostics'/'nu2of3_v4_gamma.npz',
+ ('2/3','outer0'):RELEASE/'diagnostics'/'nu2of3_v4_outer_c3_p0.npz',
+ ('2/3','outer1'):RELEASE/'diagnostics'/'nu2of3_v4_outer_c3_p1.npz',
+ ('2/3','outer2'):RELEASE/'diagnostics'/'nu2of3_v4_outer_c3_p2.npz'}
 BLUE='#28688C'; RED='#B5423A'; ORANGE='#E69F00'; MAGENTA='#CC79A7'
 ED={'1/3':-37.3932329459257,'2/3':-52.72553897658505}
-COLOR={'full':BLUE,'gamma':RED,'outer':ORANGE,'outer0':'#D55E00','outer1':'#7A5195','outer2':ORANGE}
-LINESTYLE={'full':'-','gamma':'-','outer':'-','outer0':(0,(3,1.5)),'outer1':(0,(1.2,1.2)),'outer2':(0,(5,1.5))}
+COLOR={'full':BLUE,'gamma':RED,'outer0':'#D55E00','outer1':'#7A5195','outer2':ORANGE}
+LINESTYLE={'full':'-','gamma':'-','outer0':(0,(3,1.5)),'outer1':(0,(1.2,1.2)),'outer2':(0,(5,1.5))}
+
+
+def selected_outer(filling):
+ summary=json.loads((RELEASE/'summary.json').read_text())
+ key='nu1of3' if filling=='1/3' else 'nu2of3'
+ return f"outer{summary['selected_lowest_tail_sector'][key]}"
 
 
 def style():
@@ -51,7 +60,7 @@ def main():
  fig,axs=plt.subplots(2,4,figsize=(7.25,4.45),gridspec_kw={'width_ratios':[1.18,1,1.05,1.12]})
  fig.subplots_adjust(left=.075,right=.99,bottom=.105,top=.84,wspace=.48,hspace=.43)
  for row,filling in enumerate(('1/3','2/3')):
-  branches=('full','gamma','outer') if filling=='1/3' else ('full','gamma','outer2')
+  branches=('full','gamma',selected_outer(filling))
   traces={b:json.loads(RUNS[(filling,b)].read_text()) for b in branches}
 
   ax=axs[row,0]
@@ -77,12 +86,8 @@ def main():
   ax.set_xticks([1,2,3,4,5]); ax.yaxis.set_major_locator(MaxNLocator(4)); ax.set_xlabel(r'retained bands $N_b$'); ax.set_ylabel(r'$E/N_e$ (meV)')
 
   ax=axs[row,2]; z_gamma=np.load(DIAG[(filling,'gamma')]); x=np.arange(1,6)
-  if filling=='1/3':
-   bar_branches=('full','gamma','outer'); width=.19
-   offsets={'full':-1.5*width,'gamma':-.5*width,'outer':.5*width}; ed_offset=1.5*width
-  else:
-   bar_branches=('full','gamma','outer2'); width=.19
-   offsets={'full':-1.5*width,'gamma':-.5*width,'outer2':.5*width}; ed_offset=1.5*width
+  bar_branches=branches; width=.19
+  offsets={branches[0]:-1.5*width,branches[1]:-.5*width,branches[2]:.5*width}; ed_offset=1.5*width
   for b in bar_branches:
    z=np.load(DIAG[(filling,b)]); bw=100*z['band_weight']; sem=100*z['band_weight_sem']
    ax.bar(x+offsets[b],bw,width=width,color=COLOR[b],edgecolor='white',lw=.4,yerr=sem,error_kw={'elinewidth':.65,'capsize':1.3,'ecolor':COLOR[b]},zorder=3)
@@ -100,7 +105,7 @@ def main():
   ax.xaxis.set_major_locator(MaxNLocator(4,integer=True)); ax.set_xlabel('NG update'); ax.set_ylabel(r'true $r_{\rm rel}$')
 
  for j,t in enumerate(('optimization','multiband energy','bare-band weight','CG stability')): axs[0,j].set_title(t,pad=4)
- handles=[Line2D([0],[0],color='.22',marker='o',mfc=MAGENTA,mec='white',lw=.9,label='multiband ED'),Line2D([0],[0],color=BLUE,lw=1,label=r'full $M$'),Line2D([0],[0],color=RED,lw=1,label=r'no $M$ + $M_S$'),Line2D([0],[0],color=ORANGE,lw=1,label=r'lowest-training outer $P_m$'),Patch(facecolor='#B9BEC1',label='5-band ED weight')]
+ handles=[Line2D([0],[0],color='.22',marker='o',mfc=MAGENTA,mec='white',lw=.9,label='multiband ED'),Line2D([0],[0],color=BLUE,lw=1,label=r'full $M$'),Line2D([0],[0],color=RED,lw=1,label=r'v4 $P_\Gamma[M]$'),Line2D([0],[0],color=ORANGE,lw=1,label=r'lowest-training v4 outer $P_m$'),Patch(facecolor='#B9BEC1',label='5-band ED weight')]
  fig.legend(handles=handles,frameon=False,loc='upper center',ncol=5,bbox_to_anchor=(.54,.995),columnspacing=.95,handletextpad=.38,fontsize=6.4)
  for lab,ax in zip('abcdefgh',axs.flat):
   ax.text(-.15,1.04,lab,transform=ax.transAxes,ha='left',va='bottom',fontsize=8.5,fontweight='bold')
@@ -112,13 +117,13 @@ def efficiency_timings():
  result={}
  for filling,key in [('1/3','nu1of3'),('2/3','nu2of3')]:
   t=timing[key]
-  result[filling]=np.asarray([t['ed_5band_gamma'],t['full_m'],t['no_m_ms'],
-                             t['outer_c3_three_sector_wall']/3])
+  result[filling]=np.asarray([t['ed_5band_gamma'],t['full_m'],t['v4_gamma'],
+                             t['v4_outer_c3_three_sector_wall']/3])
  return result
 
 
 def make_training_summary():
- groups={'1/3':('outer','outer1','outer2'),'2/3':('outer0','outer1','outer2')}
+ groups={'1/3':('outer0','outer1','outer2'),'2/3':('outer0','outer1','outer2')}
  fig,axs=plt.subplots(2,3,figsize=(8.4,5.15))
  fig.subplots_adjust(left=.065,right=.99,bottom=.12,top=.93,wspace=.43,hspace=.56)
  timing=efficiency_timings()
@@ -153,7 +158,7 @@ def make_training_summary():
    label=f'{value:.2f} s' if value<60 else f'{value/60:.1f} min'
    ax.annotate(label,(bar.get_x()+bar.get_width()/2,value),xytext=(0,3),textcoords='offset points',
                ha='center',va='bottom',fontsize=6)
-  ax.set_xticks(np.arange(4),[r'ED'+'\n'+r'$5b,\ \Gamma$',r'full $M$',r'no $M$'+'\n'+r'$+M_S$','Outer\nper sector'])
+  ax.set_xticks(np.arange(4),[r'ED'+'\n'+r'$5b,\ \Gamma$',r'full $M$',r'v4 $P_\Gamma$'+'\n'+r'$[M]$','v4 Outer\nper sector'])
   ax.tick_params(axis='x',labelsize=6)
   ax.set_yscale('log'); ax.set_ylim(.1,6000)
   ax.set_yticks([.1,1,10,100,1000],['0.1','1','10','100','1000'])

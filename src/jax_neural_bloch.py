@@ -28,6 +28,63 @@ class JaxNeuralBlochSpec:
     fixed_gamma_no_m: bool = False
     c3_qns: bool = False
     outer_c3_projector: bool = False
+    cells: int = 9
+    minor_chunk: int = 128
+    backflow_init_scale: float = 1.0
+    active_gamma_minors: int | None = None
+    # Internal checkpoint-compatible switch for the v4 single-M Gamma ansatz.
+    # Version 4 deliberately permits only 0 (off) or 1 (one dense M).
+    translation_projected_rank: int = 0
+
+
+def finite_translation_representatives(supercell_matrix):
+    """Integer representatives of Z^2 / A Z^2 for a direct supercell A.
+
+    A primitive translation ``n`` has supercell fractional coordinate
+    ``A^{-1} n``.  Two integer vectors describe the same torus translation
+    exactly when these fractional coordinates differ by an integer vector.
+    The integer adjugate key below avoids floating-point quotient tests.
+    """
+    matrix = np.asarray(supercell_matrix, dtype=np.int64)
+    if matrix.shape != (2, 2):
+        raise ValueError("supercell matrix must be 2x2")
+    determinant = int(round(np.linalg.det(matrix)))
+    if determinant <= 0:
+        raise ValueError("supercell matrix must have positive determinant")
+    adjugate = np.array(
+        [[matrix[1, 1], -matrix[0, 1]],
+         [-matrix[1, 0], matrix[0, 0]]],
+        dtype=np.int64,
+    )
+    representatives = {}
+    for first in range(determinant):
+        for second in range(determinant):
+            vector = np.array([first, second], dtype=np.int64)
+            key = tuple((adjugate @ vector % determinant).tolist())
+            representatives.setdefault(key, vector)
+    if len(representatives) != determinant:
+        raise RuntimeError(
+            f"expected {determinant} translation classes, found "
+            f"{len(representatives)}"
+        )
+    ordered_keys = sorted(representatives, key=lambda key: (key != (0, 0), key))
+    return np.asarray([representatives[key] for key in ordered_keys], dtype=np.int64)
+
+
+def complete_minor_sum(q_matrix, indices, mixing, chunk):
+    """Exact minor sum with rematerialized chunks; no determinant truncation."""
+    count = indices.shape[0]
+    padding = (-count) % chunk
+    # Pad with valid minors but zero coefficients (not singular dummy minors).
+    ids = jnp.concatenate([indices, jnp.tile(indices[:1], (padding, 1))], axis=0)
+    weights = jnp.pad(mixing, (0, padding))
+    def step(total, item):
+        ix, weight = item
+        values = jnp.linalg.det(q_matrix[:, ix, :])
+        return total+jnp.einsum('bm,m->b', values, weight), None
+    result, _ = jax.lax.scan(jax.checkpoint(step), jnp.zeros(q_matrix.shape[0],q_matrix.dtype),
+                             (ids.reshape(-1,chunk,indices.shape[1]),weights.reshape(-1,chunk)))
+    return result
 
 
 def _linear(parameters, values):
@@ -96,13 +153,15 @@ def _encoded_graph(parameters, positions, layers, constants):
     return cartesian, node
 
 
-def _bloch_values(cartesian, layers, constants):
+def _bloch_values(cartesian, layers, constants, return_scale=False):
     plane_momenta = constants["momenta"][:, None, :] + constants["g_vectors"][None]
     phase = jnp.einsum("bna,kga->bnkg", cartesian, plane_momenta)
-    exponent = jnp.exp(1j * phase)
+    scale = jnp.max(-jnp.imag(phase),axis=(-1,-2)) if return_scale else 0.0
+    exponent = jnp.exp(1j * phase - (scale[...,None,None] if return_scale else 0.0))
     selected = jnp.take(constants["bloch_coefficients"], layers, axis=1)
     selected = jnp.transpose(selected, (1, 2, 0, 3))
-    return jnp.transpose(jnp.sum(selected * exponent, axis=-1), (0, 2, 1))
+    values = jnp.transpose(jnp.sum(selected * exponent, axis=-1), (0, 2, 1))
+    return (values,scale) if return_scale else values
 
 
 def _orbital_factor(parameters, node, momenta, spec):
@@ -124,7 +183,9 @@ def _orbital_factor(parameters, node, momenta, spec):
     return raw[..., 0] + 1j * raw[..., 1]
 
 
-def _unprojected_determinant_values(parameters, positions, layers, constants, spec):
+def _unprojected_determinant_values(
+    parameters, positions, layers, constants, spec, support_indices=None
+):
     if spec.c3_qns:
         graphs = []
         current = positions
@@ -184,11 +245,17 @@ def _unprojected_determinant_values(parameters, positions, layers, constants, sp
             values.append(jnp.sum(jnp.stack(orbit_values), axis=0) / 3.0)
             continue
         if spec.fixed_gamma_no_m:
-            matrices = q_matrix[:, constants["gamma_sector_indices"], :]
-            determinants = jnp.linalg.det(matrices)
             mixing = (parameters["sector_mixing_real"][index]
                       + 1j * parameters["sector_mixing_imag"][index])
-            values.append(jnp.einsum("m,bm->b", mixing, determinants))
+            indices = (constants['gamma_sector_indices']
+                       if support_indices is None else support_indices)
+            if spec.cells == 27:
+                values.append(complete_minor_sum(q_matrix, indices,
+                                                mixing, spec.minor_chunk))
+            else:
+                matrices = q_matrix[:, indices, :]
+                determinants = jnp.linalg.det(matrices)
+                values.append(jnp.einsum("m,bm->b", mixing, determinants))
             continue
         else:
             mixing = (
@@ -232,11 +299,86 @@ def c3_project_from_orbit(raw_orbit, gauge_orbit, irrep):
     return jnp.sum(powers[:, None] * gauge_orbit * raw_orbit, axis=0) / 3.0
 
 
-def determinant_values(parameters, positions, layers, constants, spec):
+def _minor_values_from_q(q_matrix, indices, chunk):
+    """Evaluate a fixed-shape candidate minor table without materializing it."""
+    count = indices.shape[0]
+    padding = (-count) % chunk
+    ids = jnp.concatenate([indices, jnp.tile(indices[:1], (padding, 1))], axis=0)
+
+    def body(unused, ix):
+        return unused, jnp.linalg.det(q_matrix[:, ix, :])
+
+    _, values = jax.lax.scan(
+        jax.checkpoint(body), None,
+        ids.reshape(-1, chunk, indices.shape[1]),
+    )
+    return values.transpose(1, 0, 2).reshape(q_matrix.shape[0], -1)[:, :count]
+
+
+def active_minor_basis_values(
+    parameters, positions, layers, constants, spec, indices, chunk=32,
+    return_log_scale=False,
+):
+    """Scaled basis values used to score discrete active-support proposals.
+
+    Every returned column is the contribution of one Gamma minor before its
+    trainable M_S coefficient.  For outer-C3 states the complete physical
+    projector is applied.  A walker-dependent common scale is removed, which
+    cancels exactly in D_S(X)/Psi(X).
+    """
+    if spec.determinants != 1 or not spec.fixed_gamma_no_m:
+        raise ValueError("active minor scoring requires one fixed-Gamma determinant")
+    if spec.outer_c3_projector:
+        rotated, gauge_orbit = c3_orbit_positions_and_gauge(
+            positions, layers, constants
+        )
+        work_positions = rotated.reshape(
+            3 * len(positions), spec.n_particles, 2
+        )
+        work_layers = jnp.tile(layers, (3, 1))
+    else:
+        work_positions, work_layers = positions, layers
+        gauge_orbit = None
+    cartesian, node = _encoded_graph(
+        parameters, work_positions, work_layers, constants
+    )
+    raw_shift = _linear(parameters["backflow_heads"][0], node)
+    transformed = (
+        cartesian.astype(jnp.complex128)
+        + raw_shift[..., :2]
+        + 1j * raw_shift[..., 2:]
+    )
+    bloch, particle_scale = _bloch_values(
+        transformed, work_layers, constants, return_scale=True
+    )
+    orbital = _orbital_factor(
+        parameters["orbital_mlps"][0], node, constants["momenta"], spec
+    )
+    q_matrix = bloch * jnp.transpose(orbital, (0, 2, 1))
+    values = _minor_values_from_q(q_matrix, indices, chunk)
+    if not spec.outer_c3_projector:
+        log_scale = jnp.sum(particle_scale, axis=1)
+        return (values, log_scale) if return_log_scale else values
+    batch = len(positions)
+    values = values.reshape(3, batch, indices.shape[0])
+    log_scale = jnp.sum(particle_scale, axis=1).reshape(3, batch)
+    common = jnp.max(log_scale, axis=0)
+    scaled = values * jnp.exp(log_scale[:, :, None] - common[None, :, None])
+    root = jnp.exp(-2j * jnp.pi * spec.c3_irrep / 3.0)
+    powers = root ** jnp.arange(3, dtype=jnp.float64)
+    projected = jnp.sum(
+        powers[:, None, None] * gauge_orbit[:, :, None] * scaled, axis=0
+    ) / 3.0
+    return (projected, common) if return_log_scale else projected
+
+
+def determinant_values(
+    parameters, positions, layers, constants, spec, support_indices=None
+):
     """Return raw, internally equivariant, or outer-P_m projected ansatz."""
     if spec.c3_qns or not spec.outer_c3_projector:
         return _unprojected_determinant_values(
-            parameters, positions, layers, constants, spec
+            parameters, positions, layers, constants, spec, support_indices
         )
     rotated, gauge_orbit = c3_orbit_positions_and_gauge(
         positions, layers, constants
@@ -247,16 +389,124 @@ def determinant_values(parameters, positions, layers, constants, spec):
         jnp.tile(layers, (3, 1)),
         constants,
         spec,
+        support_indices,
     ).reshape(3, len(positions))
     return c3_project_from_orbit(raw, gauge_orbit, spec.c3_irrep)
 
-def logpsi(parameters, positions, layers, constants, spec):
-    values = determinant_values(parameters, positions, layers, constants, spec)
+
+def _v4_gamma_projected_scaled_value(
+    parameters, positions, layers, constants, spec
+):
+    """Return the Gamma-projected value and its removed common log scale."""
+    cartesian, node = _encoded_graph(parameters, positions, layers, constants)
+    raw_shift = _linear(parameters["backflow_heads"][0], node)
+    transformed = (
+        cartesian.astype(jnp.complex128)
+        + raw_shift[..., :2] + 1j * raw_shift[..., 2:]
+    )
+    bloch, particle_scale = _bloch_values(
+        transformed, layers, constants, return_scale=True
+    )
+    orbital = _orbital_factor(
+        parameters["orbital_mlps"][0], node, constants["momenta"], spec
+    )
+    q_matrix = bloch * jnp.transpose(orbital, (0, 2, 1))
+    mixing = (
+        parameters["projected_momentum_real"]
+        + 1j * parameters["projected_momentum_imag"]
+    )
+    generalized = jnp.einsum(
+        "rnk,tk,bki->brtni",
+        mixing, constants["translation_characters"], q_matrix,
+    )
+    projected = jnp.mean(jnp.linalg.det(generalized), axis=2)
+    # v4 has exactly one dense M. Keep the singleton axis in checkpoints for
+    # compatibility with the completed pilot, but never interpret it as a
+    # determinant-mixture rank.
+    return projected[:, 0], jnp.sum(particle_scale, axis=1)
+
+
+def v4_gamma_projected_logpsi(parameters, positions, layers, constants, spec):
+    """Version-4 single-dense-M state with exact Gamma projection.
+
+    Cauchy--Binet followed by the finite translation sum removes every minor
+    whose occupied mesh momenta do not add to Gamma.  The graph and Q matrix
+    are evaluated once per configuration; only the small generalized
+    determinants are replicated over the finite supercell translations. A physical
+    outer-C3 projector may then be applied to the complete Gamma state.
+    """
+    if spec.translation_projected_rank != 1 or spec.determinants != 1:
+        raise ValueError("v4 requires exactly one dense M and one Q head")
+    if spec.outer_c3_projector:
+        rotated, gauge_orbit = c3_orbit_positions_and_gauge(
+            positions, layers, constants
+        )
+        value, scale = _v4_gamma_projected_scaled_value(
+            parameters,
+            rotated.reshape(3 * len(positions), spec.n_particles, 2),
+            jnp.tile(layers, (3, 1)), constants, spec,
+        )
+        value = value.reshape(3, len(positions))
+        scale = scale.reshape(3, len(positions))
+        common = jnp.max(scale, axis=0)
+        root = jnp.exp(-2j * jnp.pi * spec.c3_irrep / 3.0)
+        powers = root ** jnp.arange(3, dtype=jnp.float64)
+        value = jnp.sum(
+            powers[:, None] * gauge_orbit * value
+            * jnp.exp(scale - common[None]), axis=0,
+        ) / 3.0
+        scale = common
+    else:
+        value, scale = _v4_gamma_projected_scaled_value(
+            parameters, positions, layers, constants, spec
+        )
+    return (
+        jnp.log(jnp.maximum(jnp.abs(value), jnp.finfo(jnp.float64).tiny))
+        + scale
+        + 1j * jnp.angle(value)
+    )
+
+def logpsi(parameters, positions, layers, constants, spec, support_indices=None):
+    if spec.translation_projected_rank:
+        return v4_gamma_projected_logpsi(
+            parameters, positions, layers, constants, spec
+        )
+    if spec.cells==27 and not spec.fixed_gamma_no_m and not spec.outer_c3_projector:
+        # Algebraically identical full-M ansatz in the log domain: avoid
+        # overflow of large 18-particle determinants, without clipping shifts.
+        if spec.determinants!=1:
+            raise ValueError('27-cell log-domain full-M currently supports one determinant')
+        cartesian,node=_encoded_graph(parameters,positions,layers,constants)
+        raw=_linear(parameters['backflow_heads'][0],node)
+        transformed=cartesian+raw[...,:2]+1j*raw[...,2:]
+        bloch,scale=_bloch_values(transformed,layers,constants,return_scale=True)
+        orbital=_orbital_factor(parameters['orbital_mlps'][0],node,constants['momenta'],spec)
+        q=bloch*jnp.transpose(orbital,(0,2,1))
+        mixing=parameters['momentum_real'][0]+1j*parameters['momentum_imag'][0]
+        sign,logabs=jnp.linalg.slogdet(jnp.einsum('rk,bki->bri',mixing,q))
+        return logabs+jnp.sum(scale,axis=1)+1j*jnp.angle(sign)
+    if spec.cells == 27 and spec.fixed_gamma_no_m:
+        indices = (constants['gamma_sector_indices']
+                   if support_indices is None else support_indices)
+        basis, scale = active_minor_basis_values(
+            parameters, positions, layers, constants, spec, indices,
+            spec.minor_chunk, return_log_scale=True,
+        )
+        mixing = (parameters['sector_mixing_real'][0]
+                  + 1j * parameters['sector_mixing_imag'][0])
+        value = jnp.einsum('bm,m->b', basis, mixing)
+        return (jnp.log(jnp.maximum(jnp.abs(value), jnp.finfo(jnp.float64).tiny))
+                + scale + 1j * jnp.angle(value))
+    values = determinant_values(
+        parameters, positions, layers, constants, spec, support_indices
+    )
     return jnp.log(jnp.maximum(jnp.abs(values), jnp.finfo(jnp.float64).tiny)) + 1j * jnp.angle(values)
 
 
-def local_energy_components(parameters, positions, layers, constants, spec):
-    base = logpsi(parameters, positions, layers, constants, spec)
+def local_energy_components(
+    parameters, positions, layers, constants, spec, support_indices=None
+):
+    base = logpsi(parameters, positions, layers, constants, spec, support_indices)
     cartesian = jnp.einsum("ac,bnc->bna", constants["supercell_lattice"], positions)
     layer_phase = jnp.where(layers == 0, -constants["moire_phase"], constants["moire_phase"])
     arguments = jnp.einsum("bna,ga->bng", cartesian, constants["potential_directions"])
@@ -279,11 +529,11 @@ def local_energy_components(parameters, positions, layers, constants, spec):
     ).reshape(batch * derivatives, spec.n_particles)
     plus_log = logpsi(
         parameters, plus.reshape(batch * derivatives, spec.n_particles, 2),
-        repeated_layers, constants, spec,
+        repeated_layers, constants, spec, support_indices,
     ).reshape(batch, derivatives)
     minus_log = logpsi(
         parameters, minus.reshape(batch * derivatives, spec.n_particles, 2),
-        repeated_layers, constants, spec,
+        repeated_layers, constants, spec, support_indices,
     ).reshape(batch, derivatives)
     plus_ratio = jnp.exp(plus_log - base[:, None])
     minus_ratio = jnp.exp(minus_log - base[:, None])
@@ -310,6 +560,7 @@ def local_energy_components(parameters, positions, layers, constants, spec):
         flipped.reshape(batch * spec.n_particles, spec.n_particles),
         constants,
         spec,
+        support_indices,
     ).reshape(batch, spec.n_particles)
     ratio = jnp.exp(flipped_log - base[:, None])
     t01 = constants["tunneling_meV"] * (
@@ -322,10 +573,12 @@ def local_energy_components(parameters, positions, layers, constants, spec):
     return kinetic, moire, tunneling, coulomb
 
 
-def local_energy(parameters, positions, layers, constants, spec):
+def local_energy(
+    parameters, positions, layers, constants, spec, support_indices=None
+):
     """Complete local energy; components are exposed for fixed-state audits."""
     kinetic, moire, tunneling, coulomb = local_energy_components(
-        parameters, positions, layers, constants, spec
+        parameters, positions, layers, constants, spec, support_indices
     )
     return kinetic + moire + tunneling + coulomb
 
@@ -357,11 +610,34 @@ def initialize(spec: JaxNeuralBlochSpec, seed: int = 83):
         spec.c3_qns or spec.outer_c3_projector
     ):
         raise ValueError("c3_irrep requires c3_qns or outer_c3_projector")
-    continuum, inputs = neural_bloch_inputs()
+    if spec.translation_projected_rank not in (0, 1):
+        raise ValueError("v4 uses exactly one dense M; the switch must be 0 or 1")
+    if spec.translation_projected_rank and (
+        spec.fixed_gamma_no_m or spec.c3_qns or spec.determinants != 1
+    ):
+        raise ValueError(
+            "the v4 Gamma-projected-M ansatz requires one Q head and "
+            "is mutually exclusive with the v3 no-M/internal-C3 ansatzes"
+        )
+    if spec.cells not in (9,27):
+        raise ValueError('supported cell counts are 9 and 27')
+    if spec.cells == 27:
+        if spec.c3_qns:
+            raise ValueError('internal C3 ansatz is not part of the 27-cell experiment')
+        from .qns27 import cluster as cluster27, inputs as inputs27
+        continuum, inputs = inputs27()
+        supercell_matrix = np.asarray(cluster27().matrix)
+    else:
+        continuum, inputs = neural_bloch_inputs()
+        supercell_matrix = np.diag([3, 3])
     torch_hamiltonian = ContinuumTorusHamiltonian(
         continuum, 3, 3, dielectric=5.0, reciprocal_shell_count=8,
         finite_difference_fraction=1.5e-3,
     )
+    if spec.cells == 27:
+        torch_hamiltonian.inverse_supercell = np.linalg.inv(inputs['supercell_lattice'])
+        torch_hamiltonian.q_vectors = torch.as_tensor(inputs['q_vectors'])
+        torch_hamiltonian.q_coefficients = torch.as_tensor(inputs['q_coefficients'])
     key = jax.random.PRNGKey(seed)
     initializer = jax.nn.initializers.lecun_normal()
 
@@ -401,29 +677,49 @@ def initialize(spec: JaxNeuralBlochSpec, seed: int = 83):
         })
     for _ in range(spec.determinants):
         parameters["backflow_heads"].append(dense(width, 4, False))
+        parameters['backflow_heads'][-1]['weight'] *= spec.backflow_init_scale
         parameters["orbital_mlps"].append([
             dense(width + 2, spec.orbital_hidden), dense(spec.orbital_hidden, 2)
         ])
-    selected = _reference_momenta(
-        np.asarray(inputs["one_body_energies"]),
-        np.asarray(inputs["momentum_fractions"]), spec.n_particles,
-    )
-    gamma_sector_indices = momentum_sector_combinations(
-        np.asarray(inputs["momentum_fractions"]), spec.n_particles
-    )
-    if not spec.fixed_gamma_no_m:
+    if spec.cells == 27:
+        if spec.fixed_gamma_no_m:
+            from .qns27 import gamma_indices
+            gamma_sector_indices = gamma_indices(spec.n_particles)
+            if spec.active_gamma_minors is not None:
+                if not 1 <= spec.active_gamma_minors <= len(gamma_sector_indices):
+                    raise ValueError('active Gamma minor count is out of range')
+                order=np.argsort(inputs['one_body_energies'][gamma_sector_indices].sum(1),kind='stable')
+                gamma_sector_indices=gamma_sector_indices[order[:spec.active_gamma_minors]]
+            selected = gamma_sector_indices[np.argmin(inputs['one_body_energies'][gamma_sector_indices].sum(1))]
+        else:
+            selected = np.argsort(inputs['one_body_energies'])[:spec.n_particles]
+            gamma_sector_indices = np.empty((0,spec.n_particles),dtype=np.int32)
+    else:
+        selected = _reference_momenta(np.asarray(inputs['one_body_energies']),
+                                     np.asarray(inputs['momentum_fractions']),spec.n_particles)
+        gamma_sector_indices = momentum_sector_combinations(np.asarray(inputs['momentum_fractions']),spec.n_particles)
+    if spec.translation_projected_rank:
+        key, momentum_real_key, momentum_imag_key = jax.random.split(key, 3)
+        flat_shape = (spec.cells, spec.n_particles)
+        parameters["projected_momentum_real"] = initializer(
+            momentum_real_key, flat_shape, jnp.float64
+        ).T[None] / jnp.sqrt(2.0)
+        parameters["projected_momentum_imag"] = initializer(
+            momentum_imag_key, flat_shape, jnp.float64
+        ).T[None] / jnp.sqrt(2.0)
+    elif not spec.fixed_gamma_no_m:
         # M is complex LeCunNormal.  Each real component has half of the
         # LeCun variance so E|M_{gamma k}|^2 = 1 / N_k.  Luo--Fu specify
         # LeCunNormal globally but do not separately document M's initializer;
         # this random complex extension avoids selecting one minor at step 0.
         key, momentum_real_key, momentum_imag_key = jax.random.split(key, 3)
-        flat_shape = (9, spec.determinants * spec.n_particles)
+        flat_shape = (spec.cells, spec.determinants * spec.n_particles)
         momentum_real = initializer(
             momentum_real_key, flat_shape, jnp.float64
-        ).T.reshape(spec.determinants, spec.n_particles, 9) / jnp.sqrt(2.0)
+        ).T.reshape(spec.determinants, spec.n_particles, spec.cells) / jnp.sqrt(2.0)
         momentum_imag = initializer(
             momentum_imag_key, flat_shape, jnp.float64
-        ).T.reshape(spec.determinants, spec.n_particles, 9) / jnp.sqrt(2.0)
+        ).T.reshape(spec.determinants, spec.n_particles, spec.cells) / jnp.sqrt(2.0)
         parameters["momentum_real"] = momentum_real
         parameters["momentum_imag"] = momentum_imag
     else:
@@ -495,6 +791,17 @@ def initialize(spec: JaxNeuralBlochSpec, seed: int = 83):
             cartesian_delta[axis] = torch_hamiltonian.finite_difference_nm
             fractional = torch_hamiltonian.inverse_supercell @ cartesian_delta
             deltas[2 * particle + axis, particle] = fractional
+    translations = finite_translation_representatives(supercell_matrix)
+    translation_characters = np.exp(
+        2j * np.pi * translations @ np.asarray(inputs["momentum_fractions"]).T
+    )
+    character_gram = translation_characters.conj().T @ translation_characters
+    expected_gram = spec.cells * np.eye(spec.cells)
+    if not np.allclose(character_gram, expected_gram, rtol=0.0, atol=2.0e-10):
+        raise RuntimeError("finite-translation characters are not complete")
+    fractional_translations = (
+        np.linalg.inv(supercell_matrix) @ translations.T
+    ).T
     constants = {
         "supercell_lattice": jnp.asarray(inputs["supercell_lattice"]),
         "momentum_fractions": jnp.asarray(inputs["momentum_fractions"]),
@@ -510,6 +817,9 @@ def initialize(spec: JaxNeuralBlochSpec, seed: int = 83):
         "c3_orbit_weights": jnp.asarray(orbit_weights),
         "fixed_momentum_indices": jnp.asarray(selected, dtype=jnp.int32),
         "gamma_sector_indices": jnp.asarray(gamma_sector_indices, dtype=jnp.int32),
+        "translation_characters": jnp.asarray(translation_characters),
+        "translation_representatives": jnp.asarray(translations),
+        "fractional_translations": jnp.asarray(fractional_translations),
         "node_directions": jnp.asarray(np.stack([b1, b2, b1 + b2])),
         "potential_directions": jnp.asarray(np.stack([b1, b2, -(b1 + b2)])),
         "moire_phase": jnp.asarray(np.deg2rad(continuum.params.phase_deg)),
@@ -557,10 +867,15 @@ def from_torch(wavefunction):
         parameters["backflow_heads"].append(dense(head))
         parameters["orbital_mlps"].append([dense(mlp[0]), dense(mlp[2])])
     if wavefunction.momentum_real is not None:
-        parameters["momentum_real"] = jnp.asarray(
+        names = (
+            ("projected_momentum_real", "projected_momentum_imag")
+            if wavefunction.config.v4_gamma_projected_m
+            else ("momentum_real", "momentum_imag")
+        )
+        parameters[names[0]] = jnp.asarray(
             wavefunction.momentum_real.detach().numpy()
         )
-        parameters["momentum_imag"] = jnp.asarray(
+        parameters[names[1]] = jnp.asarray(
             wavefunction.momentum_imag.detach().numpy()
         )
     if wavefunction.sector_mixing_real is not None:
@@ -598,11 +913,21 @@ def copy_to_torch(parameters, wavefunction):
             dense(source[0], target[0])
             dense(source[1], target[2])
         if wavefunction.momentum_real is not None:
+            key = (
+                "projected_momentum_real"
+                if "projected_momentum_real" in parameters
+                else "momentum_real"
+            )
+            imag_key = (
+                "projected_momentum_imag"
+                if "projected_momentum_imag" in parameters
+                else "momentum_imag"
+            )
             wavefunction.momentum_real.copy_(
-                torch.as_tensor(np.array(parameters["momentum_real"], copy=True))
+                torch.as_tensor(np.array(parameters[key], copy=True))
             )
             wavefunction.momentum_imag.copy_(
-                torch.as_tensor(np.array(parameters["momentum_imag"], copy=True))
+                torch.as_tensor(np.array(parameters[imag_key], copy=True))
             )
         if wavefunction.sector_mixing_real is not None:
             wavefunction.sector_mixing_real.copy_(torch.as_tensor(

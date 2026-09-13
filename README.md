@@ -1,6 +1,6 @@
 # QNS for moire FCI
 
-Version 3.2 (same-seed shared-pool sector-mixer revision).
+Version 4.2 (single-matrix momentum projection and direct plane-wave observable revision).
 
 This project benchmarks the continuum model and multiband exact diagonalization (ED) of twisted MoTe2 against Luo, Zaklama, and Fu, [arXiv:2503.13585v3](https://arxiv.org/abs/2503.13585), then tests their continuous-coordinate Neural-Bloch variational ansatz at fillings `nu=1/3` and `nu=2/3`.
 
@@ -8,38 +8,48 @@ The current report is [`result/AI_for_Physics.pdf`](result/AI_for_Physics.pdf). 
 
 ## Current numerical result
 
-The controlled QNS comparison uses a `3 x 3` moire cluster, width 32, two
-unshared message-passing iterations, 4,128 persistent walkers, and explicit
-true-CG-residual acceptance. Version 3 adds a trainable complex determinant
-mixer `M_S`: it linearly combines all 12 selected-momentum determinants whose
-total momentum is `Gamma`. Version 3.2 initializes the three outer-`C3`
-sectors with the same seed, applies 20 independent-parameter updates using a
-shared mixture-sampled pool, then continues with 100 private-chain updates.
-Energies below are final-ten means of the correlated persistent training
-chain; RMS measures tail stability rather than an independent error bar.
+Version 4 replaces the explicit momentum-combination mixer by one dense
+trainable determinant matrix `M`. The exact finite-translation projector is
+applied to the complete generalized determinant, so its Cauchy--Binet
+expansion contains all and only total-`Gamma` minors. Version 4.2 also corrects
+the post-training observables. `n(k)` is the direct plane-wave Fourier
+transform of the one-body density matrix at the 27 displayed first-BZ
+momenta, summed over the two layers with only `G=0`. `S(q)` is the direct
+Fourier transform of the static density--density correlation at those same
+physical vectors. Neither observable folds or sums reciprocal images;
+Bloch-state projection is used only for bare-band weights.
 
-| filling | state | final-ten training `E/N_e` (meV) | five-band ED (meV) | difference (meV) |
-|---|---|---:|---:|---:|
-| `1/3` | no `M` + `M_S`, `Gamma` | `-37.3037 (0.0421)` | `-37.39323` | `+0.0896` |
-| `1/3` | outer `P0` + `M_S` (lowest outer sector) | `-37.3436 (0.0343)` | `-37.39323` | `+0.0497` |
-| `2/3` | no `M` + `M_S`, `Gamma` | `-52.7666 (0.0569)` | `-52.72554` | `-0.0411` |
-| `2/3` | outer `P2` + `M_S` (lowest outer sector) | `-52.8838 (0.0530)` | `-52.72554` | `-0.1583` |
+The nine-cell jobs use width 32 and the 27-cell jobs width 64, with 4,128
+persistent walkers and 120 natural-gradient updates. The three outer-`C3`
+branches start from the same seed, use 20 shared-mixture-sampling updates, and
+then continue with independent parameters and walkers for 100 updates.
+Energies are final-ten means of correlated training chains; RMS is a
+tail-stability diagnostic rather than an independent uncertainty.
 
-All three outer characters remain available in the compact training traces.
-Fig. 6 shows only the lowest-training outer sector at each filling; Fig. 7
-reports all three optimization traces, tail-energy splitting, and separate
-five-band-ED/QNS timing panels for `nu=1/3` and `nu=2/3`. The complete-ratio
-1-RDM estimator jointly batches all auxiliary replacements while recomputing
-the full projected wavefunction for every replacement.
+| cells | filling | lowest outer branch | final-ten `E/N_e` (meV) | ED reference |
+|---:|---|---|---:|---:|
+| 9 | `1/3` | `P0 P_Gamma[M]` | `-37.3215 (0.0244)` | five-band: `-37.39323` |
+| 9 | `2/3` | `P2 P_Gamma[M]` | `-52.9124 (0.0616)` | five-band: `-52.72554` |
+| 27 | `1/3` | `P0 P_Gamma[M]` | `-47.5342 (0.0347)` | one-band: `-47.59546` |
+| 27 | `2/3` | `P1 P_Gamma[M]` | `-60.4155 (0.0391)` | one-band: `-57.45573` |
+
+Figures 6 and 7 summarize the nine- and 27-cell energies, all three outer
+branches, bare-band weights and timing. Figures 8--10 compare the 27-cell
+direct `G=0` plane-wave `n(k)`, full `S(q)` and folded density. The stored
+Fourier vectors are checked point by point against the dots drawn in the
+hexagonal BZ, including the five boundary/corner indices that previously
+used a different representative by one reciprocal lattice vector.
 ## Repository layout
 
 - `src/continuum.py`, `src/multiband_ed.py`, `src/sparse_ed.py`: continuum bands and projected ED.
 - `src/jax_neural_bloch.py`: double-precision JAX wavefunction and continuum local energy.
 - `src/run_jax_neural_bloch.py`: matrix-free natural gradient with ordinary CG.
-- `src/neural_bloch_diagnostics.py`: complete-ratio 1-RDM, band projection, density, and two-body `S(q)`.
-- `src/make_adaptive120_figures.py`, `src/make_adaptive120_observables.py`: final Figs. 6–7.
+- `src/neural_bloch_diagnostics.py`: nine-cell complete-ratio 1-RDM and observables.
+- `src/qns27.py`, `src/qns27_diagnostics.py`: 27-cell geometry, projected training, and observables.
+- `src/assemble_v42_release_data.py`: compact v4.2 figure-data assembly and checksums.
+- `src/make_v42_figures.py`: final Figs. 6–11.
 - `native/`: C++17 sparse-ED and observable kernels, compiled automatically when needed.
-- `result/release_data/`: compact, publication-facing traces and diagnostics for Figs. 6–7.
+- `result/release_data/` and selected `result/data/` subtrees: compact publication-facing inputs.
 - `result/figures/`: vector and raster report figures.
 - `tests/`: unit and physics-regression tests.
 
@@ -64,30 +74,26 @@ python -m unittest discover -s tests -v
 
 Small ED fixtures required by regression tests are versioned under `result/data/`. Large walkers, checkpoints, many-body twist eigenvectors, and raw training directories are intentionally ignored.
 
-## Reproducing the controlled Neural-Bloch runs
+## Reproducing the v4 runs
 
-The four jobs differ only in particle number and the presence of the fixed-`Gamma`, no-`M` flag. A representative full-`M`, `nu=1/3` job is:
+The v4 launchers preserve the exact local settings used for the report:
 
 ```bash
-python -m src.run_jax_neural_bloch \
-  --output-dir result/data/neural_bloch_adaptive_cg120_full_m_nu1of3 \
-  --particles 3 --width 32 --message-passing-steps 2 --determinants 1 \
-  --samples 4128 --steps 120 --learning-rate 2e-3 \
-  --burn-sweeps 300 --sweeps-per-step 2 \
-  --wavefunction-batch 258 --local-energy-batch 32 --sr-chunk 258 \
-  --sr-damping 1e-2 --cg-min-iterations 20 --cg-max-iterations 60 \
-  --cg-true-tolerance 0.02 --cg-acceptance-tolerance 0.05 \
-  --recovery-damping 0.03 --recovery-learning-rate 1e-3 \
-  --checkpoint-interval 10 --log-interval 10 --adaptive-cg-120-step
+python scripts/launch_v4_9cell.py
+python scripts/launch_v4_outer_c3_9cell_queue.py
+python scripts/launch_v4_qns27_queue.py
+python scripts/update_v4_27_observables.py
 ```
 
-Use `--particles 6` for `nu=2/3`; add `--fixed-gamma-no-m` for the no-`M` state. These are expensive CPU calculations. The paper's reported production setting is 1,000 optimization steps; the public benchmark here deliberately reports the completed 120-update audit.
+The jobs are GPU calculations and write raw walkers/checkpoints below
+`result/data/`; those large files are intentionally not versioned. The compact
+training traces and diagnostic arrays needed to inspect the published figures
+are included.
 
 ## Complete-wavefunction outer C3 projection
 
-The `outer_c3_projector` leaves the periodic no-`M` + `M_S` Luo--Fu network
-internally unrestricted and applies `P_m=(1/3) sum_a omega^(-ma) C3^a` only
-to the complete determinant mixture. The physical `C3` action includes
+The `outer_c3_projector` applies `P_m=(1/3) sum_a omega^(-ma) C3^a` to the
+complete translation-projected determinant. The physical `C3` action includes
 the continuum layer-gauge sewing factor. Projected `logpsi` is the single
 source used by local energy, Metropolis ratios, and SR logarithmic derivatives.
 
@@ -111,19 +117,17 @@ The analogous `nu=2/3` production launchers are
 
 ## Redrawing the publication figures
 
-Figs. 6–7 can be regenerated without the raw checkpoints:
+Figs. 6–11 can be regenerated from the compact published inputs:
 
 ```bash
-python -m src.make_adaptive120_figures
-python -m src.make_adaptive120_observables
+python -m src.make_v42_figures
 ```
 
 Build the report with:
 
 ```bash
 cd result
-pdflatex -interaction=nonstopmode -halt-on-error AI_for_Physics.tex
-pdflatex -interaction=nonstopmode -halt-on-error AI_for_Physics.tex
+tectonic AI_for_Physics.tex
 ```
 
 ## Data policy

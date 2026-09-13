@@ -1,0 +1,266 @@
+{
+  "version": "4.2.0",
+  "observable_definition": "direct G=0 layer-summed plane-wave n(k) and full S(q), both at the exact 27 plotted first-BZ vectors with no reciprocal-image sum",
+  "files": {
+    "nine/summary.json": {
+      "bytes": 15329,
+      "sha256": "1d570c578e562b25674b51115aab124e0da11ee75461803035a17ab3848227c2",
+      "source": "result/data/local_v4_final/summary.json"
+    },
+    "nine/traces/nu1of3_full_m.json": {
+      "bytes": 118122,
+      "sha256": "c15e6460e11242009176425f115453ce2c99a1d38fdce2d67a8462a1557ea017",
+      "source": "result/data/local_v4_final/traces/nu1of3_full_m.json"
+    },
+    "nine/traces/nu1of3_v4_gamma.json": {
+      "bytes": 127577,
+      "sha256": "dc310e518a75c4e0736da98928869124791974cdf5723f41e43a74485f67d130",
+      "source": "result/data/local_v4_final/traces/nu1of3_v4_gamma.json"
+    },
+    "nine/traces/nu1of3_v4_outer_c3_p0.json": {
+      "bytes": 127125,
+      "sha256": "f3c4611683f15410931ddbbcaf65289f2b529c07037735f5a9e58fcb5a8d0cb0",
+      "source": "result/data/local_v4_final/traces/nu1of3_v4_outer_c3_p0.json"
+    },
+    "nine/traces/nu1of3_v4_outer_c3_p1.json": {
+      "bytes": 127075,
+      "sha256": "5b69fa197be97fc55be3eb33faf78bb05cded1c070ca873cb9428131c0141f85",
+      "source": "result/data/local_v4_final/traces/nu1of3_v4_outer_c3_p1.json"
+    },
+    "nine/traces/nu1of3_v4_outer_c3_p2.json": {
+      "bytes": 127144,
+      "sha256": "74c1530dcc91d99297d29d7383cb80b1ee0997ccb2ead6587886799606f8c5d7",
+      "source": "result/data/local_v4_final/traces/nu1of3_v4_outer_c3_p2.json"
+    },
+    "nine/traces/nu2of3_full_m.json": {
+      "bytes": 117655,
+      "sha256": "24b2e6233a1b208cf465007b3d7e808f0a8e739d7ff2df8442c8be68910be2d0",
+      "source": "result/data/local_v4_final/traces/nu2of3_full_m.json"
+    },
+    "nine/traces/nu2of3_v4_gamma.json": {
+      "bytes": 127127,
+      "sha256": "5bd14fd93c72bbe401c31f444ff32cbf111b2219c7f467110bfa40e2b823c65f",
+      "source": "result/data/local_v4_final/traces/nu2of3_v4_gamma.json"
+    },
+    "nine/traces/nu2of3_v4_outer_c3_p0.json": {
+      "bytes": 127079,
+      "sha256": "b5375cb03c49c9452c09a748fcff8da47b8b750014723f74c38e226d92c60b9a",
+      "source": "result/data/local_v4_final/traces/nu2of3_v4_outer_c3_p0.json"
+    },
+    "nine/traces/nu2of3_v4_outer_c3_p1.json": {
+      "bytes": 127093,
+      "sha256": "477d9590ac6d158445f11f79a0494ed6e67d8012edfe923d30f9870b842177f9",
+      "source": "result/data/local_v4_final/traces/nu2of3_v4_outer_c3_p1.json"
+    },
+    "nine/traces/nu2of3_v4_outer_c3_p2.json": {
+      "bytes": 127091,
+      "sha256": "9aaa24454ebae45cef4d66652d72d0dcd1325b09bc15d8ac9f9796e48de1b3bb",
+      "source": "result/data/local_v4_final/traces/nu2of3_v4_outer_c3_p2.json"
+    },
+    "nine/diagnostics/nu1of3_full_m.npz": {
+      "bytes": 124806,
+      "sha256": "83aec661978deb0dd7e45c23d4d6fc1d424decfc8317ec322eb6c5be7a30148c",
+      "source": "result/data/local_v4_final/diagnostics/nu1of3_full_m.npz"
+    },
+    "nine/diagnostics/nu1of3_v4_gamma.npz": {
+      "bytes": 124842,
+      "sha256": "c8589b10f2ca488c027baa6e32e700ef8f6175b1d11512a87780c7dfe7446690",
+      "source": "result/data/local_v4_final/diagnostics/nu1of3_v4_gamma.npz"
+    },
+    "nine/diagnostics/nu1of3_v4_outer_c3_p0.npz": {
+      "bytes": 124841,
+      "sha256": "48dcecf65e7a76e1cd7287e5ee2f938e21b44fa77c3dbd565c3044db466ab3ea",
+      "source": "result/data/local_v4_final/diagnostics/nu1of3_v4_outer_c3_p0.npz"
+    },
+    "nine/diagnostics/nu1of3_v4_outer_c3_p1.npz": {
+      "bytes": 124853,
+      "sha256": "501113a1aca5c2d39f23597273fc907968448e06eebde642efbf12aa8d8ab6bd",
+      "source": "result/data/local_v4_final/diagnostics/nu1of3_v4_outer_c3_p1.npz"
+    },
+    "nine/diagnostics/nu1of3_v4_outer_c3_p2.npz": {
+      "bytes": 124731,
+      "sha256": "5829a6092617f4cce64c8c6bf87d631fd8f7287c6ed692af007fffc751d14554",
+      "source": "result/data/local_v4_final/diagnostics/nu1of3_v4_outer_c3_p2.npz"
+    },
+    "nine/diagnostics/nu2of3_full_m.npz": {
+      "bytes": 124775,
+      "sha256": "eb9f9764ae5d97153784d49fab03c859d6bbe3a761e68b82b9bacd8a81d97137",
+      "source": "result/data/local_v4_final/diagnostics/nu2of3_full_m.npz"
+    },
+    "nine/diagnostics/nu2of3_v4_gamma.npz": {
+      "bytes": 124787,
+      "sha256": "ebec39ee6dbc9d229a5f774550b43bb1c8bce834363351d5ec728465388daba7",
+      "source": "result/data/local_v4_final/diagnostics/nu2of3_v4_gamma.npz"
+    },
+    "nine/diagnostics/nu2of3_v4_outer_c3_p0.npz": {
+      "bytes": 124775,
+      "sha256": "e30abaff0c0196ccc8fe3acabe571e103b5a7f62638e5f457a03ecabb4967dbd",
+      "source": "result/data/local_v4_final/diagnostics/nu2of3_v4_outer_c3_p0.npz"
+    },
+    "nine/diagnostics/nu2of3_v4_outer_c3_p1.npz": {
+      "bytes": 124745,
+      "sha256": "893eff36a993b98daf3e9a79f31426d9a828c3e09f2d80d10351dc0c45cacfb9",
+      "source": "result/data/local_v4_final/diagnostics/nu2of3_v4_outer_c3_p1.npz"
+    },
+    "nine/diagnostics/nu2of3_v4_outer_c3_p2.npz": {
+      "bytes": 124826,
+      "sha256": "e2779ea2f82493c2897064715c4788a84fa14f017a29f2668586fe172b284962",
+      "source": "result/data/local_v4_final/diagnostics/nu2of3_v4_outer_c3_p2.npz"
+    },
+    "qns27/diagnostics/nu1of3_full_m.npz": {
+      "bytes": 37460,
+      "sha256": "bd800bc40e06abcfe7fb122d6b395e36800696e54a0f8b84de3a3630f5d80ba7",
+      "source": "result/data/v4_qns27_observables/nu1of3_full_m/qns27_diagnostics.npz"
+    },
+    "qns27/diagnostics/nu1of3_full_m.json": {
+      "bytes": 1757,
+      "sha256": "552cffec3b504c739d536fc67aac24bdab6dd95c2c80066fc83c8358fd21dae7",
+      "source": "result/data/v4_qns27_observables/nu1of3_full_m/qns27_diagnostics.json"
+    },
+    "qns27/diagnostics/nu1of3_v4_gamma.npz": {
+      "bytes": 37479,
+      "sha256": "f7a50dd1a020ffc301c524fb1cf53d17f11ce8e52583f60baedd887efcdc69b3",
+      "source": "result/data/v4_qns27_observables/nu1of3_v4_gamma/qns27_diagnostics.npz"
+    },
+    "qns27/diagnostics/nu1of3_v4_gamma.json": {
+      "bytes": 1753,
+      "sha256": "186acbb96937a78c8942346f7aa3a0abbf62527477898d5eb7a6b54882137dd9",
+      "source": "result/data/v4_qns27_observables/nu1of3_v4_gamma/qns27_diagnostics.json"
+    },
+    "qns27/diagnostics/nu1of3_v4_outer_c3_p0.npz": {
+      "bytes": 37511,
+      "sha256": "69b0247cf1be26d38c178a5bea5f044f4203e019cb1dd9547159e5f2a37917e3",
+      "source": "result/data/v4_qns27_observables/nu1of3_v4_outer_c3_p0/qns27_diagnostics.npz"
+    },
+    "qns27/diagnostics/nu1of3_v4_outer_c3_p0.json": {
+      "bytes": 1744,
+      "sha256": "b1615c1fe33fd345c395d9bb9376333c3ab2b28652137793bb8875d5f31eb282",
+      "source": "result/data/v4_qns27_observables/nu1of3_v4_outer_c3_p0/qns27_diagnostics.json"
+    },
+    "qns27/diagnostics/nu1of3_v4_outer_c3_p1.npz": {
+      "bytes": 37486,
+      "sha256": "158057369a3d194d863dcd8c346cbe87f5d14194d5ce8887cd3e808ae789c9bb",
+      "source": "result/data/v4_qns27_observables/nu1of3_v4_outer_c3_p1/qns27_diagnostics.npz"
+    },
+    "qns27/diagnostics/nu1of3_v4_outer_c3_p1.json": {
+      "bytes": 1744,
+      "sha256": "0a5fab685946aadc029935f2718d68b5dc3234e9c8e773a81cbb2a44f1ee590e",
+      "source": "result/data/v4_qns27_observables/nu1of3_v4_outer_c3_p1/qns27_diagnostics.json"
+    },
+    "qns27/diagnostics/nu1of3_v4_outer_c3_p2.npz": {
+      "bytes": 37494,
+      "sha256": "fa20b89b90468fd5fb3d53751b0f5fc75748b9d3dd962c491a3954ea01030e9d",
+      "source": "result/data/v4_qns27_observables/nu1of3_v4_outer_c3_p2/qns27_diagnostics.npz"
+    },
+    "qns27/diagnostics/nu1of3_v4_outer_c3_p2.json": {
+      "bytes": 1744,
+      "sha256": "583a7095bee203a757e17c77645740c217fbf1bad3cdfbfa63d217dddc1aeaa6",
+      "source": "result/data/v4_qns27_observables/nu1of3_v4_outer_c3_p2/qns27_diagnostics.json"
+    },
+    "qns27/traces/nu1of3_full_m.json": {
+      "bytes": 117203,
+      "sha256": "7549e03e3548c4f054cb698bbb8d7242fa2fd071f88035d7059578f1fd6a3963",
+      "source": "result/data/qns27_width64_seed3184/nu1of3_full_m/jax_neural_bloch_trace.json"
+    },
+    "qns27/traces/nu1of3_v4_gamma.json": {
+      "bytes": 126873,
+      "sha256": "067f43e5233eb88f47024d05f2e57f5eb9cf63fd65b2ddeb039c3cb72fa0f499",
+      "source": "result/data/v4_qns27_seed3184/nu1of3_v4_gamma/jax_neural_bloch_trace.json"
+    },
+    "qns27/traces/nu1of3_v4_outer_c3_p0.json": {
+      "bytes": 126694,
+      "sha256": "a286f9fc87282279cc48d4f42d9fdbef4a70e8484ca1dc221ab97fde2dd8946b",
+      "source": "result/data/v4_qns27_seed3184/nu1of3_v4_outer_c3/p0/jax_neural_bloch_trace.json"
+    },
+    "qns27/traces/nu1of3_v4_outer_c3_p1.json": {
+      "bytes": 126585,
+      "sha256": "ed37f1cd1d511c9817c852b5d3613be1ade5eaae9d089353a3db11c80914ed82",
+      "source": "result/data/v4_qns27_seed3184/nu1of3_v4_outer_c3/p1/jax_neural_bloch_trace.json"
+    },
+    "qns27/traces/nu1of3_v4_outer_c3_p2.json": {
+      "bytes": 126596,
+      "sha256": "a2f7f2934dd7a5d71cb56103bdcaeb62ac5daacd4ff53b336cccc5aa0eac58ac",
+      "source": "result/data/v4_qns27_seed3184/nu1of3_v4_outer_c3/p2/jax_neural_bloch_trace.json"
+    },
+    "qns27/diagnostics/nu2of3_full_m.npz": {
+      "bytes": 37492,
+      "sha256": "2bc7af2b19e9aab4be9e85d368785866b997cf89718f8a280d2530764923b39d",
+      "source": "result/data/v4_qns27_observables/nu2of3_full_m/qns27_diagnostics.npz"
+    },
+    "qns27/diagnostics/nu2of3_full_m.json": {
+      "bytes": 1744,
+      "sha256": "1d8f94ee0a3f6b7adaa8a7648448e4d3b62fa0933c5529c7a81f48a38d7f716c",
+      "source": "result/data/v4_qns27_observables/nu2of3_full_m/qns27_diagnostics.json"
+    },
+    "qns27/diagnostics/nu2of3_v4_gamma.npz": {
+      "bytes": 37507,
+      "sha256": "a9715e28117bbb10647dd9eb3bf50b32bbb05e09168f518f661c55422351db39",
+      "source": "result/data/v4_qns27_observables/nu2of3_v4_gamma/qns27_diagnostics.npz"
+    },
+    "qns27/diagnostics/nu2of3_v4_gamma.json": {
+      "bytes": 1736,
+      "sha256": "03f6434d83c86429c99ffc0c295de8afd6961891c171a168cccd54bbd0ae9684",
+      "source": "result/data/v4_qns27_observables/nu2of3_v4_gamma/qns27_diagnostics.json"
+    },
+    "qns27/diagnostics/nu2of3_v4_outer_c3_p0.npz": {
+      "bytes": 37525,
+      "sha256": "8f0c809437ddb44bcfe8e5b2239f6862226354d1a178f2873657e6a435202803",
+      "source": "result/data/v4_qns27_observables/nu2of3_v4_outer_c3_p0/qns27_diagnostics.npz"
+    },
+    "qns27/diagnostics/nu2of3_v4_outer_c3_p0.json": {
+      "bytes": 1744,
+      "sha256": "468167d29ae1fd3181ecbf269130061672c828e9b3639fa745d1b3bb09efed4e",
+      "source": "result/data/v4_qns27_observables/nu2of3_v4_outer_c3_p0/qns27_diagnostics.json"
+    },
+    "qns27/diagnostics/nu2of3_v4_outer_c3_p1.npz": {
+      "bytes": 37483,
+      "sha256": "028fbfca31e4dba89cca1078a31db9248478123eb1d43db50c7319fd775b37b7",
+      "source": "result/data/v4_qns27_observables/nu2of3_v4_outer_c3_p1/qns27_diagnostics.npz"
+    },
+    "qns27/diagnostics/nu2of3_v4_outer_c3_p1.json": {
+      "bytes": 1745,
+      "sha256": "fe5533dca96e1a1280b342ce26b4152c106d4bb7395c0908394f0c94137d2407",
+      "source": "result/data/v4_qns27_observables/nu2of3_v4_outer_c3_p1/qns27_diagnostics.json"
+    },
+    "qns27/diagnostics/nu2of3_v4_outer_c3_p2.npz": {
+      "bytes": 37515,
+      "sha256": "47a5845ce1be3b127cda05d635b039ba0d608e9abfd040d722201353e38ccc34",
+      "source": "result/data/v4_qns27_observables/nu2of3_v4_outer_c3_p2/qns27_diagnostics.npz"
+    },
+    "qns27/diagnostics/nu2of3_v4_outer_c3_p2.json": {
+      "bytes": 1749,
+      "sha256": "2e8e3c7e1fd7eadf9060664112db845af25b39a4fa3313ceb4df1e35f356ad1d",
+      "source": "result/data/v4_qns27_observables/nu2of3_v4_outer_c3_p2/qns27_diagnostics.json"
+    },
+    "qns27/traces/nu2of3_full_m.json": {
+      "bytes": 117137,
+      "sha256": "bd8b02e49045da8e3364b7591f55ee9758b244c20e0bf3125740dec4ba80db36",
+      "source": "result/data/qns27_width64_seed3184/nu2of3_full_m/jax_neural_bloch_trace.json"
+    },
+    "qns27/traces/nu2of3_v4_gamma.json": {
+      "bytes": 126781,
+      "sha256": "6fe232ec37f9ca863d15358aedd9eca37c6c565850b479c1180b6d8d90e9409c",
+      "source": "result/data/v4_qns27_seed3184/nu2of3_v4_gamma/jax_neural_bloch_trace.json"
+    },
+    "qns27/traces/nu2of3_v4_outer_c3_p0.json": {
+      "bytes": 126301,
+      "sha256": "834ba7f678e66c427ff798062062c642710e278fb965f8a41e1beedf60ef4715",
+      "source": "result/data/v4_qns27_seed3184/nu2of3_v4_outer_c3/p0/jax_neural_bloch_trace.json"
+    },
+    "qns27/traces/nu2of3_v4_outer_c3_p1.json": {
+      "bytes": 126314,
+      "sha256": "ba27d749ee3cc24ed4300db43bc461fbc3328fcd8160ca11d7c3105098114c48",
+      "source": "result/data/v4_qns27_seed3184/nu2of3_v4_outer_c3/p1/jax_neural_bloch_trace.json"
+    },
+    "qns27/traces/nu2of3_v4_outer_c3_p2.json": {
+      "bytes": 126409,
+      "sha256": "bbc32453b5cb9f2d7001c89a948675ddf9c6fd2de4d2209c34423e68424ab2f8",
+      "source": "result/data/v4_qns27_seed3184/nu2of3_v4_outer_c3/p2/jax_neural_bloch_trace.json"
+    },
+    "qns27/timing.json": {
+      "bytes": 18299,
+      "sha256": "904624a5aff6651ebbcd1f902734a5718605cc2dd74c2bf63ea5114b8a83d05f",
+      "source": "selected local queue metadata"
+    }
+  }
+}

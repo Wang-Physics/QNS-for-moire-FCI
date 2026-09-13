@@ -1,4 +1,8 @@
 .venv/
+.tools/
+.python/
+.uv-cache/
+.jax-cache/
 __pycache__/
 *.py[cod]
 .pytest_cache/

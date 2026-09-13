@@ -36,6 +36,7 @@ def bloch_orbital_values(
     continuum,
 ) -> torch.Tensor:
     cache = np.load(DATA / "fig2_5band_operator_cache.npz")
+    mesh = np.load(DATA / "fig2_bloch_mesh.npz")
     vectors = np.asarray(cache["vectors"])[..., :n_bands]
     coefficients = (
         vectors.reshape(9, continuum.dim, n_bands)
@@ -43,15 +44,22 @@ def bloch_orbital_values(
         .reshape(9 * n_bands, 2, continuum.n_g)
     )
     momenta = np.repeat(
-        np.asarray(cache["k_points"]).reshape(9, 2), n_bands, axis=0
+        np.asarray(mesh["k_points"]).reshape(9, 2), n_bands, axis=0
     )
-    coefficient_tensor = torch.as_tensor(coefficients, dtype=torch.complex128)
-    momentum_tensor = torch.as_tensor(momenta, dtype=positions.dtype)
-    g_tensor = torch.as_tensor(continuum.g_vectors, dtype=positions.dtype)
+    coefficient_tensor = torch.as_tensor(
+        coefficients, dtype=torch.complex128, device=positions.device
+    )
+    momentum_tensor = torch.as_tensor(
+        momenta, dtype=positions.dtype, device=positions.device
+    )
+    g_tensor = torch.as_tensor(
+        continuum.g_vectors, dtype=positions.dtype, device=positions.device
+    )
     reciprocal = np.stack([continuum.b1, continuum.b2])
     primitive = 2.0 * np.pi * np.linalg.inv(reciprocal)
     supercell = torch.as_tensor(
-        primitive @ np.diag([3.0, 3.0]), dtype=positions.dtype
+        primitive @ np.diag([3.0, 3.0]), dtype=positions.dtype,
+        device=positions.device,
     )
     cartesian = torch.einsum("ac,bnc->bna", supercell, positions)
     plane_momentum = momentum_tensor[:, None] + g_tensor[None]
@@ -73,7 +81,8 @@ def ed_coordinate_wavefunction(
     result = torch.zeros(batch, dtype=torch.complex128)
     for start in range(0, len(occupied), chunk_size):
         selected = torch.as_tensor(
-            occupied[start : start + chunk_size], dtype=torch.long
+            occupied[start : start + chunk_size], dtype=torch.long,
+            device=orbital_values.device,
         )
         count = len(selected)
         matrices = orbital_values[:, :, selected.reshape(-1)]
@@ -81,7 +90,8 @@ def ed_coordinate_wavefunction(
         matrices = matrices.permute(0, 2, 1, 3)
         determinants = torch.linalg.det(matrices)
         coefficient = torch.as_tensor(
-            amplitudes[start : start + count], dtype=torch.complex128
+            amplitudes[start : start + count], dtype=torch.complex128,
+            device=orbital_values.device,
         )
         result = result + torch.sum(determinants * coefficient[None], dim=1)
     return result
