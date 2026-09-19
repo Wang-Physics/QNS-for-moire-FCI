@@ -30,6 +30,12 @@ from src.qns27_diagnostics import (
     _physical_rotation_residual,
     _rotation_permutation,
 )
+from src.qns27_importance_obdm import (
+    _block_ratio,
+    _five_band_c3_sewing_audit,
+    _orbital_mixture_density,
+    _uniform_rejection_envelope,
+)
 
 
 class QNS27Checks(unittest.TestCase):
@@ -107,6 +113,42 @@ class QNS27Checks(unittest.TestCase):
         selected = coefficients[:, layers, :].transpose(1, 0, 2)
         expected = np.sum(selected * np.exp(1j * phase), axis=-1)
         np.testing.assert_allclose(actual, expected, rtol=2e-13, atol=2e-13)
+
+    def test_importance_density_has_certified_uniform_envelope(self):
+        coefficients, momenta = _five_band_orbitals()
+        rng = np.random.default_rng(250311756)
+        positions = rng.random((128, 2))
+        layers = rng.integers(0, 2, size=128)
+        density = _orbital_mixture_density(
+            positions, layers, coefficients, momenta, 128
+        )
+        envelope = _uniform_rejection_envelope(coefficients)
+        self.assertTrue(np.all(density > 0.0))
+        self.assertLessEqual(float(np.max(2.0 * density)), envelope)
+
+    def test_first_five_band_projectors_obey_c3_sewing(self):
+        audit = _five_band_c3_sewing_audit()
+        self.assertGreater(audit["minimum_singular_value"], 0.999999)
+        self.assertLess(audit["maximum_interband_leakage"], 2.0e-6)
+        self.assertLess(audit["maximum_diagonal_magnitude_error"], 1.0e-7)
+
+    def test_importance_block_ratio_does_not_constrain_trace(self):
+        denominator = np.array([[1., 2.], [3., 4.], [2., 1.], [4., 3.]])
+        numerator = np.array([[.1, .5], [.2, .7], [.4, .9], [.8, 1.2]])
+        mean, sem, blocks = _block_ratio(numerator, denominator, 2)
+        expected_blocks = np.stack([
+            numerator[:2].mean(0) / denominator[:2].mean(0),
+            numerator[2:].mean(0) / denominator[2:].mean(0),
+        ])
+        np.testing.assert_allclose(mean, numerator.mean(0) / denominator.mean(0))
+        np.testing.assert_allclose(blocks, expected_blocks)
+        np.testing.assert_allclose(sem, expected_blocks.std(0, ddof=1) / np.sqrt(2))
+        self.assertFalse(np.isclose(mean.sum(), 1.))
+        # Linear scaling of the numerator must remain visible, unlike a
+        # particle-trace normalization or an ED-profile constraint.
+        scaled, scaled_sem, _ = _block_ratio(3 * numerator, denominator, 2)
+        np.testing.assert_allclose(scaled, 3 * mean)
+        np.testing.assert_allclose(scaled_sem, 3 * sem)
 
     def test_first_bz_fourier_grid_is_c6_closed(self):
         points = first_bz_c6_grid()

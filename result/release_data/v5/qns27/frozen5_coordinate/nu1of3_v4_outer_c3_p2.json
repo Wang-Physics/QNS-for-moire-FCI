@@ -1,6 +1,7 @@
 {
   "status": "complete",
   "samples": "result/data/v4_qns27_frozen5_samples/nu1of3_v4_outer_c3_p2.npz",
+  "training_step": 240,
   "parameters_frozen": true,
   "optimizer_updates": 0,
   "unique_walker_chains": 4128,
@@ -9,13 +10,13 @@
   "coordinate_samples": 20640,
   "storage_order": "walker-major, then measurement time",
   "error_blocks": 8,
-  "structure_factor_estimator": "Luo full S(q)=<|sum_i exp(i q.r_i)|^2>/N_e for q!=0, evaluated directly from five measurement-only snapshots of the step-120 frozen wavefunction; no auxiliary coordinate, q+G substitution, Bloch-band projection, or C3 average",
+  "structure_factor_estimator": "Luo full S(q)=<|sum_i exp(i q.r_i)|^2>/N_e for q!=0, evaluated directly from five measurement-only snapshots of the step-240 frozen wavefunction; no auxiliary coordinate, q+G substitution, Bloch-band projection, or C3 average",
   "structure_factor_grid_points": 27,
   "structure_factor_projected_density": false,
   "structure_factor_periodic_wigner_seitz": true,
   "structure_factor_c3_matched_physical_points": 21,
-  "structure_factor_raw_c3_residual": 0.016137187734606262,
-  "maximum_nonzero_structure_factor": 1.2112441486638679,
-  "maximum_nonzero_density_amplitude": 0.010397164428488419,
-  "wall_seconds": 4.422468987002503
+  "structure_factor_raw_c3_residual": 0.025329021813276897,
+  "maximum_nonzero_structure_factor": 1.6243313392710632,
+  "maximum_nonzero_density_amplitude": 0.009314773358901733,
+  "wall_seconds": 4.323020639945753
 }

@@ -51,11 +51,21 @@ def main() -> None:
         coordinate_metadata = json.loads(
             coordinate_path.with_suffix(".json").read_text()
         )
-        expected_draws = 128
+        expected_draws = 64
         assert metadata["auxiliary_draws_per_sample"] == expected_draws
-        assert metadata["coordinate_samples"] == 4128
-        assert metadata["auxiliary_sampling"].startswith("Cranley-Patterson")
+        assert metadata["error_blocks"] == 32
+        assert metadata["coordinate_samples"] == 20640
+        assert metadata["unique_walker_chains"] == 4128
+        assert metadata["measurement_steps"] == 5
+        assert metadata["parameters_frozen"] is True
+        assert metadata["optimizer_updates"] == 0
+        assert metadata["auxiliary_sampling"].startswith("PyQMC-style")
         assert "physical first-BZ k points" in metadata["one_body_estimator"]
+        assert "no particle-trace" in metadata["one_body_estimator"]
+        assert metadata["auxiliary_orbital_normalization_max_error"] < 0.02
+        sewing = metadata["bloch_projector_c3_sewing_audit"]
+        assert sewing["minimum_singular_value"] > 0.999999
+        assert sewing["maximum_interband_leakage"] < 2.0e-6
         assert metadata["momentum_occupation_first_five_raw_sum_sem"] >= 0.0
         assert coordinate_metadata["coordinate_samples"] == 20640
         assert coordinate_metadata["unique_walker_chains"] == 4128
@@ -84,6 +94,27 @@ def main() -> None:
             assert all(np.all(np.isfinite(value)) for value in (
                 nk, nk_raw, nk_total, nk_total_raw, sq
             ))
+            blocks = record["one_body_density_diagonal_block_estimates"]
+            assert blocks.shape == (32, 27, 5)
+            np.testing.assert_allclose(
+                blocks.sum(axis=(1, 2)).std(ddof=1) / np.sqrt(32),
+                metadata["momentum_occupation_first_five_raw_sum_sem"],
+            )
+            class_rotation = np.asarray(cluster().rotation60)
+            class_rotation = class_rotation[class_rotation]
+            if "outer_c3" in path.stem:
+                nk_improved = record["momentum_occupation_band1_c3_improved"]
+                nt_improved = record[
+                    "momentum_occupation_first_five_c3_improved"
+                ]
+                np.testing.assert_allclose(
+                    nk_improved, nk_improved[class_rotation], atol=2e-14
+                )
+                np.testing.assert_allclose(
+                    nt_improved, nt_improved[class_rotation], atol=2e-14
+                )
+                np.testing.assert_allclose(nk_improved.sum(), nk_raw.sum())
+                np.testing.assert_allclose(nt_improved.sum(), nk_total_raw.sum())
             assert np.min(sq) >= -2e-12
             np.testing.assert_allclose(
                 nk.sum(), metadata["n_particles"], rtol=0.0, atol=2e-12,
@@ -100,8 +131,6 @@ def main() -> None:
                 nk_total_raw.sum(), record["one_body_density_diagonal"].sum(),
                 rtol=0.0, atol=2e-10,
             )
-            class_rotation = np.asarray(cluster().rotation60)
-            class_rotation = class_rotation[class_rotation]
             nk_c3_residuals.append(float(np.max(np.abs(
                 nk_raw - nk_raw[class_rotation]
             ))))
@@ -134,12 +163,16 @@ def main() -> None:
         ["pdftotext", str(PDF), "-"], check=True, text=True,
         capture_output=True,
     ).stdout
-    assert "Pages:           27" in info
+    pages = int(next(line.split(":", 1)[1] for line in info.splitlines()
+                     if line.startswith("Pages:")))
+    assert pages >= 20
     assert "Version 5.0.0" in text
     assert "Bloch-projected" in text
     assert "27 physical" in text
     assert "band-complete momentum occupation" not in text.lower()
     assert "undefined" not in text.lower()
+    assert "PyQMC" in text
+    assert "32 blocks" in text
     print(json.dumps({
         "status": "passed",
         "diagnostics": len(diagnostics),
@@ -151,6 +184,7 @@ def main() -> None:
         "manifest_files": len(manifest["files"]),
         "figures": expected_figures,
         "pdf": str(PDF.relative_to(ROOT)),
+        "pdf_pages": pages,
     }, indent=2))
 
 

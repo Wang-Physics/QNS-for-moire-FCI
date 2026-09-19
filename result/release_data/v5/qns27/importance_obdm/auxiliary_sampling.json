@@ -1,0 +1,16 @@
+{
+  "status": "complete",
+  "output": "result/data/v5_qns27_importance_obdm/auxiliary_20640x64.npz",
+  "count": 20640,
+  "draws": 64,
+  "sweeps_per_draw": 1,
+  "seed": 250311756,
+  "target_density": "mean_a |phi_a(x)|^2 over 27 k x first 5 bands",
+  "initialization": "exact rejection sample from uniform position and layer",
+  "rejection_envelope": 6.13162447692116,
+  "initial_rejection_acceptance": 0.14181570828838608,
+  "independence_metropolis_acceptance": 0.6738133690168574,
+  "mean_inverse_density": 2.000313666506955,
+  "expected_mean_inverse_density": 2.0,
+  "wall_seconds": 102.19105252099689
+}

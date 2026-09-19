@@ -22,18 +22,20 @@ conditionally normalized variants are retained in the diagnostics, but neither
 plotted occupation is trace-normalized and no ED
 momentum profile is fitted.
 `S(q)` is Luo et al.'s full real-space density-pair structure factor, evaluated
-directly at the same 27 physical first-BZ vectors drawn for ED. The occupation
-baseline uses 4,128 final walkers and 128 auxiliary coordinates per walker.
-For the cheaper coordinate-only observables, step-120 parameters are frozen
-and five measurement-only steps provide 20,640 configurations for `S(q)` and
-the density. No auxiliary coordinate or Bloch-band projection enters `S(q)`,
+directly at the same 27 physical first-BZ vectors drawn for ED.  For all
+post-training observables, step-240 parameters are frozen and five
+measurement-only steps provide 20,640 configurations from 4,128 walker
+chains. Occupations additionally use 64 auxiliary coordinates sampled from
+the PyQMC orbital-mixture importance density and a unit-orbital normalization
+control; this does not normalize the many-body trace. No auxiliary coordinate
+or Bloch-band projection enters `S(q)`,
 and no value is replaced by `q+G`. A uniform 91-point transform is retained
 only as an auxiliary diagnostic and is not plotted.
 
 The nine-cell jobs use width 32 and the 27-cell jobs width 64, with 4,128
-persistent walkers and 120 natural-gradient updates. The three outer-`C3`
+persistent walkers. The 27-cell results use 240 natural-gradient updates. The three outer-`C3`
 branches start from the same seed, use 20 shared-mixture-sampling updates, and
-then continue with independent parameters and walkers for 100 updates.
+then continue with independent parameters and walkers for 220 updates.
 Energies are final-ten means of correlated training chains; RMS is a
 tail-stability diagnostic rather than an independent uncertainty.
 
@@ -41,15 +43,15 @@ tail-stability diagnostic rather than an independent uncertainty.
 |---:|---|---|---:|---:|
 | 9 | `1/3` | `P0 P_Gamma[M]` | `-37.3215 (0.0244)` | five-band: `-37.39323` |
 | 9 | `2/3` | `P2 P_Gamma[M]` | `-52.9124 (0.0616)` | five-band: `-52.72554` |
-| 27 | `1/3` | `P0 P_Gamma[M]` | `-47.5342 (0.0347)` | one-band: `-47.59546` |
-| 27 | `2/3` | `P1 P_Gamma[M]` | `-60.4155 (0.0391)` | one-band: `-57.45573` |
+| 27 | `1/3` | `P0 P_Gamma[M]` | `-48.2946 (0.0362)` | one-band: `-47.59546` |
+| 27 | `2/3` | `P1 P_Gamma[M]` | `-60.7064 (0.0221)` | one-band: `-57.45573` |
 
 Figures 6 and 7 summarize the nine- and 27-cell energies, all three outer
 branches, bare-band weights and timing. Figures 8--10 compare, in order, the
 27-cell raw five-band-total `n_tot(k)`, unrescaled physical
 first-band `n_1(k)`, full
 `S(q)`, and folded density. Both occupations and `S(q)` use the 27 ED dots.
-The QNS observables are neither C3 averaged nor occupation-trace normalized.
+The plotted QNS observables are neither C3 averaged nor occupation-trace normalized.
 Thus their visible C3 residuals remain genuine
 diagnostics.
 
@@ -59,7 +61,7 @@ diagnostics.
 - `src/jax_neural_bloch.py`: double-precision JAX wavefunction and continuum local energy.
 - `src/run_jax_neural_bloch.py`: matrix-free natural gradient with ordinary CG.
 - `src/neural_bloch_diagnostics.py`: nine-cell complete-ratio 1-RDM and observables.
-- `src/qns27.py`, `src/qns27_diagnostics.py`: 27-cell geometry, projected training, and observables.
+- `src/qns27.py`, `src/qns27_diagnostics.py`, `src/qns27_importance_obdm.py`: 27-cell geometry, projected training, and low-variance Bloch occupations.
 - `src/assemble_v5_release_data.py`: compact v5 figure-data assembly and checksums.
 - `src/make_v5_figures.py`: final Figs. 6–11.
 - `native/`: C++17 sparse-ED and observable kernels, compiled automatically when needed.
@@ -99,6 +101,26 @@ python scripts/launch_v4_outer_c3_9cell_queue.py
 python scripts/launch_v4_qns27_queue.py
 python scripts/update_v4_27_observables.py
 ```
+
+For the updated occupations, with the completed step-240 checkpoints and
+five frozen measurement snapshots available locally:
+
+```bash
+python -m src.qns27_importance_obdm auxiliary-cache \
+  --output result/data/v5_qns27_importance_obdm/auxiliary_20640x64.npz \
+  --count 20640 --draws 64
+python -m scripts.update_v5_importance_obdm --draws 64 --error-blocks 32 --detach
+# After all ten states are complete:
+python -m src.summarize_importance_obdm
+python -m src.assemble_v5_release_data
+python -m src.make_v5_figures
+```
+
+Each occupation job saves a checkpoint every four auxiliary draws. The
+frozen samples retain five correlated times per chain; the 32 error blocks
+keep all times from each chain together. Their SEM is an empirical precision
+estimate, not a test of independent equilibration. Optional C3-averaged arrays
+are labelled separately and are not used in the report figures.
 
 The jobs are GPU calculations and write raw walkers/checkpoints below
 `result/data/`; those large files are intentionally not versioned. The compact

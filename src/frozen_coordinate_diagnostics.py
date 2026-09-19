@@ -29,6 +29,9 @@ def run(args: argparse.Namespace) -> dict:
         positions = np.asarray(payload["positions"])
         walker_id = np.asarray(payload["walker_id"])
         measurement_step = np.asarray(payload["measurement_step"])
+    sample_metadata_path = args.samples.with_suffix(".json")
+    sample_metadata = json.loads(sample_metadata_path.read_text())
+    training_step = int(sample_metadata.get("training_step", 0))
     if len(positions) != 20640:
         raise ValueError("frozen five-step sample must contain 20,640 configurations")
     if len(np.unique(walker_id)) != 4128:
@@ -55,6 +58,7 @@ def run(args: argparse.Namespace) -> dict:
     result = {
         "status": "complete",
         "samples": str(args.samples.resolve()),
+        "training_step": training_step,
         "parameters_frozen": True,
         "optimizer_updates": 0,
         "unique_walker_chains": 4128,
@@ -66,7 +70,7 @@ def run(args: argparse.Namespace) -> dict:
         "structure_factor_estimator": (
             "Luo full S(q)=<|sum_i exp(i q.r_i)|^2>/N_e for q!=0, "
             "evaluated directly from five measurement-only snapshots of the "
-            "step-120 frozen wavefunction; no auxiliary coordinate, q+G "
+            f"step-{training_step} frozen wavefunction; no auxiliary coordinate, q+G "
             "substitution, Bloch-band projection, or C3 average"
         ),
         "structure_factor_grid_points": int(

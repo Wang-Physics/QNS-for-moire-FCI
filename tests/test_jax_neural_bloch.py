@@ -68,6 +68,14 @@ class JaxNeuralBlochParityTests(unittest.TestCase):
         self.assertIsNone(arguments.c3_irrep)
         self.assertFalse(arguments.fixed_gamma_no_m)
         self.assertFalse(arguments.v4_gamma_projected_m)
+        self.assertFalse(arguments.checkpoint_continuation)
+
+        continuation = parser().parse_args([
+            "--resume", "checkpoint.npz", "--steps", "240",
+            "--checkpoint-continuation",
+        ])
+        self.assertTrue(continuation.checkpoint_continuation)
+        self.assertEqual(continuation.steps, 240)
 
     def test_adaptive_cg_acceptance_and_recovery_state_machine(self):
         args = parser().parse_args([

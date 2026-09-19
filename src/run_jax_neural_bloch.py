@@ -537,7 +537,7 @@ def run(args):
         and args.steps == 200
     )
     allowed_checkpoint_continuation = (
-        args.checkpoint_additional_100_step
+        (args.checkpoint_additional_100_step or args.checkpoint_continuation)
         and args.resume is not None
         and args.steps >= 200
     )
@@ -567,6 +567,7 @@ def run(args):
         raise ValueError(
             "use 1000 paper-target updates, --exploratory-100-step with --steps 100, "
             "--exploratory-additional-100-step with a step-100 --resume and --steps 200, "
+            "--checkpoint-continuation with a production --resume, "
             "--adaptive-cg-120-step with --steps 120, or the explicit outer-C3 "
             "shared-20/branch-100 protocols"
         )
@@ -629,6 +630,7 @@ def run(args):
     resume_sampler_key = None
     resume_support = None
     resume_optimizer_state = None
+    resume_metadata = {}
     if args.resume is not None and args.parameter_init is not None:
         raise ValueError("--resume and --parameter-init are mutually exclusive")
     if args.parameter_init is not None:
@@ -668,6 +670,17 @@ def run(args):
             "--checkpoint-additional-100-step requires a positive continuation "
             "of at most 100 updates"
         )
+    if args.checkpoint_continuation:
+        if not start_step < args.steps:
+            raise ValueError(
+                "--checkpoint-continuation requires target --steps above the "
+                "saved training_step"
+            )
+        if resume_metadata.get("adaptive_cg") is None:
+            raise ValueError(
+                "--checkpoint-continuation requires an adaptive-CG production "
+                "checkpoint"
+            )
     if args.exploratory_additional_100_step and not (100 <= start_step < 200):
         raise ValueError(
             "--exploratory-additional-100-step requires a checkpoint with "
@@ -793,12 +806,16 @@ def run(args):
             "recovery_damping": args.recovery_damping,
             "recovery_learning_rate": args.recovery_learning_rate,
             "stable_steps_to_restore": args.recovery_stable_steps,
-        } if (args.adaptive_cg_120_step or allowed_outer_shared_20 or allowed_outer_branch_100) else None,
+        } if (
+            args.adaptive_cg_120_step or allowed_outer_shared_20
+            or allowed_outer_branch_100 or allowed_checkpoint_continuation
+        ) else None,
         "validation_during_training": False,
         "smoke_test": args.smoke_test,
         "exploratory_100_step": args.exploratory_100_step,
         "exploratory_additional_100_step": args.exploratory_additional_100_step,
         "checkpoint_additional_100_step": args.checkpoint_additional_100_step,
+        "checkpoint_continuation": args.checkpoint_continuation,
         "fixed_gamma_no_m": args.fixed_gamma_no_m,
         "c3_qns": args.c3_qns,
         "outer_c3_projector": args.outer_c3_projector,
@@ -835,6 +852,7 @@ def run(args):
         ) else None),
         "paper_optimization_settings_retained_except_total_steps": (
             args.exploratory_100_step or args.exploratory_additional_100_step
+            or allowed_checkpoint_continuation
         ),
         "resumed_from": None if args.resume is None else str(args.resume),
         "start_step": start_step,
@@ -895,7 +913,7 @@ def run(args):
         natural_gradient.damping = current_damping
         adaptive_protocol = (
             args.adaptive_cg_120_step or allowed_outer_shared_20
-            or allowed_outer_branch_100
+            or allowed_outer_branch_100 or allowed_checkpoint_continuation
         )
         if adaptive_protocol:
             direction, diagnostics = natural_gradient.direction(
@@ -1186,6 +1204,14 @@ def parser():
         help=(
             "continue any saved production checkpoint for exactly 100 updates "
             "while retaining all other protocol settings"
+        ),
+    )
+    result.add_argument(
+        "--checkpoint-continuation",
+        action="store_true",
+        help=(
+            "resume an adaptive-CG production checkpoint to an explicit larger "
+            "absolute --steps target, restoring walkers and optimizer state"
         ),
     )
     result.add_argument(

@@ -77,7 +77,7 @@ Rows compare both ansatzes at $\nu=1/3$ and $2/3$. Columns show
 $n_{\rm tot}(\bm k)$, the band-1 occupation, the full static structure factor transformed
 from the real-space density-pair correlation, and folded charge density. The
 $n_{\rm tot}$ distribution is the raw Bloch-projected sum over bands 1--5;
-its 27-value trace and eight-block SEM are printed in the panel title as
+its 27-value trace and 32-block SEM are printed in the panel title as
 $T_5\mathbin{\pm}\sigma_{T_5}$, with respectively three and two significant
 digits. The band-1 panel shows the
 unrescaled physical projection, whose sum is $N_eW_1$. The two momentum panels use
@@ -91,12 +91,14 @@ directly at the drawn first-BZ point and $\bm G$ occurs only inside the Bloch
 plane-wave expansion. Each $n_{\rm tot}$ panel title gives its unnormalized
 five-band trace $\sum_{\bm k}\widetilde n_{\rm tot}=T_5$ and statistical
 uncertainty. Neither occupation
-is trace-normalized, no observable is $C_3$ averaged, and no ED momentum
+is trace-normalized, no plotted observable is $C_3$ averaged, and no ED momentum
 profile enters the postprocessing. All
-occupations use the saved final 4,128-walker training ensembles and 128
-auxiliary coordinates per walker. The $S(\bm q)$ and density columns use
-20,640 configurations from five measurement-only steps of those same chains
-with the step-120 parameters frozen; no optimizer update is made.}
+occupations use 20,640 configurations from five frozen-parameter measurement
+steps of 4,128 walker chains and 64 PyQMC-style orbital-mixture importance
+samples per configuration.  The unit-orbital normalization control does not
+normalize the many-body trace. The $S(\bm q)$ and density columns use the same
+20,640 frozen-chain configurations without an auxiliary coordinate; no
+optimizer update is made.}
 \label{fig:nbobservables-baseline}
 \end{figure}
 
@@ -119,8 +121,8 @@ comparison without sector-by-sector rescaling.}
 \includegraphics[width=\textwidth,height=.84\textheight,keepaspectratio]{fig10_27cell_qns_observables_nu2of3.pdf}
 \caption{\textbf{Twenty-seven-cell $\nu=2/3$ outer-sector observables.}
 Rows are $P_0,P_1,P_2$ and columns use the same definitions, color limits and
-marker rules as Fig.~\ref{fig:nbobservables13}. The nearly
-degenerate final-ten $m=1,2$ energies are not by themselves evidence of a
+marker rules as Fig.~\ref{fig:nbobservables13}. The nearby
+final-ten $m=1,2$ energies are not by themselves evidence of a
 converged three-state manifold.}
 \label{fig:nbobservables23}
 \end{figure}
@@ -134,6 +136,6 @@ True relative residuals are recomputed from $F-(S+\lambda I)\Delta\theta$.
 Columns compare nine and 27 cells and rows compare $\nu=1/3$ and $2/3$.
 Horizontal lines mark the 0.02 early-stop and 0.05 cap-acceptance thresholds;
 the vertical line marks update 20. The 27-cell residual excursions and rejected
-updates show that the 120-step energies remain finite-optimization diagnostics.}
+updates show that even the 240-step energies remain finite-optimization diagnostics.}
 \label{fig:cgstability}
 \end{figure}

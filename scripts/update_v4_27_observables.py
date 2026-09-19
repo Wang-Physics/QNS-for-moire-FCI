@@ -56,6 +56,7 @@ def run_one(job: dict, gpu: int) -> dict:
         record = json.loads(completed.read_text())
         if (
             record.get("status") == "complete"
+            and record.get("training_step") == 240
             and "momentum_occupation_band1_normalized_sum" in record
             and "momentum_occupation_first_five_raw_sum" in record
             and "momentum_occupation_first_five_raw_sum_sem" in record
@@ -130,7 +131,7 @@ def worker() -> None:
     lane1 = all_jobs[1::2]
     started = time.monotonic()
     write_json(DEST / "status.json", {
-        "status": "running", "started": stamp(),
+        "status": "running", "started": stamp(), "training_step": 240,
         "jobs": [job["stem"] for job in all_jobs],
     })
     try:
@@ -139,6 +140,7 @@ def worker() -> None:
             records = [record for future in futures for record in future.result()]
         summary = {
             "status": "complete", "finished": stamp(),
+            "training_step": 240,
             "wall_seconds": time.monotonic() - started,
             "jobs": sorted(records, key=lambda item: item["checkpoint"]),
         }

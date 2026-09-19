@@ -108,10 +108,15 @@ def clean_axis(axis: plt.Axes) -> None:
 
 def value_with_sem(value: float, sem: float) -> str:
     """Format a three-significant-digit estimate and two-digit SEM."""
+    center = np.format_float_positional(
+        value, precision=3, unique=False, fractional=False, trim="k"
+    )
     if not (np.isfinite(value) and np.isfinite(sem)) or sem <= 0:
-        return f"{value:.3g}"
-    sem_decimals = max(0, 1 - math.floor(math.log10(abs(sem))))
-    return f"{value:.3g}\\pm{sem:.{sem_decimals}f}"
+        return center
+    error = np.format_float_positional(
+        sem, precision=2, unique=False, fractional=False, trim="k"
+    )
+    return f"{center}\\pm{error}"
 
 
 def plot_optimization(axis, trace_loader, filling, branches, ed=None) -> None:
@@ -127,7 +132,9 @@ def plot_optimization(axis, trace_loader, filling, branches, ed=None) -> None:
                      alpha=.50, edgecolors="none")
         all_values.append(energy)
     axis.axvline(20, color=".55", lw=.6, ls=(0, (2, 2)), zorder=0)
-    axis.set_xlim(0, 122)
+    maximum_step = max(int(row["step"]) for branch in branches
+                       for row in trace_loader(filling, branch))
+    axis.set_xlim(0, maximum_step + 2)
     values = np.concatenate(all_values)
     minimum = float(values.min())
     axis.set_ylim(minimum - .5, minimum + 10.0)
@@ -138,14 +145,16 @@ def plot_optimization(axis, trace_loader, filling, branches, ed=None) -> None:
 
 
 def plot_outer_trace(axis, trace_loader, filling) -> None:
+    maximum_step = 0
     for m in range(3):
         branch = f"outer{m}"
         record = trace_loader(filling, branch)
         axis.plot([row["step"] for row in record],
                   [row["energy_per_particle_meV"] for row in record],
                   color=COLOR[branch], lw=.9, label=rf"$m={m}$")
+        maximum_step = max(maximum_step, max(int(row["step"]) for row in record))
     axis.axvline(20, color=".55", ls=":", lw=.7)
-    axis.set_xlim(0, 122)
+    axis.set_xlim(0, maximum_step + 2)
     axis.set_xlabel("NG update")
     axis.set_ylabel(r"$E/N_e$ (meV)")
     axis.yaxis.set_major_locator(MaxNLocator(4))
@@ -335,6 +344,11 @@ def figure7() -> None:
             axes[row, col].set_title(rf"27 cells, $\nu={filling}$: {title}", fontweight="bold")
     for lower, filling in enumerate(("1/3", "2/3"), start=2):
         plot_outer_trace(axes[lower, 0], trace27, filling)
+        # Use the same energy window as the corresponding summary trace above.
+        # The projected branches have very large initialization transients;
+        # matching panels (g,j) to (a,d) keeps the converged 0--240 evolution
+        # directly comparable instead of letting those transients dominate.
+        axes[lower, 0].set_ylim(axes[lower - 2, 0].get_ylim())
         plot_offsets(axes[lower, 1], trace27, filling)
         plot_timing(axes[lower, 2], timing27(filling), 27)
         axes[lower, 0].set_title(rf"27 cells, $\nu={filling}$: outer sectors", fontweight="bold")
@@ -375,7 +389,12 @@ def figure11() -> None:
             axis.axhline(.02, color=".35", lw=.65, ls=(0, (2, 2)))
             axis.axhline(.05, color="#D55E00", lw=.65, ls=(0, (3, 2)))
             axis.set_yscale("log")
-            axis.set_xlim(0, 122)
+            maximum_step = max(
+                int(item["step"])
+                for branch in ("full", "gamma", chosen)
+                for item in loader(filling, branch)
+            )
+            axis.set_xlim(0, maximum_step + 2)
             axis.set_ylim(7e-3, .65)
             axis.set_title(rf"{cells} cells, $\nu={filling}$", fontweight="bold")
             axis.set_xlabel("NG update")

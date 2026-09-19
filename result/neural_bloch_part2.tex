@@ -762,10 +762,10 @@ translation average in Eq.~\eqref{eq:v4gamma} by the exact 27-element finite
 translation group.  The network width and orbital-MLP width are both 64.
 Consequently the $N_e=9$ and 18 states contain 571,374 and 571,860 real
 trainable parameters, respectively.  The sampler still contains 4,128
-persistent walkers and uses 300 burn sweeps, two sweeps per update and 120
-natural-gradient updates.  Full $M$, $P_\Gamma[M]$, and every outer sector
+persistent walkers and uses 300 initial burn sweeps, two sweeps per update and
+240 natural-gradient updates.  Full $M$, $P_\Gamma[M]$, and every outer sector
 use seed 3184.  For the outer calculation, the first 20 updates use the
-shared-mixture pool and the remaining 100 updates use independently evolved
+shared-mixture pool and the remaining 220 updates use independently evolved
 parameters and walkers, exactly as in the nine-cell protocol.
 
 \begin{table}[H]
@@ -777,19 +777,19 @@ by the explicit true-residual criterion.}
 \resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}llrrr@{}}
 \toprule
-$\nu$ & ansatz & $\langle E/N_e\rangle$ & RMS & reject$_{120}$\\
+$\nu$ & ansatz & $\langle E/N_e\rangle$ & RMS & reject$_{240}$\\
 \midrule
-$1/3$ & full $M$ & $-46.3697$ & 0.0343 & 59\\
-$1/3$ & v5 $P_\Gamma[M]$ & $-46.6770$ & 0.0346 & 49\\
-$1/3$ & v5 $P_0P_\Gamma[M]$ & $-47.5342$ & 0.0347 & 24\\
-$1/3$ & v5 $P_1P_\Gamma[M]$ & $-46.7285$ & 0.0329 & 32\\
-$1/3$ & v5 $P_2P_\Gamma[M]$ & $-46.6239$ & 0.0309 & 40\\
+$1/3$ & full $M$ & $-46.6494$ & 0.0503 & 154\\
+$1/3$ & v5 $P_\Gamma[M]$ & $-47.0017$ & 0.0304 & 139\\
+$1/3$ & v5 $P_0P_\Gamma[M]$ & $-48.2946$ & 0.0362 & 73\\
+$1/3$ & v5 $P_1P_\Gamma[M]$ & $-47.6377$ & 0.0272 & 83\\
+$1/3$ & v5 $P_2P_\Gamma[M]$ & $-47.3865$ & 0.0359 & 101\\
 \midrule
-$2/3$ & full $M$ & $-59.5784$ & 0.0514 & 94\\
-$2/3$ & v5 $P_\Gamma[M]$ & $-59.8350$ & 0.0217 & 92\\
-$2/3$ & v5 $P_0P_\Gamma[M]$ & $-60.2690$ & 0.0161 & 91\\
-$2/3$ & v5 $P_1P_\Gamma[M]$ & $-60.4155$ & 0.0391 & 75\\
-$2/3$ & v5 $P_2P_\Gamma[M]$ & $-60.3833$ & 0.0249 & 85\\
+$2/3$ & full $M$ & $-60.0979$ & 0.0281 & 210\\
+$2/3$ & v5 $P_\Gamma[M]$ & $-60.2554$ & 0.0443 & 209\\
+$2/3$ & v5 $P_0P_\Gamma[M]$ & $-60.5228$ & 0.0281 & 202\\
+$2/3$ & v5 $P_1P_\Gamma[M]$ & $-60.7064$ & 0.0221 & 188\\
+$2/3$ & v5 $P_2P_\Gamma[M]$ & $-60.6500$ & 0.0313 & 191\\
 \bottomrule
 \end{tabular}%
 }
@@ -800,10 +800,10 @@ layout for 27 cells.  Because a five-band 27-cell ED calculation is not
 available, its energy-comparison panels use the five QNS method labels on the
 horizontal axis.  The one-band ED energies $-47.595463$ and $-57.455730$ meV
 per particle are horizontal dashed references at $\nu=1/3$ and $2/3$.
-At $\nu=1/3$, outer $m=0$ is lowest and lies 0.0612 meV per particle above
+At $\nu=1/3$, outer $m=0$ is lowest and lies 0.6992 meV per particle below
 the one-band ED reference.  At $\nu=2/3$, outer $m=1$ is lowest; it and
-$m=2$ differ by only 0.0322 meV per particle, below their combined tail
-scatter.  All continuum QNS values at this filling lie below one-band ED
+$m=2$ differ by 0.0565 meV per particle, comparable to their combined tail
+scatter.  All continuum QNS values at both fillings can lie below one-band ED
 because the neural state contains continuum/remote-band freedom absent from
 the one-band projected Hamiltonian.  This is not a variational violation and
 the dashed line is a reference, not a matched-Hamiltonian bound.
@@ -818,7 +818,7 @@ not be confused with the latency or GPU allocation of a single isolated run.
 
 \begin{table}[H]
 \centering
-\caption{Twenty-seven-cell ED/QNS timing. QNS rows are 120-update training
+\caption{Twenty-seven-cell ED/QNS timing. QNS rows are complete 240-update training
 jobs. Outer wall time is the observed two-GPU critical path; allocated GPU
 time sums both lanes.}
 \label{tab:qns27-efficiency}
@@ -828,15 +828,15 @@ time sums both lanes.}
 $\nu$ & workflow & wall time & allocated GPU time\\
 \midrule
 $1/3$ & one-band ED, $\Gamma$ & $\sim30$ s & ---\\
-$1/3$ & full $M$ & 2.37 h & 2.37 GPU h\\
-$1/3$ & v5 $P_\Gamma[M]$ & 2.38 h & 2.38 GPU h\\
-$1/3$ & outer, complete / amortized & 14.33 / 4.78 h & 22.84 / 7.61 GPU h\\
+$1/3$ & full $M$ & 4.99 h & 4.99 GPU h\\
+$1/3$ & v5 $P_\Gamma[M]$ & 5.09 h & 5.09 GPU h\\
+$1/3$ & outer, complete / amortized & 37.08 / 12.36 h & 45.60 / 15.20 GPU h\\
 \midrule
 $2/3$ & one-band ED, $\Gamma$ & $\sim29$ s & ---\\
-$2/3$ & full $M$ & 10.89 h & 10.89 GPU h\\
-$2/3$ & v5 $P_\Gamma[M]$ & 11.11 h & 11.11 GPU h\\
-$2/3$ & outer, complete / amortized & 66.66 / 22.22 h & 106.58 / 35.53 GPU h\\
-both & 128-point occupation baseline, ten states & 18.56 min & 0.565 GPU h\\
+$2/3$ & full $M$ & 21.28 h & 21.28 GPU h\\
+$2/3$ & v5 $P_\Gamma[M]$ & 21.69 h & 21.69 GPU h\\
+$2/3$ & outer, complete / amortized & 132.29 / 44.10 h & 206.45 / 68.82 GPU h\\
+both & previous uniform 128-draw occupations, ten states & 18.44 min & 0.557 GPU h\\
 \bottomrule
 \end{tabular}%
 }
@@ -855,18 +855,23 @@ Figure~\ref{fig:nbobservables-baseline} compares full-$M$ and v5
 $P_\Gamma[M]$ at both fillings on 27 cells. Figures~\ref{fig:nbobservables13}
 and \ref{fig:nbobservables23} display all three 27-cell externally projected
 v5 sectors; the final-ten training minimum is selected from the completed
-local traces and marked in each figure. The occupation panels use the 4,128
-walkers saved at step 120. For the much cheaper coordinate-only observables,
-the step-120 parameters are then frozen and the same 4,128 chains are advanced
-for five measurement-only steps, giving 20,640 stored configurations for
-$S(\bm q)$ and $\rho(\bm r)$. No optimizer update is made in this measurement
-extension and no different training state is mixed into an average.
+local traces and marked in each figure. After step 240 the parameters are
+frozen and the same 4,128 chains are advanced for five measurement-only steps,
+giving 20,640 stored configurations for both occupations and the cheaper
+coordinate-only $S(\bm q)$ and $\rho(\bm r)$. No optimizer update is made in
+this measurement extension and no different training state is mixed into an
+average. Every occupation configuration is paired with 64 auxiliary
+coordinates sampled from the orbital-mixture importance density below.
 Both occupations and the structure factor are shown at exactly the 27 physical
 momentum vectors drawn in the ED figure. The occupation points label Bloch
 states, while the structure-factor points are literal Fourier vectors. A
 uniform 91-vector transform is retained only as an auxiliary diagnostic.
-No observable is $C_3$ averaged and no ED momentum profile is used in
-postprocessing.
+No plotted observable is $C_3$ averaged and no ED momentum profile is used in
+postprocessing.  Figure~3c of Ref.~\cite{limomentum} instead displays the
+equal-weight occupation averaged over three degenerate FCI states.  We do not
+apply that manifold average here because the three optimized outer branches
+are not established as a converged degenerate manifold; doing so would change
+the reported observable and could hide single-state estimator residuals.
 
 \subsection{Bloch-projected momentum occupations and bare-band weights}
 
@@ -876,8 +881,8 @@ $a=(n,\bm k)$ and $b=(m,\bm q)$, first define the continuum one-body reduced
 density matrix and its bare-band projection,
 \begin{align}
  \gamma_{ll'}(\bm r,\bm r')&=
- \langle\hat\psi_l^\dagger(\bm r)
- \hat\psi_{l'}(\bm r')\rangle,\\
+ \langle\hat\psi_{l'}^\dagger(\bm r')
+ \hat\psi_l(\bm r)\rangle,\\
  \rho_{ab}&=\sum_{ll'}\int d\bm r\,d\bm r'\,
  (\phi_a^0(\bm r,l))^*\nonumber\\[-2pt]
  &\hspace{18mm}\times\gamma_{ll'}(\bm r,\bm r')
@@ -886,24 +891,54 @@ density matrix and its bare-band projection,
 \end{align}
 This is the same one-body-RDM projection used in the v3 analysis. It is not a
 Fourier transform of the sampled scalar density and cannot be reconstructed
-from the density--density correlator used for $S(\bm q)$. Sampling one
-particle from $X$ and an independent uniformly distributed position and layer
-$x'=(\bm r',l')$ converts Eq.~\eqref{eq:continuum-rdm-projector} to
+from the density--density correlator used for $S(\bm q)$. Following the
+orbital analysis used for Fig.~3 of Ref.~\cite{limomentum}, which refers to
+the PyQMC one-body-RDM estimator~\cite{pyqmc}, define the normalized auxiliary
+density over fractional supercell position and layer,
+\begin{equation}
+\begin{gathered}
+ p(x')=\frac{1}{135}\sum_{n=1}^{5}\sum_{\bm k}
+       |\phi^0_{n\bm k}(x')|^2,\\
+ \sum_{l'}\int_{\rm SC}d\bm u'\,p(\bm u',l')=1 .
+\end{gathered}
+\label{eq:orbital-mixture-density}
+\end{equation}
+Sampling one particle from $X$ and an independent $x'$ from this density
+converts Eq.~\eqref{eq:continuum-rdm-projector} to
 \begin{equation}
 \begin{split}
  \rho_{ab}&=\langle c_b^\dagger c_a\rangle\\
- &=2N_e\,\mathbb E_{X\sim|\Psi|^2,i,x'}\!\left[
- (\phi_a^0(x_i))^*\phi_b^0(x')
+ &=N_e\mathbb E_{X\sim|\Psi|^2,i,x'\sim p}\!\left[
+ \frac{(\phi_a^0(x_i))^*\phi_b^0(x')}{p(x')}
  \left(\frac{\Psi(X_{i\to x'})}{\Psi(X)}\right)^*\right].
 \end{split}
 \label{eq:rdmratio}
 \end{equation}
-The factor two accounts for uniform auxiliary sampling of the two layers.  In
+The earlier factor two for a uniform layer proposal is therefore replaced by
+the explicit importance weight $1/p(x')$. The initial auxiliary pool is an
+exact rejection sample from uniform position and layer using a rigorous
+plane-wave triangle-inequality envelope. Independent-uniform Metropolis
+updates then preserve $p$; their measured acceptance is 0.674 and the audit
+$\langle1/p\rangle_p=2.00031$ agrees with the exact two-layer measure 2.
+The same auxiliary samples provide the known orbital-normalization control
+\begin{equation}
+\begin{gathered}
+ z_a=\mathbb E_{x'\sim p}\frac{|\phi_a^0(x')|^2}{p(x')}=1,
+ \\
+ \widehat\rho_{aa}=\widehat\rho^{\rm(num)}_{aa}/\widehat z_a .
+\end{gathered}
+\label{eq:orbital-normalization-control}
+\end{equation}
+The ratio in Eq.~\eqref{eq:orbital-normalization-control} is formed separately
+inside every walker block before the SEM is evaluated. It corrects finite
+auxiliary quadrature of an exactly normalized Bloch orbital; it neither fixes
+$T_5$ to $N_e$ nor enforces $C_3$ equality. In
 every ratio, replacing one particle triggers a complete new ansatz call: the
 code rebuilds the graph and recomputes all particles' $\delta\bm r_j$,
-$J_{\bm k j}$, and either the $M Q$ determinant or all nine translated
-$M D_TQ$ determinants. The
-outer ensemble nevertheless remains exactly the saved final 4,128 walkers:
+$J_{\bm k j}$, and either the $M Q$ determinant or all finite-supercell translated
+$M D_TQ$ determinants (27 on this cluster). The
+outer ensemble nevertheless remains the 20,640 frozen-parameter measurement
+configurations from 4,128 walker chains:
 $X_{i\to x'}$ is a temporary quadrature configuration, is never accepted into
 a Markov chain, and never overwrites $X$. Eliminating this auxiliary
 off-diagonal evaluation would replace the one-body RDM by a diagonal density
@@ -919,6 +954,24 @@ directly at that same $\bm k$; reciprocal vectors occur only in the internal
 plane-wave expansion and are never used to replace the plotted momentum.
 No backflow phase is multiplied into it.  Thus neural dressing appears once,
 only through the complete wavefunction ratio.
+
+The Bloch projectors themselves pass a direct five-band sewing audit on this
+exact 27-point mesh. After rotating each plane-wave spinor, applying the
+layer-dependent continuum gauge, and mapping only the Bloch label back to its
+chosen first-BZ representative, the minimum singular value of the five-band
+sewing matrix is 0.999999948, the maximum interband leakage is
+$1.38\times10^{-6}$, and the maximum error in a diagonal sewing magnitude is
+$4.37\times10^{-8}$. Hence the $10^{-2}$-scale raw occupation differences
+between $C_3$ partners cannot originate from inequivalent single-particle
+projectors alone. Finite sampling and the many-body estimator must therefore
+be audited independently. At generic momenta, symmetry-related Bloch states
+are related by $|\phi_{n,C_3\bm k}\rangle=e^{i\chi_n(\bm k)}
+U_{C_3}|\phi_{n,\bm k}\rangle$, not by a constant phase at fixed coordinates.
+The projectors obey $P_{n,C_3\bm k}=U_{C_3}P_{n,\bm k}U_{C_3}^\dagger$.
+If the many-body state is a $C_3$ eigenstate, their exact expectations agree;
+the two local estimators evaluated on the same unrotated walker need not
+agree sample by sample. This distinguishes symmetry of the exact expectation
+from symmetry of a finite sampled estimate.
 
 There are 27 momentum classes on the finite torus. A boundary class can have
 more than one first-BZ representative related by a primitive reciprocal
@@ -964,7 +1017,7 @@ in every panel title in the form
 $n_{\rm tot}(\bm k):T_5\mathbin{\pm}\sigma_{T_5}$, where
 $T_5=\sum_{\bm k}\widetilde n_{\rm tot}(\bm k)$ is the measured trace, not a
 target value or a fitted normalization. The center value is shown with three
-significant digits and the eight-block SEM $\sigma_{T_5}$ with two. The
+significant digits and the 32-block SEM $\sigma_{T_5}$ with two. The
 conditionally normalized band-1
 variant is likewise retained in the data for audit but is not plotted. Five
 bands are retained because bands four and five are already at the
@@ -975,14 +1028,14 @@ $0\leq T_5\leq N_e$; equality is guaranteed only for a band-complete basis.
 Thus missing weight in bands above five can lower the exact $T_5$, whereas the
 finite-walker and finite-auxiliary-integral error can move its estimator in
 either direction. In particular, raw estimates above $N_e$ cannot be explained
-by omitted bands and directly measure the present Monte Carlo/integration
-noise. The panel title reports this raw $T_5$ value; no trace correction is
-applied to the displayed points. Every apparent excess is within $1.2$
-standard errors of the exact upper bound: the largest $\nu=1/3$ example is
-$9.14\pm0.12$ ($1.1\sigma$ above 9), while the full-$M$ $\nu=2/3$ result is
-$18.1\pm0.37$ ($0.35\sigma$ above 18). The excesses are therefore not
-statistically significant. They are retained because clipping or trace
-normalization would hide the estimator uncertainty.
+by omitted bands and indicate Monte Carlo/integration error or bias, rather
+than physical extra particles. The panel title reports this raw $T_5$ value; no trace correction is
+applied to the displayed points. The earlier uniform-proposal result
+$9.283\pm0.079$ for $\nu=1/3,m=1$ exceeded the exact bound by 3.6 quoted
+standard errors. This motivated the present sampling revision; it was not
+interpreted as physical extra particle number. A single excursion does not
+by itself distinguish sampling fluctuation, underestimated uncertainty,
+insufficient equilibration, or estimator bias.
 
 Although the v3 implementation materialized the complete projected RDM, the
 27-cell calculation evaluates only its 135 diagonal entries. This is an exact
@@ -996,25 +1049,7 @@ with the v3 orbital-by-orbital expression and the optimized shared-phase
 contraction, including both layers, and finds agreement to numerical
 roundoff.
 
-For the selected $\nu=1/3$, $m=0$ branch, the physical band-1 QNS
-profile has RMS difference 0.074 and Pearson correlation 0.843 with the
-one-band ED result. The corresponding selected $\nu=2/3$, $m=1$ values are
-0.102 and 0.831. These are blind comparisons between independently computed
-profiles, with no affine or pointwise fit. Their band-1 sums are 8.241 and
-15.658, respectively, equal to $N_eW_1$ rather than 9 and 18.
-No rotation average is applied. On these two selected outer-$C_3$ states, the
-largest differences between physical band-1 $C_3$ partners are 0.051 and 0.046;
-when the block errors of both partners are combined, the largest deviations
-are 2.93 and 2.28 standard errors. Thus the visible asymmetry is explicitly
-resolved as a finite auxiliary-ratio residual rather than removed by symmetry
-postprocessing.
-The selected-state all-momentum RMS partner differences are smaller, 0.023
-and 0.021. The isolated maximum at $\nu=1/3$ is therefore not evidence for a
-systematic rotation or boundary-index error. In contrast to $S(\bm q)$, each
-$n(\bm k)$ sample contains a nonlocal wavefunction ratio and an auxiliary
-integral, so its variance is appreciably larger. Increasing the six
-outer-state integrations to 128 auxiliary coordinates reduces that
-source of noise without imposing equality between rotation partners.
+\input{neural_bloch_importance_profiles.tex}
 
 For the nine-cell band-weight validation, the saved final configurations were
 used to estimate the complete
@@ -1053,35 +1088,7 @@ $2/3$ & v5 $P_2P_\Gamma[M]$ & $6.100(192)$ & $89.83(1.47)$ & $7.15(90)$ & $2.80(
 }
 \end{table}
 
-\begin{table}[H]
-\centering
-\caption{Twenty-seven-cell diagonal five-band projection from the 4,128 saved
-final walkers, using 128 auxiliary positions per walker. $T_5$ is the trace
-within the five-band subspace and $W_n$ are percentages of the physical
-particle number; parentheses are eight-block SEM estimates. Negative
-high-band entries quantify ratio-estimator noise and are not physical
-occupations.}
-\label{tab:qns27-rdm}
-\resizebox{\columnwidth}{!}{%
-\begin{tabular}{@{}llrrrrrr@{}}
-\toprule
-$\nu$ & state & $T_5$ & $W_1$ & $W_2$ & $W_3$ & $W_4$ & $W_5$\\
-\midrule
-$1/3$ & full $M$ & $9.06\mathbin{\pm}0.22$ & 90.35(79) & 8.42(94) & 1.47(95) & 0.41(64) & 0.03(50)\\
-$1/3$ & $P_\Gamma[M]$ & $9.12\mathbin{\pm}0.17$ & 89.90(45) & 8.86(84) & 1.96(91) & 0.86(75) & $-0.29$(58)\\
-$1/3$ & $P_0P_\Gamma[M]$ & $9.14\mathbin{\pm}0.12$ & 91.57(62) & 7.70(1.11) & 1.77(47) & 0.93(37) & $-0.39$(68)\\
-$1/3$ & $P_1P_\Gamma[M]$ & $8.88\mathbin{\pm}0.17$ & 88.89(47) & 7.99(73) & 2.78(79) & $-0.36$(80) & $-0.59$(53)\\
-$1/3$ & $P_2P_\Gamma[M]$ & $8.96\mathbin{\pm}0.13$ & 88.93(68) & 8.26(41) & 1.34(36) & 0.23(86) & 0.76(62)\\
-\midrule
-$2/3$ & full $M$ & $18.1\mathbin{\pm}0.37$ & 91.23(69) & 4.94(86) & 2.53(95) & 0.89(47) & 1.12(42)\\
-$2/3$ & $P_\Gamma[M]$ & $17.6\mathbin{\pm}0.28$ & 88.48(44) & 5.90(61) & 1.98(66) & 0.84(84) & 0.84(64)\\
-$2/3$ & $P_0P_\Gamma[M]$ & $17.5\mathbin{\pm}0.15$ & 86.53(69) & 6.71(55) & 2.45(45) & 0.95(83) & 0.59(40)\\
-$2/3$ & $P_1P_\Gamma[M]$ & $17.8\mathbin{\pm}0.40$ & 86.99(73) & 8.33(56) & 3.25(71) & 1.26(71) & $-0.75$(69)\\
-$2/3$ & $P_2P_\Gamma[M]$ & $17.9\mathbin{\pm}0.27$ & 86.86(63) & 8.19(85) & 2.18(83) & 1.24(68) & 0.96(64)\\
-\bottomrule
-\end{tabular}%
-}
-\end{table}
+\input{neural_bloch_importance_table.tex}
 
 The nine-cell matrices are Hermitized but are not projected onto the
 positive-semidefinite cone. Their finite-sampling negative eigenvalues must
@@ -1097,44 +1104,38 @@ distribution.  The traces fluctuate around $N_e$, but the negative
 high-band estimates and eigenvalues quantify the remaining ratio-estimator
 noise; they must not be read as physical negative occupations.
 
-The estimator caches $\Psi_m(X)$ once per configuration block. All ten
-27-cell states use 128 Cranley--Patterson-shifted low-discrepancy auxiliary
-positions per saved walker, with balanced particle and layer indices, for both
-momentum occupations and band weights. These 128 positions are integration
-points for the off-diagonal one-body matrix element, not replacement walkers:
-the outer Monte Carlo ensemble remains the final 4,128 configurations saved
-at the last training step.
-Each replacement still rebuilds the
-complete graph, all $\delta\bm r_j$, $J$, the finite-translation determinant sum,
-the projected three-branch sum and the wavefunction ratio.  On the A30 GPUs,
-the 4,128-walker measurements are timed independently from training on the
-scheduled dual-GPU critical path. Training and postprocessing are timed
-separately in Table~\ref{tab:ed-qns-efficiency}.
-The auxiliary-integration convergence check holds the walkers and checkpoint
-fixed. For the $\nu=2/3$ full-$M$ state, $T_5$ changes from 19.602 at 16
-auxiliary positions to 17.556 at 64 and $18.131(373)$ at 128. For the
-$\nu=1/3$, $m=2$ outer state it changes from 9.365 at 64 to $8.957(133)$ at
-128. The nonmonotonic sequence is expected for a finite stochastic/quasi-Monte
-Carlo integral; its purpose is not to extrapolate to a chosen trace, but to
-show that the earlier $T_5>N_e$ values were not stable. At 128 points all ten
-traces lie in $[8.885,9.142]$ or $[17.501,18.131]$. Values below $N_e$ can
-contain genuine weight above band 5 as well as estimator error, whereas a
-statistically significant value above $N_e$ would be estimator error only.
-An explicit cost--error audit was used to choose this split estimator. On the
-selected $\nu=1/3$, $m=0$ state, replacing the 4,128-by-128 occupation
-calculation by 20,640 frozen-step configurations with only 32 auxiliary
-positions lowered the mean pointwise $n_1$ SEM from 0.0147 to 0.0094 and the
-maximum raw $C_3$ residual from 0.0512 to 0.0327. On the selected
-$\nu=2/3$, $m=1$ state, however, the mean SEM improved only from 0.0202 to
-0.0190 while the maximum $C_3$ residual increased from 0.0465 to 0.0851.
-Thus 32 auxiliary positions per configuration are insufficiently robust for
-the 18-particle nonlocal ratio estimator, despite a 25\% larger total number
-of ratio calls. The figures therefore retain the 4,128-by-128 occupation
-baseline. In contrast, the same five frozen steps reduce the selected-state
-mean $S(\bm q)$ SEM by about 3--5\% at only the cost of direct coordinate
-sums, so all five snapshots are used for the plotted $S(\bm q)$ and density.
-This is a precision/cost choice made before plotting, not a selection by
-agreement with ED.
+The estimator caches $\Psi_m(X)$ once per configuration. Each of the
+20,640 frozen-chain configurations uses 64 auxiliary coordinates drawn from
+Eq.~\eqref{eq:orbital-mixture-density}. The original coordinates are never
+overwritten by the auxiliary replacements. Every ratio evaluates the complete
+graph, backflow, orbital factors, finite-translation sum, and outer projector.
+The five stored times are grouped by walker, so every one of the 32 blocks
+contains 129 complete five-time histories. These 20,640 configurations are
+not 20,640 independent walkers: they reuse the training-end chains with two
+single-electron Metropolis position/layer proposal rounds between snapshots.
+This revision does not add a separately initialized, independently
+equilibrated validation ensemble.
+
+The quoted block SEM includes the empirical fluctuations of the combined
+walker and auxiliary estimator. The auxiliary pool is shared and its
+stationary Metropolis samples are randomly reassigned across configurations;
+residual cross-block auxiliary dependence is not separately calibrated by
+independent-pool replicas. The orbital-normalization ratio is consistent,
+but as a ratio of finite-sample means it is not exactly unbiased at finite
+sample. Consequently the error bars do not certify the absence of
+equilibration or ratio bias. The raw importance numerator is saved alongside
+the normalization-controlled value.
+
+A fixed-walker pilot at $\nu=1/3,m=0$ compared 32 and 64 importance draws.
+The mean pointwise $n_1$ SEM decreased from 0.0170 to 0.0107, and that of
+$n_{\rm tot}$ from 0.0284 to 0.0188; the maximum raw $n_1$ rotation residual
+decreased from 0.0482 to 0.0298. These pilot errors used eight blocks.
+The final production protocol uses 64 draws and 32 blocks for all ten
+states, with unchanged trained parameters. Selection of the protocol was
+based on estimator precision and cost, not agreement with the ED profile.
+
+\input{neural_bloch_importance_comparison.tex}
+
 The focused bare-Slater regression sets $\delta\bm r=0$, $J=1$, fixes a
 complex $2\times9$ matrix $M$ with orthonormal rows, and samples the resulting
 single determinant.  In a complete nine-orbital test basis the exact matrix is
@@ -1144,17 +1145,14 @@ Frobenius error is 0.05272, the Hermiticity residual is zero, and the minimum
 sampled eigenvalue is $-0.02072$.  This unit test verifies occupation,
 Hermiticity, PSD within sampling noise and full-basis trace normalization.
 
-For the 27-cell states, the selected $\nu=1/3$ outer branch $m=0$ has
-estimated first-two-band weights
-$(91.57(0.62),7.70(1.11))\%$. The selected $\nu=2/3$ branch $m=1$ has
-$(W_1,W_2,W_3)=(86.99(0.73),8.33(0.56),3.25(0.71))\%$.
-The five-band projected traces range from 8.885 to 9.142 at $N_e=9$ and
-from 17.501 to 18.131 at $N_e=18$. Several negative remote-band diagonal
-estimates remain larger than in the nine-cell audit. Therefore
-Fig.~\ref{fig:qns27summary} displays
-the raw estimates and their block errors without renormalizing them to 100\%;
-the high-band bars should be interpreted only at the quoted Monte Carlo
-precision.
+Table~\ref{tab:qns27-rdm} and the band-weight panels of
+Fig.~\ref{fig:qns27summary} use the same updated occupation data.
+Neither band weights nor the plotted occupations are normalized to their
+measured five-band trace. The six outer-state files additionally store
+a separately named $C_3$ orbit average and its paired-block uncertainty.
+That optional diagnostic imposes the known state symmetry and is not used
+in Figs.~\ref{fig:nbobservables-baseline}--\ref{fig:nbobservables23};
+the raw profiles remain the single-state symmetry audit.
 
 \subsection{ED-grid full density structure factor and density order}
 
@@ -1227,7 +1225,7 @@ Each walker contributes all $N_e^2$ ordered density pairs to $S(\bm q)$ at
 once. This local coordinate estimator has much lower variance than the
 nonlocal one-body wavefunction-ratio estimator, explaining why its numerical
 $C_3$ pattern is visibly cleaner even though neither observable is symmetry
-averaged. Accordingly, there is no analogue of the 128 auxiliary $x'$ points
+averaged. Accordingly, there is no analogue of the 64 auxiliary $x'$ points
 used by the one-body RDM. Increasing the number of displayed $\bm q$ vectors
 would only sample the Fourier transform more densely; it would not reduce the
 statistical error at the 27 ED momenta. At fixed estimator, that error can be
@@ -1252,13 +1250,13 @@ order.
 
 On the 27 compatible torus modes at $\nu=1/3$, the full-$S$ nonzero maxima for full $M$,
 $P_\Gamma[M]$ and outer $m=0,1,2$ are respectively
-$(1.1488,1.1734,1.5435,1.2127,1.2112)$, compared with 1.0571 in one-band
+$(1.2496,1.3353,2.2724,1.5384,1.6243)$, compared with 1.0571 in one-band
 ED. At $\nu=2/3$, the corresponding
-QNS maxima are $(0.7064,0.7269,0.7573,0.7401,0.7307)$ and
+QNS maxima are $(0.7111,0.7291,0.7699,0.7366,0.7427)$ and
 remain much larger than the one-band ED maximum 0.1968. Hence the present
-120-update 27-cell states do not reproduce the weak one-band ED $\nu=2/3$
+240-update 27-cell states do not reproduce the weak one-band ED $\nu=2/3$
 structure-factor amplitude, although the selected-state momentum dependence
-is close: its Pearson correlation with ED is 0.985 (0.814 at $\nu=1/3$).
+is close: its Pearson correlation with ED is 0.983 (0.958 at $\nu=1/3$).
 Some difference is physically allowed because the QNS
 uses the untruncated continuum Hilbert space, but the high rejected-update
 counts and lack of an independent inference chain prevent attributing the
@@ -1268,7 +1266,7 @@ that range saturate at the top color without changing the stored numbers.
 Likewise, both occupation colors saturate at 0.8. Marker areas in all three
 momentum panels continue to increase with the actual values.
 
-The maximum nonzero density amplitudes $m_{\bm q}$ are 0.0934 and 0.0280 for
+The maximum nonzero density amplitudes $m_{\bm q}$ are 0.1215 and 0.0305 for
 the momentum-unrestricted full-$M$ states at $\nu=1/3$ and $2/3$.
 After exact translation projection they fall below 0.011 for every
 $P_\Gamma[M]$ and outer state. The repeated intra-cell texture in the density
@@ -1316,11 +1314,11 @@ $P_2$ is the lowest outer branch at $-52.9124$ meV per particle.
 These are single-initialization training-chain diagnostics, so they do not
 establish convergence or resolve seed sensitivity.
 
-On 27 cells, full $M$ and $P_\Gamma[M]$ reach $-46.3697$ and $-46.6770$ meV
-per particle at $\nu=1/3$, while outer $m=0$ is lowest at $-47.5342$ meV,
-0.0612 meV above the one-band ED reference. At $\nu=2/3$, the respective
-values are $-59.5784$ and $-59.8350$ meV, and outer $m=1$ is lowest at
-$-60.4155$ meV. The $m=1,2$ tail means differ by only 0.0322 meV per particle,
+After 240 updates on 27 cells, full $M$ and $P_\Gamma[M]$ reach $-46.6494$
+and $-47.0017$ meV per particle at $\nu=1/3$, while outer $m=0$ is lowest at
+$-48.2946$ meV. At $\nu=2/3$, the respective values are $-60.0979$ and
+$-60.2554$ meV, and outer $m=1$ is lowest at $-60.7064$ meV. The $m=1,2$
+tail means differ by 0.0565 meV per particle,
 but extensive residual-cap rejections prevent interpreting that proximity as
 a converged topological multiplet. The observed per-state QNS training cost
 is hours rather than the roughly 30-second cached one-band $\Gamma$ ED solve;
@@ -1328,8 +1326,9 @@ this comparison changes qualitatively for multiband ED, whose 27-cell Hilbert
 space is not available here.
 
 The 27-cell observables show that the projected $\nu=1/3,m=0$ state retains
-zone-corner structure-factor enhancement. At $\nu=2/3$, however, all QNS
-structure-factor maxima remain near 0.74--0.75, above the one-band ED
+zone-corner structure-factor enhancement, with a maximum 2.272. At
+$\nu=2/3$, however, the projected QNS structure-factor maxima remain near
+0.73--0.77, above the one-band ED
 maximum 0.197, even though static nonzero-$q$ density amplitudes of all
 translation-projected states stay below 0.011. Thus the current finite run
 does not yet reproduce the ED liquid correlations. The complete-ratio

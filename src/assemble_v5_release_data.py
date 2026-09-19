@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from datetime import datetime
 from pathlib import Path
 import shutil
 
@@ -14,7 +15,7 @@ DEST = ROOT / "result/release_data/v5"
 NINE = DATA / "local_v4_final"
 QNS27 = DATA / "v4_qns27_seed3184"
 FULL27 = DATA / "qns27_width64_seed3184"
-OBS27 = DATA / "v4_qns27_observables"
+OBS27 = DATA / "v5_qns27_importance_obdm/final"
 FROZEN_SAMPLES = DATA / "v4_qns27_frozen5_samples"
 FROZEN_COORD = DATA / "v4_qns27_frozen5_coordinate"
 
@@ -64,6 +65,17 @@ def main() -> None:
         copy(source, DEST / "nine/traces" / source.name, manifest)
     for source in sorted((NINE / "diagnostics").glob("*.npz")):
         copy(source, DEST / "nine/diagnostics" / source.name, manifest)
+
+    continuation_status = json.loads(
+        (DATA / "v5_qns27_continue_to240/status.json").read_text()
+    )
+    continuation_jobs = {
+        item["name"]: item for item in continuation_status["completed_jobs"]
+    }
+    gpu1_p2 = json.loads(
+        (DATA / "v5_qns27_continue_to240/gpu1_nu2_p2_status.json").read_text()
+    )
+    continuation_jobs[gpu1_p2["name"]] = gpu1_p2
 
     timing = {}
     for filling in ("nu1of3", "nu2of3"):
@@ -126,6 +138,37 @@ def main() -> None:
         outer = json.loads(
             (QNS27 / f"{filling}_v4_outer_c3/summary.json").read_text()
         )
+        continuation_prefix = "nu1of3" if filling == "nu1of3" else "nu2of3"
+        full_continuation = continuation_jobs[f"{continuation_prefix}_full_m"]
+        gamma_continuation = continuation_jobs[f"{continuation_prefix}_v5_gamma"]
+        outer_continuations = [
+            continuation_jobs[f"{continuation_prefix}_v5_outer_c3_p{sector}"]
+            for sector in range(3)
+        ]
+        for record, extension in (
+            (full, full_continuation), (gamma, gamma_continuation)
+        ):
+            record["wall_seconds_first_120"] = record["wall_seconds"]
+            record["continuation_wall_seconds"] = extension["elapsed_seconds"]
+            record["wall_seconds"] += extension["elapsed_seconds"]
+            record["training_steps"] = 240
+        continuation_start = min(
+            datetime.fromisoformat(item["started"])
+            for item in outer_continuations
+        )
+        continuation_finish = max(
+            datetime.fromisoformat(item["finished"])
+            for item in outer_continuations
+        )
+        outer["wall_seconds_first_120"] = outer["wall_seconds"]
+        outer["continuation_wall_seconds"] = (
+            continuation_finish - continuation_start
+        ).total_seconds()
+        outer["wall_seconds"] += outer["continuation_wall_seconds"]
+        outer["continuation_gpu_allocated_seconds"] = sum(
+            item["elapsed_seconds"] for item in outer_continuations
+        )
+        outer["training_steps"] = 240
         timing[filling] = {"full": full, "gamma": gamma, "outer": outer}
 
     write_json(DEST / "qns27/timing.json", portable_metadata(timing))
@@ -140,19 +183,30 @@ def main() -> None:
         DEST / "qns27/frozen5_coordinate/summary.json",
         manifest,
     )
+    for source, name in (
+        (OBS27 / "summary.json", "production_summary.json"),
+        (OBS27.parent / "auxiliary_20640x64.json", "auxiliary_sampling.json"),
+    ):
+        copy(source, DEST / "qns27/importance_obdm" / name, manifest)
+    if (OBS27 / "comparison.json").is_file():
+        copy(OBS27 / "comparison.json",
+             DEST / "qns27/importance_obdm/comparison.json", manifest)
     write_json(DEST / "manifest.json", {
         "version": "5.0.0",
         "observable_definition": (
             "Bloch-projected n_tot(k) is the raw sum over bands 1:5 and n_1(k) "
             "is the raw physical band-1 projection with sum N_e W_1; normalized "
-            "variants are audit-only; k is evaluated directly "
+            "variants are audit-only; the one-body RDM uses 20,640 frozen-chain "
+            "configurations, 64 auxiliary draws from the PyQMC orbital-mixture "
+            "importance density, and an orbital-normalization control that does "
+            "not constrain the many-body trace; k is evaluated directly "
             "at the 27 drawn first-BZ points and G used only inside each Bloch "
             "orbital; plotted S(q) and rho(r) are evaluated from 20,640 "
             "configurations collected in five measurement-only steps with the "
-            "step-120 parameters frozen; S(q) is the unbinned Fourier transform "
+            "step-240 parameters frozen; S(q) is the unbinned Fourier transform "
             "of the real-space density-pair correlation at the same 27 physical "
             "first-BZ vectors drawn for ED; the uniform 91-vector grid is "
-            "auxiliary only; no C3 averaging, q+G "
+            "auxiliary only; no plotted C3 averaging, q+G "
             "substitution, or ED-profile fit"
         ),
         "files": manifest,

@@ -2,7 +2,7 @@
   "status": "complete",
   "checkpoint": "result/data/v4_qns27_seed3184/nu2of3_v4_outer_c3/p1/jax_neural_bloch_final.npz",
   "output": "result/data/v4_qns27_frozen5_samples/nu2of3_v4_outer_c3_p1.npz",
-  "training_step": 120,
+  "training_step": 240,
   "parameters_frozen": true,
   "optimizer_updates": 0,
   "initial_walkers": 4128,
@@ -13,30 +13,30 @@
   "acceptance": [
     {
       "measurement_step": 1,
-      "position_acceptance": 0.463299423456192,
-      "layer_acceptance": 0.5473594963550568
+      "position_acceptance": 0.46947674453258514,
+      "layer_acceptance": 0.5531734526157379
     },
     {
       "measurement_step": 2,
-      "position_acceptance": 0.4545784890651703,
-      "layer_acceptance": 0.5438468754291534
+      "position_acceptance": 0.455426350235939,
+      "layer_acceptance": 0.5473594963550568
     },
     {
       "measurement_step": 3,
-      "position_acceptance": 0.4584544599056244,
-      "layer_acceptance": 0.5462693572044373
+      "position_acceptance": 0.45482073724269867,
+      "layer_acceptance": 0.5541424453258514
     },
     {
       "measurement_step": 4,
-      "position_acceptance": 0.4580910801887512,
-      "layer_acceptance": 0.5478439927101135
+      "position_acceptance": 0.46002906560897827,
+      "layer_acceptance": 0.5564438104629517
     },
     {
       "measurement_step": 5,
-      "position_acceptance": 0.46535852551460266,
-      "layer_acceptance": 0.5420300364494324
+      "position_acceptance": 0.46414728462696075,
+      "layer_acceptance": 0.5494186282157898
     }
   ],
-  "wall_seconds": 38.798425292014144,
+  "wall_seconds": 37.994229628005996,
   "storage_order": "walker-major, then measurement time"
 }

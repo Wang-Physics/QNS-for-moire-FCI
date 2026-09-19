@@ -57,8 +57,11 @@
       "completed_updates": 120,
       "last_energy_meV_per_particle": -46.393499744822414,
       "exit_code": 0,
-      "wall_seconds": 8544.336311407009,
-      "finished": "2026-09-07T00:51:05.513466+08:00"
+      "wall_seconds": 17966.75777733003,
+      "finished": "2026-09-07T00:51:05.513466+08:00",
+      "wall_seconds_first_120": 8544.336311407009,
+      "continuation_wall_seconds": 9422.42146592302,
+      "training_steps": 240
     },
     "gamma": {
       "status": "complete",
@@ -121,15 +124,18 @@
       "last_energy_meV_per_particle": -46.73322843437199,
       "rejected_updates": 48,
       "exit_code": 0,
-      "wall_seconds": 8575.826940628001,
+      "wall_seconds": 18315.793808392016,
       "finished": "2026-09-08T12:30:00.935134+08:00",
       "tail10_mean_meV_per_particle": -46.67699257229622,
-      "tail10_rms_meV_per_particle": 0.03455030688683145
+      "tail10_rms_meV_per_particle": 0.03455030688683145,
+      "wall_seconds_first_120": 8575.826940628001,
+      "continuation_wall_seconds": 9739.966867764015,
+      "training_steps": 240
     },
     "outer": {
       "status": "complete",
       "finished": "2026-09-09T11:33:38.897813+08:00",
-      "wall_seconds": 51582.670132030034,
+      "wall_seconds": 133493.38330903003,
       "branches": [
         {
           "status": "complete",
@@ -328,7 +334,11 @@
         }
       ],
       "shared_gpu_lane_allocated_seconds": 12997.184258173977,
-      "branch_gpu_allocated_seconds": 69242.14834032505
+      "branch_gpu_allocated_seconds": 69242.14834032505,
+      "wall_seconds_first_120": 51582.670132030034,
+      "continuation_wall_seconds": 81910.713177,
+      "continuation_gpu_allocated_seconds": 81910.707477625,
+      "training_steps": 240
     }
   },
   "nu2of3": {
@@ -389,8 +399,11 @@
       "completed_updates": 120,
       "last_energy_meV_per_particle": -59.62517714794771,
       "exit_code": 0,
-      "wall_seconds": 39218.19207576802,
-      "finished": "2026-09-07T09:22:19.371281+08:00"
+      "wall_seconds": 76600.24507057402,
+      "finished": "2026-09-07T09:22:19.371281+08:00",
+      "wall_seconds_first_120": 39218.19207576802,
+      "continuation_wall_seconds": 37382.052994806,
+      "training_steps": 240
     },
     "gamma": {
       "status": "complete",
@@ -453,15 +466,18 @@
       "last_energy_meV_per_particle": -59.86235869512968,
       "rejected_updates": 92,
       "exit_code": 0,
-      "wall_seconds": 40011.03246557899,
+      "wall_seconds": 78096.27865419898,
       "finished": "2026-09-08T21:13:56.142582+08:00",
       "tail10_mean_meV_per_particle": -59.834972548066204,
-      "tail10_rms_meV_per_particle": 0.02172644101556522
+      "tail10_rms_meV_per_particle": 0.02172644101556522,
+      "wall_seconds_first_120": 40011.03246557899,
+      "continuation_wall_seconds": 38085.24618861999,
+      "training_steps": 240
     },
     "outer": {
       "status": "complete",
       "finished": "2026-09-12T06:13:21.174355+08:00",
-      "wall_seconds": 239981.51861056907,
+      "wall_seconds": 476255.43068556907,
       "branches": [
         {
           "status": "complete",
@@ -660,7 +676,11 @@
         }
       ],
       "shared_gpu_lane_allocated_seconds": 77766.550079952,
-      "branch_gpu_allocated_seconds": 305912.87347463105
+      "branch_gpu_allocated_seconds": 305912.87347463105,
+      "wall_seconds_first_120": 239981.51861056907,
+      "continuation_wall_seconds": 236273.912075,
+      "continuation_gpu_allocated_seconds": 359524.68285189196,
+      "training_steps": 240
     }
   }
 }

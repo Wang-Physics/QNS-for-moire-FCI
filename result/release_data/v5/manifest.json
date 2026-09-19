@@ -1,6 +1,6 @@
 {
   "version": "5.0.0",
-  "observable_definition": "Bloch-projected n_tot(k) is the raw sum over bands 1:5 and n_1(k) is the raw physical band-1 projection with sum N_e W_1; normalized variants are audit-only; k is evaluated directly at the 27 drawn first-BZ points and G used only inside each Bloch orbital; plotted S(q) and rho(r) are evaluated from 20,640 configurations collected in five measurement-only steps with the step-120 parameters frozen; S(q) is the unbinned Fourier transform of the real-space density-pair correlation at the same 27 physical first-BZ vectors drawn for ED; the uniform 91-vector grid is auxiliary only; no C3 averaging, q+G substitution, or ED-profile fit",
+  "observable_definition": "Bloch-projected n_tot(k) is the raw sum over bands 1:5 and n_1(k) is the raw physical band-1 projection with sum N_e W_1; normalized variants are audit-only; the one-body RDM uses 20,640 frozen-chain configurations, 64 auxiliary draws from the PyQMC orbital-mixture importance density, and an orbital-normalization control that does not constrain the many-body trace; k is evaluated directly at the 27 drawn first-BZ points and G used only inside each Bloch orbital; plotted S(q) and rho(r) are evaluated from 20,640 configurations collected in five measurement-only steps with the step-240 parameters frozen; S(q) is the unbinned Fourier transform of the real-space density-pair correlation at the same 27 physical first-BZ vectors drawn for ED; the uniform 91-vector grid is auxiliary only; no plotted C3 averaging, q+G substitution, or ED-profile fit",
   "files": {
     "nine/summary.json": {
       "bytes": 15329,
@@ -108,314 +108,329 @@
       "source": "result/data/local_v4_final/diagnostics/nu2of3_v4_outer_c3_p2.npz"
     },
     "qns27/diagnostics/nu1of3_full_m.npz": {
-      "bytes": 41706,
-      "sha256": "4866d6776682ebd6be461d79a023f3fc47c3629267861d7405110df3de7b2970",
-      "source": "result/data/v4_qns27_observables/nu1of3_full_m/qns27_diagnostics.npz"
+      "bytes": 44994,
+      "sha256": "55c3ebe29d7d26e1913e6ccadbd43aa19066608285a3fcd72cbc4005fc2fc8ce",
+      "source": "result/data/v5_qns27_importance_obdm/final/nu1of3_full_m/qns27_diagnostics.npz"
     },
     "qns27/diagnostics/nu1of3_full_m.json": {
-      "bytes": 2828,
-      "sha256": "d6351e9457665b857944ff9864cf02dc561092502bcde867455a07d61c0114c1",
-      "source": "result/data/v4_qns27_observables/nu1of3_full_m/qns27_diagnostics.json"
+      "bytes": 2999,
+      "sha256": "0e188b6681ea0f698ed1e289b2a6586a9c325df6a4877a701d3055a59eb477d5",
+      "source": "result/data/v5_qns27_importance_obdm/final/nu1of3_full_m/qns27_diagnostics.json"
     },
     "qns27/frozen5_coordinate/nu1of3_full_m.npz": {
-      "bytes": 35406,
-      "sha256": "39b1706dab6275fc9e2cb9832d7f946393075a2378525a71857ec661252c249c",
+      "bytes": 35396,
+      "sha256": "e2a34138071535a3c8b7129c149ba8c29c954903fa71fb4939bb202a04d83f1a",
       "source": "result/data/v4_qns27_frozen5_coordinate/nu1of3_full_m/coordinate_diagnostics.npz"
     },
     "qns27/frozen5_coordinate/nu1of3_full_m.json": {
-      "bytes": 1008,
-      "sha256": "1ea7e732437d74afd27a209e59bf80a1b7ee221678e28a434784b870786bdb56",
+      "bytes": 1033,
+      "sha256": "7a5fb8aa6e93e104ee82b0ef5bd221bab65c55df2530d576ff455724285b693a",
       "source": "result/data/v4_qns27_frozen5_coordinate/nu1of3_full_m/coordinate_diagnostics.json"
     },
     "qns27/frozen5_sampling/nu1of3_full_m.json": {
       "bytes": 1205,
-      "sha256": "6e3603bf033d3ad7c9d04e1f8a9ca3fc0fc1f48c12783e0afdd3ce07dc260e99",
+      "sha256": "4d988866509073beec12aa098b0302b7dfa490fb2a54ff7c31a95ac979e91df8",
       "source": "result/data/v4_qns27_frozen5_samples/nu1of3_full_m.json"
     },
     "qns27/diagnostics/nu1of3_v4_gamma.npz": {
-      "bytes": 41717,
-      "sha256": "80c92d17b6f3efcc657ffdedab03499c5dad5e0fab77fd644aec814580c84641",
-      "source": "result/data/v4_qns27_observables/nu1of3_v4_gamma/qns27_diagnostics.npz"
+      "bytes": 45003,
+      "sha256": "da4be1145ced8b5fdfdc248b71081be6a31e09a5250bf00350167840313e1da7",
+      "source": "result/data/v5_qns27_importance_obdm/final/nu1of3_v4_gamma/qns27_diagnostics.npz"
     },
     "qns27/diagnostics/nu1of3_v4_gamma.json": {
-      "bytes": 2849,
-      "sha256": "1f07041c8df44968b0f57a2e019221c4c3f48152597ff8f87bf9efaa80710765",
-      "source": "result/data/v4_qns27_observables/nu1of3_v4_gamma/qns27_diagnostics.json"
+      "bytes": 2984,
+      "sha256": "215c0389beb94ef56c93fd9a04a70af737d6506346b6d2e3bfd99acb8d72d7f6",
+      "source": "result/data/v5_qns27_importance_obdm/final/nu1of3_v4_gamma/qns27_diagnostics.json"
     },
     "qns27/frozen5_coordinate/nu1of3_v4_gamma.npz": {
-      "bytes": 35388,
-      "sha256": "64fae2d2b13c05564fdb461bdd838716f27e5566623b75c27e84f68bf4390326",
+      "bytes": 35420,
+      "sha256": "8fe1a4398fb1ba3c0c2abf95339b070dd8e545873b0ac7b8b0a432e640c04ad0",
       "source": "result/data/v4_qns27_frozen5_coordinate/nu1of3_v4_gamma/coordinate_diagnostics.npz"
     },
     "qns27/frozen5_coordinate/nu1of3_v4_gamma.json": {
-      "bytes": 1011,
-      "sha256": "a58621ae2c2acdec67dbbbf0e28e6374cb2c26d0ae85c8f5e028d7c74171496c",
+      "bytes": 1035,
+      "sha256": "c13f7aa4e23c0ef2ab2af6fd2d8d7552aba7a3316bcd1022ff3472315691bdfd",
       "source": "result/data/v4_qns27_frozen5_coordinate/nu1of3_v4_gamma/coordinate_diagnostics.json"
     },
     "qns27/frozen5_sampling/nu1of3_v4_gamma.json": {
-      "bytes": 1205,
-      "sha256": "07ec13ab80ae647cffa79f9cfcd93a9af61312b6522755e52751b72bd6217fb5",
+      "bytes": 1204,
+      "sha256": "d2970348491e7321a880fdb219acecc8b4963dd7c62fc96f3f36b5f4f1e895f7",
       "source": "result/data/v4_qns27_frozen5_samples/nu1of3_v4_gamma.json"
     },
     "qns27/diagnostics/nu1of3_v4_outer_c3_p0.npz": {
-      "bytes": 41757,
-      "sha256": "56d9d1f325d43e647902ffc075f97ef04e3f109b0d4e6156c0d2fc3748227b3a",
-      "source": "result/data/v4_qns27_observables/nu1of3_v4_outer_c3_p0/qns27_diagnostics.npz"
+      "bytes": 46518,
+      "sha256": "b24ff374c20074ad4c30c78736133e86aa163083cd6ca8956267747ffac99e43",
+      "source": "result/data/v5_qns27_importance_obdm/final/nu1of3_v4_outer_c3_p0/qns27_diagnostics.npz"
     },
     "qns27/diagnostics/nu1of3_v4_outer_c3_p0.json": {
-      "bytes": 2810,
-      "sha256": "e4b0e7a3b5b80b56a4d76b091b03803caec3322578632d2c438819f80dfe2554",
-      "source": "result/data/v4_qns27_observables/nu1of3_v4_outer_c3_p0/qns27_diagnostics.json"
+      "bytes": 3172,
+      "sha256": "f920d268ea5b34f43b1510f073ee1c645347218beb085525181e54de53ff1e0a",
+      "source": "result/data/v5_qns27_importance_obdm/final/nu1of3_v4_outer_c3_p0/qns27_diagnostics.json"
     },
     "qns27/frozen5_coordinate/nu1of3_v4_outer_c3_p0.npz": {
-      "bytes": 35436,
-      "sha256": "064b10c062008501b754444b292ec8e5eeb10a43e902cca1c294a262ea08ad6a",
+      "bytes": 35466,
+      "sha256": "9c68ca31cf76ab2a90873d3cd10cbb3347315abb6621e94b728e029d4006b79b",
       "source": "result/data/v4_qns27_frozen5_coordinate/nu1of3_v4_outer_c3_p0/coordinate_diagnostics.npz"
     },
     "qns27/frozen5_coordinate/nu1of3_v4_outer_c3_p0.json": {
-      "bytes": 1016,
-      "sha256": "cc9d3ab3ed83c8e73764a3b2d4802169d39e74c5971eeb85f3e62b8282bfda7c",
+      "bytes": 1040,
+      "sha256": "fbc46f8e60c73d720e4d12a1ca202c52c91b3679fdfd1e924973fd662c02f190",
       "source": "result/data/v4_qns27_frozen5_coordinate/nu1of3_v4_outer_c3_p0/coordinate_diagnostics.json"
     },
     "qns27/frozen5_sampling/nu1of3_v4_outer_c3_p0.json": {
-      "bytes": 1206,
-      "sha256": "c8be1ac2dc3cfd6c610dca3e4cc159f620465d2154bf3c194e0486ccb93f2190",
+      "bytes": 1220,
+      "sha256": "ba734027756c35f6e5652170c28e6b3399cfff8ad7fd247eb80e3a9f62e2420b",
       "source": "result/data/v4_qns27_frozen5_samples/nu1of3_v4_outer_c3_p0.json"
     },
     "qns27/diagnostics/nu1of3_v4_outer_c3_p1.npz": {
-      "bytes": 41731,
-      "sha256": "1db67fb1e61ea9904dbc82a461bf930788c27faf4bf3a1a7b57022288a362472",
-      "source": "result/data/v4_qns27_observables/nu1of3_v4_outer_c3_p1/qns27_diagnostics.npz"
+      "bytes": 46497,
+      "sha256": "6d3658c8faf4ef62256a7f8fe4a91dd58ac788fab38605cd4284c1d69213d35e",
+      "source": "result/data/v5_qns27_importance_obdm/final/nu1of3_v4_outer_c3_p1/qns27_diagnostics.npz"
     },
     "qns27/diagnostics/nu1of3_v4_outer_c3_p1.json": {
-      "bytes": 2827,
-      "sha256": "b5dc763aa8348bf93c3bc878ac69303e8bd0715950a7323ee8b87207f83965cf",
-      "source": "result/data/v4_qns27_observables/nu1of3_v4_outer_c3_p1/qns27_diagnostics.json"
+      "bytes": 3185,
+      "sha256": "3b8a9971c08aef745017ac5018f3ef5b54d4da79ce5c29eff011ecbbaad437ab",
+      "source": "result/data/v5_qns27_importance_obdm/final/nu1of3_v4_outer_c3_p1/qns27_diagnostics.json"
     },
     "qns27/frozen5_coordinate/nu1of3_v4_outer_c3_p1.npz": {
-      "bytes": 35408,
-      "sha256": "36a3982bae53bbb8e7b6588f834e6bd288fa44c11c5f8cf37151173b5198f8ad",
+      "bytes": 35439,
+      "sha256": "5a6f9a4cbab6f533c2079e2dd7edaa28b2c1fbf82f379fa62f5223c75ea6aa10",
       "source": "result/data/v4_qns27_frozen5_coordinate/nu1of3_v4_outer_c3_p1/coordinate_diagnostics.npz"
     },
     "qns27/frozen5_coordinate/nu1of3_v4_outer_c3_p1.json": {
-      "bytes": 1016,
-      "sha256": "60e3b731de9350d04b15eaaf2ee46a681243f1cf2947908d21d2e2c8ced9542c",
+      "bytes": 1041,
+      "sha256": "cf8065cfb7b6b161e174a06164d063d264e877490b0ca670a1e1c2bca68b88b1",
       "source": "result/data/v4_qns27_frozen5_coordinate/nu1of3_v4_outer_c3_p1/coordinate_diagnostics.json"
     },
     "qns27/frozen5_sampling/nu1of3_v4_outer_c3_p1.json": {
       "bytes": 1218,
-      "sha256": "412e0cb80f4b4fc8b0027b16f91f1a53698d044a0f0a2fb3e1d4755e0d42ce80",
+      "sha256": "d2d364f2db96665854177928a8d1f500c7f67cc8b56402617bd92675ae2b4e8d",
       "source": "result/data/v4_qns27_frozen5_samples/nu1of3_v4_outer_c3_p1.json"
     },
     "qns27/diagnostics/nu1of3_v4_outer_c3_p2.npz": {
-      "bytes": 41742,
-      "sha256": "7bdb6773ee61933a8323781dae36c5048a7ccebdb62f800a6ff620962d5f76f8",
-      "source": "result/data/v4_qns27_observables/nu1of3_v4_outer_c3_p2/qns27_diagnostics.npz"
+      "bytes": 46490,
+      "sha256": "be97ce7ad233a98782524199569aa609e1cb87c206462dbf98ed8ae944bc95a2",
+      "source": "result/data/v5_qns27_importance_obdm/final/nu1of3_v4_outer_c3_p2/qns27_diagnostics.npz"
     },
     "qns27/diagnostics/nu1of3_v4_outer_c3_p2.json": {
-      "bytes": 2793,
-      "sha256": "4a57a227b32e1fa675fdae3fa7bd8153bfab6cf6f5bf545cc86f9401be33b54a",
-      "source": "result/data/v4_qns27_observables/nu1of3_v4_outer_c3_p2/qns27_diagnostics.json"
+      "bytes": 3169,
+      "sha256": "cb66c9c53f3dba035966b74bd24e1c09bf9e630fec1c6570be0f84b9d1386ad9",
+      "source": "result/data/v5_qns27_importance_obdm/final/nu1of3_v4_outer_c3_p2/qns27_diagnostics.json"
     },
     "qns27/frozen5_coordinate/nu1of3_v4_outer_c3_p2.npz": {
-      "bytes": 35393,
-      "sha256": "b3aa79aecccd90828313582f003992691ca989784a40a0aba05533aae7f15b3e",
+      "bytes": 35430,
+      "sha256": "f2384f81f6c64c630feefb03c258060c5e72feff2d079d2a32e754b03f45a849",
       "source": "result/data/v4_qns27_frozen5_coordinate/nu1of3_v4_outer_c3_p2/coordinate_diagnostics.npz"
     },
     "qns27/frozen5_coordinate/nu1of3_v4_outer_c3_p2.json": {
-      "bytes": 1018,
-      "sha256": "350070d6c9a5b93ccd9c4c6413d368cb5c24510a026e49d06f113e787406bc27",
+      "bytes": 1042,
+      "sha256": "0e1d75bdc1d5e0f8850fca2029efaa4c791c6e56ecb468082a5f8a5090460bfa",
       "source": "result/data/v4_qns27_frozen5_coordinate/nu1of3_v4_outer_c3_p2/coordinate_diagnostics.json"
     },
     "qns27/frozen5_sampling/nu1of3_v4_outer_c3_p2.json": {
-      "bytes": 1218,
-      "sha256": "c09e1241a459d8e0bc59e7cd5c0ca3cc12f0782451076efa9e612b42fdc603f1",
+      "bytes": 1217,
+      "sha256": "ba9829bcadf5834dc7cdf6f91f981c72a97899463cb30657c200604e4a0748bb",
       "source": "result/data/v4_qns27_frozen5_samples/nu1of3_v4_outer_c3_p2.json"
     },
     "qns27/traces/nu1of3_full_m.json": {
-      "bytes": 117203,
-      "sha256": "7549e03e3548c4f054cb698bbb8d7242fa2fd071f88035d7059578f1fd6a3963",
+      "bytes": 244051,
+      "sha256": "50a16dc170980551b36860ae0b220bd2e9b1bbdc4fe48e03988d1bdfcc92d3ff",
       "source": "result/data/qns27_width64_seed3184/nu1of3_full_m/jax_neural_bloch_trace.json"
     },
     "qns27/traces/nu1of3_v4_gamma.json": {
-      "bytes": 126873,
-      "sha256": "067f43e5233eb88f47024d05f2e57f5eb9cf63fd65b2ddeb039c3cb72fa0f499",
+      "bytes": 253696,
+      "sha256": "3ee1c4dc11ef64dc210b9ba40ae751601da9bc8f5933bdd7577a99ca7c28dbce",
       "source": "result/data/v4_qns27_seed3184/nu1of3_v4_gamma/jax_neural_bloch_trace.json"
     },
     "qns27/traces/nu1of3_v4_outer_c3_p0.json": {
-      "bytes": 126694,
-      "sha256": "a286f9fc87282279cc48d4f42d9fdbef4a70e8484ca1dc221ab97fde2dd8946b",
+      "bytes": 253878,
+      "sha256": "d8fb761b5543092ae776a9de382a46e1da25f85cd7f826ab819a348e0456981b",
       "source": "result/data/v4_qns27_seed3184/nu1of3_v4_outer_c3/p0/jax_neural_bloch_trace.json"
     },
     "qns27/traces/nu1of3_v4_outer_c3_p1.json": {
-      "bytes": 126585,
-      "sha256": "ed37f1cd1d511c9817c852b5d3613be1ade5eaae9d089353a3db11c80914ed82",
+      "bytes": 253691,
+      "sha256": "25cd27325e65ed91605dec47d9c939c890c1d14c3d9f3d336b4068918a9b23cd",
       "source": "result/data/v4_qns27_seed3184/nu1of3_v4_outer_c3/p1/jax_neural_bloch_trace.json"
     },
     "qns27/traces/nu1of3_v4_outer_c3_p2.json": {
-      "bytes": 126596,
-      "sha256": "a2f7f2934dd7a5d71cb56103bdcaeb62ac5daacd4ff53b336cccc5aa0eac58ac",
+      "bytes": 253687,
+      "sha256": "7061800c0b0a05b6825af13479ac9f3edd1c652cf1ac8f5530d66991fa1d14af",
       "source": "result/data/v4_qns27_seed3184/nu1of3_v4_outer_c3/p2/jax_neural_bloch_trace.json"
     },
     "qns27/diagnostics/nu2of3_full_m.npz": {
-      "bytes": 41739,
-      "sha256": "3938fbce566f1bbd1e778bd9e7089583e75a7ec4144aabf1012c9882784e43b1",
-      "source": "result/data/v4_qns27_observables/nu2of3_full_m/qns27_diagnostics.npz"
+      "bytes": 44974,
+      "sha256": "826418a6da44cf006a40c572e0fdfaa85040a795509d795f961e803d3d42cac2",
+      "source": "result/data/v5_qns27_importance_obdm/final/nu2of3_full_m/qns27_diagnostics.npz"
     },
     "qns27/diagnostics/nu2of3_full_m.json": {
-      "bytes": 2844,
-      "sha256": "7569451def1d609007e946920101b99ffa810627bcc46a39b22aabc5711f01c6",
-      "source": "result/data/v4_qns27_observables/nu2of3_full_m/qns27_diagnostics.json"
+      "bytes": 3006,
+      "sha256": "0f9e9b0d08a0535bd0cffd057cba8961fe47e6b20e09d800bac735381281e8b3",
+      "source": "result/data/v5_qns27_importance_obdm/final/nu2of3_full_m/qns27_diagnostics.json"
     },
     "qns27/frozen5_coordinate/nu2of3_full_m.npz": {
-      "bytes": 35406,
-      "sha256": "36fbd2f3123f6cffff78b921897035e384d1f41cc8bd7dc3d901ba744c6a4820",
+      "bytes": 35404,
+      "sha256": "5d085ddb93090972d945fec109756f730cef79bc7d315a6a3025a822630ee3e9",
       "source": "result/data/v4_qns27_frozen5_coordinate/nu2of3_full_m/coordinate_diagnostics.npz"
     },
     "qns27/frozen5_coordinate/nu2of3_full_m.json": {
-      "bytes": 1011,
-      "sha256": "9a181c87207111f9335a00220a5f913542ee8bfcd8748728c4391f905105e1fd",
+      "bytes": 1033,
+      "sha256": "906a0a4e7b9f3d2d643ef5c54d0c0a82e2e47644f8beab6735b4c1e7c61019cd",
       "source": "result/data/v4_qns27_frozen5_coordinate/nu2of3_full_m/coordinate_diagnostics.json"
     },
     "qns27/frozen5_sampling/nu2of3_full_m.json": {
-      "bytes": 1206,
-      "sha256": "405cfcb95136d8c9a22c307cb0a5ab2c42c7b91d2376e3d1e65ccacfbf8b40b4",
+      "bytes": 1209,
+      "sha256": "69821fccc6c5937d3cacf76ae814aa5035f62620f842d4c283aec211fc9ca965",
       "source": "result/data/v4_qns27_frozen5_samples/nu2of3_full_m.json"
     },
     "qns27/diagnostics/nu2of3_v4_gamma.npz": {
-      "bytes": 41745,
-      "sha256": "e6b5a2279ef9f1a0c7eba75dd1cc6af825fb96075af6a248f9bc2fae3aefbd93",
-      "source": "result/data/v4_qns27_observables/nu2of3_v4_gamma/qns27_diagnostics.npz"
+      "bytes": 44990,
+      "sha256": "654197654f7f28c914b6f5c79bf2597bbe0ed9ce605350da306708ccfd9e3133",
+      "source": "result/data/v5_qns27_importance_obdm/final/nu2of3_v4_gamma/qns27_diagnostics.npz"
     },
     "qns27/diagnostics/nu2of3_v4_gamma.json": {
-      "bytes": 2809,
-      "sha256": "330c3bdb2ab169cd2c86452c63e43bddd99656978f642e9bc08641d4cf7d8738",
-      "source": "result/data/v4_qns27_observables/nu2of3_v4_gamma/qns27_diagnostics.json"
+      "bytes": 2996,
+      "sha256": "5437a625b14d26c33c09d5068d4371838d14636408381c102af525e2e0bcf8f5",
+      "source": "result/data/v5_qns27_importance_obdm/final/nu2of3_v4_gamma/qns27_diagnostics.json"
     },
     "qns27/frozen5_coordinate/nu2of3_v4_gamma.npz": {
-      "bytes": 35415,
-      "sha256": "8390548cf86da4677e3c816e5211ca129d27127c4a5d973ebedebaeabb05cec2",
+      "bytes": 35394,
+      "sha256": "e5653160de994ae84c54c55f109f573a5d8e0f49e73edbb597a62a831b11d39a",
       "source": "result/data/v4_qns27_frozen5_coordinate/nu2of3_v4_gamma/coordinate_diagnostics.npz"
     },
     "qns27/frozen5_coordinate/nu2of3_v4_gamma.json": {
-      "bytes": 1013,
-      "sha256": "b691e76362f5bcd40172df2e5982ce7e3fd537b5d01da6ca6d9a006be7b28fcc",
+      "bytes": 1035,
+      "sha256": "efe27eeffa1d36ab65def0f8f8843564e2c726cad2ce7fb040760ce07c78c15a",
       "source": "result/data/v4_qns27_frozen5_coordinate/nu2of3_v4_gamma/coordinate_diagnostics.json"
     },
     "qns27/frozen5_sampling/nu2of3_v4_gamma.json": {
-      "bytes": 1207,
-      "sha256": "0716902e543175e8e566b73674278b99a2eae51f360298c5157375fae3e2b7ba",
+      "bytes": 1206,
+      "sha256": "1e8ff467034431574e0e44a06ab0d8044ea66c4bded6623db95005727ed2385f",
       "source": "result/data/v4_qns27_frozen5_samples/nu2of3_v4_gamma.json"
     },
     "qns27/diagnostics/nu2of3_v4_outer_c3_p0.npz": {
-      "bytes": 41769,
-      "sha256": "60b6a8a8ca4f86d614d636ace94968e6f71fbc3493fd199983734d5c94bae170",
-      "source": "result/data/v4_qns27_observables/nu2of3_v4_outer_c3_p0/qns27_diagnostics.npz"
+      "bytes": 46504,
+      "sha256": "f22d70fc2fbafca676859d4b2f77a516e0d610da930a1797ba776d5eb7317f9b",
+      "source": "result/data/v5_qns27_importance_obdm/final/nu2of3_v4_outer_c3_p0/qns27_diagnostics.npz"
     },
     "qns27/diagnostics/nu2of3_v4_outer_c3_p0.json": {
-      "bytes": 2831,
-      "sha256": "a9b1e766d65cf60812b24cf38fbfd242b00a36ab4fc8aa2d6eda3f49a0510deb",
-      "source": "result/data/v4_qns27_observables/nu2of3_v4_outer_c3_p0/qns27_diagnostics.json"
+      "bytes": 3189,
+      "sha256": "417e1089da32993dc0551a3fb795027b0372dc1a2cf0f28d3496a867b4dbc17b",
+      "source": "result/data/v5_qns27_importance_obdm/final/nu2of3_v4_outer_c3_p0/qns27_diagnostics.json"
     },
     "qns27/frozen5_coordinate/nu2of3_v4_outer_c3_p0.npz": {
-      "bytes": 35459,
-      "sha256": "e6381b1ee0b9f9d2550986ae5058496db2021dd732f1b9bc9957d4abf2bec00e",
+      "bytes": 35399,
+      "sha256": "b210fa79af8621a47a598837afcfb0137918f48266ef16b195fb83d51ddb5768",
       "source": "result/data/v4_qns27_frozen5_coordinate/nu2of3_v4_outer_c3_p0/coordinate_diagnostics.npz"
     },
     "qns27/frozen5_coordinate/nu2of3_v4_outer_c3_p0.json": {
-      "bytes": 1019,
-      "sha256": "7b3057fc1c8638cde88a3ce81aab0c08dd4627de5dff24fad7712b7a67bff535",
+      "bytes": 1040,
+      "sha256": "5c16f94cce61974e0609c6fe9451545b074a0e65d0e15f09a8403fbceff68599",
       "source": "result/data/v4_qns27_frozen5_coordinate/nu2of3_v4_outer_c3_p0/coordinate_diagnostics.json"
     },
     "qns27/frozen5_sampling/nu2of3_v4_outer_c3_p0.json": {
-      "bytes": 1221,
-      "sha256": "8ec63db1bc5ae9fcc87ba49d59802ce2a0d3136525ef61e5eac88b983238c9b4",
+      "bytes": 1219,
+      "sha256": "712279e91043738777262ef2742ac92fc69c3661506e7d7c65c3cf2aec52f67e",
       "source": "result/data/v4_qns27_frozen5_samples/nu2of3_v4_outer_c3_p0.json"
     },
     "qns27/diagnostics/nu2of3_v4_outer_c3_p1.npz": {
-      "bytes": 41740,
-      "sha256": "63f155f3a6377e12f6dcb37b5080e030a6a4917daaba16a4ee17840bb9947779",
-      "source": "result/data/v4_qns27_observables/nu2of3_v4_outer_c3_p1/qns27_diagnostics.npz"
+      "bytes": 46467,
+      "sha256": "aeb090af57e9eb76cb5926df2169568e94c11c23b01dfd3a7f7c4b8830d16683",
+      "source": "result/data/v5_qns27_importance_obdm/final/nu2of3_v4_outer_c3_p1/qns27_diagnostics.npz"
     },
     "qns27/diagnostics/nu2of3_v4_outer_c3_p1.json": {
-      "bytes": 2846,
-      "sha256": "9f2e40570b0b687958bfe6c14d74287d5f32fe8dcbf91d7064caa788147438b3",
-      "source": "result/data/v4_qns27_observables/nu2of3_v4_outer_c3_p1/qns27_diagnostics.json"
+      "bytes": 3202,
+      "sha256": "f8865a2fe65b8a5a9d8605aa0cb64a63b337f36dfaa5aa1775da9ae345861618",
+      "source": "result/data/v5_qns27_importance_obdm/final/nu2of3_v4_outer_c3_p1/qns27_diagnostics.json"
     },
     "qns27/frozen5_coordinate/nu2of3_v4_outer_c3_p1.npz": {
-      "bytes": 35427,
-      "sha256": "8ef3e9e6e56bb7e661d19ab9ecd2d76ff717012d29d07b6169da5ebb0fb999e7",
+      "bytes": 35441,
+      "sha256": "ef8eae478ea56bcb4ee8fa486678c5fcb0dd7cb16b12fbd359b05c39e9b6b3f1",
       "source": "result/data/v4_qns27_frozen5_coordinate/nu2of3_v4_outer_c3_p1/coordinate_diagnostics.npz"
     },
     "qns27/frozen5_coordinate/nu2of3_v4_outer_c3_p1.json": {
-      "bytes": 1018,
-      "sha256": "0900a05268f15c17d4589c5babca3f8789ed85dd2a074fb5a0c57a144ddc287f",
+      "bytes": 1044,
+      "sha256": "1cd918d2738aadd6b2ff9af8c5f107f9bc8772e5d2b4baa5280b9924b98386cf",
       "source": "result/data/v4_qns27_frozen5_coordinate/nu2of3_v4_outer_c3_p1/coordinate_diagnostics.json"
     },
     "qns27/frozen5_sampling/nu2of3_v4_outer_c3_p1.json": {
-      "bytes": 1217,
-      "sha256": "8ffc37d457ea262a703736d20195b0c824f3968cf3ac3856de6ba1190692a96b",
+      "bytes": 1220,
+      "sha256": "4301520c335578a5797604c60d29d127d506abd9c73f89da7cd4b68386ebeb6c",
       "source": "result/data/v4_qns27_frozen5_samples/nu2of3_v4_outer_c3_p1.json"
     },
     "qns27/diagnostics/nu2of3_v4_outer_c3_p2.npz": {
-      "bytes": 41759,
-      "sha256": "cf4ed5c43fb3f5a675e54c785ba0a3003bf72fb9998e85fd4520de1aa5e347fe",
-      "source": "result/data/v4_qns27_observables/nu2of3_v4_outer_c3_p2/qns27_diagnostics.npz"
+      "bytes": 46462,
+      "sha256": "f068e8f833d979ddba3463ec2be60c20e2a2c0b86655bcd2bdff29d5aa7a2636",
+      "source": "result/data/v5_qns27_importance_obdm/final/nu2of3_v4_outer_c3_p2/qns27_diagnostics.npz"
     },
     "qns27/diagnostics/nu2of3_v4_outer_c3_p2.json": {
-      "bytes": 2806,
-      "sha256": "d4443ccfbe4a21510192a0067ec2b355a42271aa4f86ba66fff93c7a88980fe8",
-      "source": "result/data/v4_qns27_observables/nu2of3_v4_outer_c3_p2/qns27_diagnostics.json"
+      "bytes": 3177,
+      "sha256": "0d50199c8360377f6f9d33a5e289c893dd086feec8fcc51db8aea55da31fe73f",
+      "source": "result/data/v5_qns27_importance_obdm/final/nu2of3_v4_outer_c3_p2/qns27_diagnostics.json"
     },
     "qns27/frozen5_coordinate/nu2of3_v4_outer_c3_p2.npz": {
-      "bytes": 35402,
-      "sha256": "8edfd9fb9edfa709e8c276f3b29d66f5f1d9a3beb8fb5dd85cc4ab80ed48da7f",
+      "bytes": 35413,
+      "sha256": "e0255132c1a3227329c5de93a89a2f1beb1cb64ffd8d838772252a2efa05bbf1",
       "source": "result/data/v4_qns27_frozen5_coordinate/nu2of3_v4_outer_c3_p2/coordinate_diagnostics.npz"
     },
     "qns27/frozen5_coordinate/nu2of3_v4_outer_c3_p2.json": {
-      "bytes": 1019,
-      "sha256": "2316b2f7585acb2ff0b122de8789e6f44b033f0cc687ade7053009fb71dba99b",
+      "bytes": 1044,
+      "sha256": "03e567c10aa13160828a27641641b207a8ee42a56a31b21d43b4f59f33052306",
       "source": "result/data/v4_qns27_frozen5_coordinate/nu2of3_v4_outer_c3_p2/coordinate_diagnostics.json"
     },
     "qns27/frozen5_sampling/nu2of3_v4_outer_c3_p2.json": {
-      "bytes": 1208,
-      "sha256": "fef5a22440ac971bcc27a09492102b07972ca7ef5c62f3285dbf90a79fa5efff",
+      "bytes": 1218,
+      "sha256": "c30a64b59f9f236a80f7fa0581a1c09ff94b30589f2c6b277169bef6bd953006",
       "source": "result/data/v4_qns27_frozen5_samples/nu2of3_v4_outer_c3_p2.json"
     },
     "qns27/traces/nu2of3_full_m.json": {
-      "bytes": 117137,
-      "sha256": "bd8b02e49045da8e3364b7591f55ee9758b244c20e0bf3125740dec4ba80db36",
+      "bytes": 244088,
+      "sha256": "a81189477fe1471c79db68a7234528e05d3b91b93fd61a5f8724654a204c082c",
       "source": "result/data/qns27_width64_seed3184/nu2of3_full_m/jax_neural_bloch_trace.json"
     },
     "qns27/traces/nu2of3_v4_gamma.json": {
-      "bytes": 126781,
-      "sha256": "6fe232ec37f9ca863d15358aedd9eca37c6c565850b479c1180b6d8d90e9409c",
+      "bytes": 253724,
+      "sha256": "51bd2712643e7dee204832fd71e7858f2e7c179500bc0e0a4d508f1295d80e68",
       "source": "result/data/v4_qns27_seed3184/nu2of3_v4_gamma/jax_neural_bloch_trace.json"
     },
     "qns27/traces/nu2of3_v4_outer_c3_p0.json": {
-      "bytes": 126301,
-      "sha256": "834ba7f678e66c427ff798062062c642710e278fb965f8a41e1beedf60ef4715",
+      "bytes": 253175,
+      "sha256": "d86c0e4aa77cb2ccd138194fb5af1d09ddd43f0f50e7366ad125ad46eb7ca472",
       "source": "result/data/v4_qns27_seed3184/nu2of3_v4_outer_c3/p0/jax_neural_bloch_trace.json"
     },
     "qns27/traces/nu2of3_v4_outer_c3_p1.json": {
-      "bytes": 126314,
-      "sha256": "ba27d749ee3cc24ed4300db43bc461fbc3328fcd8160ca11d7c3105098114c48",
+      "bytes": 253228,
+      "sha256": "3a94032bde6838193722ea24dd40bac2c2ebabc29d409d68f1c9c76ff5681da2",
       "source": "result/data/v4_qns27_seed3184/nu2of3_v4_outer_c3/p1/jax_neural_bloch_trace.json"
     },
     "qns27/traces/nu2of3_v4_outer_c3_p2.json": {
-      "bytes": 126409,
-      "sha256": "bbc32453b5cb9f2d7001c89a948675ddf9c6fd2de4d2209c34423e68424ab2f8",
+      "bytes": 253391,
+      "sha256": "e11b0e321dea5b2c507242fd38da616dbf7ad3c96a3356efe2a30004691ff711",
       "source": "result/data/v4_qns27_seed3184/nu2of3_v4_outer_c3/p2/jax_neural_bloch_trace.json"
     },
     "qns27/timing.json": {
-      "bytes": 18299,
-      "sha256": "904624a5aff6651ebbcd1f902734a5718605cc2dd74c2bf63ea5114b8a83d05f",
+      "bytes": 19219,
+      "sha256": "65731821f85fea8f37aed431203855feb4c362f68f5903c5f5f4ae1f0da4538f",
       "source": "selected local queue metadata"
     },
     "qns27/frozen5_coordinate/summary.json": {
-      "bytes": 25005,
-      "sha256": "c8774aa77eb4c58cd9be8df28b99d2e45632cbf0003f580f0ed698d5bfce1d69",
+      "bytes": 25332,
+      "sha256": "7d461d1f87af189f2b3c14efa521bc35e066f825443ea720cc6bea2062ed8d3a",
       "source": "result/data/v4_qns27_frozen5_coordinate/summary.json"
+    },
+    "qns27/importance_obdm/production_summary.json": {
+      "bytes": 34040,
+      "sha256": "91bb67b18b6ab46b8b90b5f1545e005aaf372d582a8a041bd99f4101aeba69c4",
+      "source": "result/data/v5_qns27_importance_obdm/final/summary.json"
+    },
+    "qns27/importance_obdm/auxiliary_sampling.json": {
+      "bytes": 607,
+      "sha256": "a896dbe60ee1384f0519056e0781e1c43c0b138870bab86fd39e7befc69ffead",
+      "source": "result/data/v5_qns27_importance_obdm/auxiliary_20640x64.json"
+    },
+    "qns27/importance_obdm/comparison.json": {
+      "bytes": 13538,
+      "sha256": "49e9f9feece0f4b686ea175710d9b36a9dcfcc10cce48a0d18817bbf7bc7ba0f",
+      "source": "result/data/v5_qns27_importance_obdm/final/comparison.json"
     }
   }
 }

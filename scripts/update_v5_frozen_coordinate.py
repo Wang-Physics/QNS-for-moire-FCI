@@ -70,6 +70,7 @@ def sample_one(job: dict, gpu: int) -> dict:
     sample = SAMPLES / f"{job['stem']}.npz"
     metadata = sample.with_suffix(".json")
     if not _read_complete(metadata, {
+        "training_step": 240,
         "parameters_frozen": True,
         "optimizer_updates": 0,
         "measurement_steps": 5,
@@ -99,6 +100,7 @@ def coordinate_one(item: tuple[int, dict]) -> dict:
     output = DEST / job["stem"]
     metadata = output / "coordinate_diagnostics.json"
     if not _read_complete(metadata, {
+        "training_step": 240,
         "parameters_frozen": True,
         "optimizer_updates": 0,
         "unique_walker_chains": 4128,
@@ -142,6 +144,7 @@ def main() -> None:
         coordinate_records = list(executor.map(coordinate_one, enumerate(all_jobs)))
     summary = {
         "status": "complete",
+        "training_step": 240,
         "route": (
             "five frozen-parameter measurement steps for coordinate-only "
             "S(q) and density; occupation remains the 4128-by-128 baseline"
